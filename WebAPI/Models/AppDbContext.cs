@@ -14,10 +14,13 @@ namespace WebAPI.Models
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Order> Orders { get; set; }
-        public DbSet<OrderItem> OrderItems { get; }
-        public DbSet<Payment> Payments { get; }
-        public DbSet<Inventory> Inventories { get; }
-        public DbSet<Notification> Notifications { get; }
+        public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<Payment> Payments { get; set; }
+        public DbSet<Inventory> Inventories { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Table> Tables { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Product> Products { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -26,9 +29,14 @@ namespace WebAPI.Models
             // User -> Role (One-to-Many)
             modelBuilder.Entity<User>()
                 .HasOne(u => u.Role)
-                .WithMany()
+                .WithMany(r => r.Users)
                 .HasForeignKey(u => u.RoleId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.User)
+                .WithMany(u => u.Notifications)
+                .HasForeignKey(u => u.UserId);
 
             // Order -> Table (One-to-Many)
             modelBuilder.Entity<Order>()
@@ -48,17 +56,23 @@ namespace WebAPI.Models
                 .WithMany(o => o.OrderItems)
                 .HasForeignKey(oi => oi.OrderId);
 
+            // OrderItem -> Product (Many-to-one)
+            modelBuilder.Entity<OrderItem>()
+                .HasOne(oi => oi.Product)
+                .WithMany(p => p.OrderItems)
+                .HasForeignKey(oi => oi.ProductId);
+
+            // Product -> Category (Many-to-one)
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.Category)
+                .WithMany(c => c.Products)
+                .HasForeignKey(p => p.CategoryId);
+
             // Product -> Inventory (One-to-Many)
             modelBuilder.Entity<Inventory>()
                 .HasOne(i => i.Product)
                 .WithMany(p => p.Inventories)
                 .HasForeignKey(i => i.ProductId);
-
-            // Notification -> User (One-to-Many)
-            modelBuilder.Entity<Notification>()
-                .HasOne(n => n.User)
-                .WithMany()
-                .HasForeignKey(n => n.UserId);
         }
     }
 }

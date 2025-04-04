@@ -25,8 +25,10 @@ namespace WebAPI.Models
         [Required]
         public int CategoryId { get; set; }
 
-        public Category Category { get; set; }
+        public Category? Category { get; set; } 
 
-        public ICollection<Inventory> Inventories { get; set; }
+        public ICollection<Inventory> Inventories { get; } = new List<Inventory>();
+
+        public ICollection<OrderItem> OrderItems { get; } = new List<OrderItem>();
     }
 }
