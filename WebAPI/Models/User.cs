@@ -25,6 +25,8 @@ namespace WebAPI.Models
         [Required]
         public int RoleId { get; set; }
 
-        public Role Role { get; set; }
+        public Role? Role { get; set; } 
+
+        public ICollection<Notification> Notifications { get; } = new List<Notification>();
     }
 }

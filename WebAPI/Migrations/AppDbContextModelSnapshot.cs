@@ -36,7 +36,7 @@ namespace WebAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Category");
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("WebAPI.Models.Inventory", b =>
@@ -107,9 +107,14 @@ namespace WebAPI.Migrations
                     b.Property<int>("TableId")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("TableId1")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("TableId");
+
+                    b.HasIndex("TableId1");
 
                     b.ToTable("Orders");
                 });
@@ -197,7 +202,7 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Product");
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("WebAPI.Models.Role", b =>
@@ -236,7 +241,7 @@ namespace WebAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Table");
+                    b.ToTable("Tables");
                 });
 
             modelBuilder.Entity("WebAPI.Models.User", b =>
@@ -288,7 +293,7 @@ namespace WebAPI.Migrations
             modelBuilder.Entity("WebAPI.Models.Notification", b =>
                 {
                     b.HasOne("WebAPI.Models.User", "User")
-                        .WithMany()
+                        .WithMany("Notifications")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -304,6 +309,10 @@ namespace WebAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("WebAPI.Models.Table", null)
+                        .WithMany("Orders")
+                        .HasForeignKey("TableId1");
+
                     b.Navigation("Table");
                 });
 
@@ -316,7 +325,7 @@ namespace WebAPI.Migrations
                         .IsRequired();
 
                     b.HasOne("WebAPI.Models.Product", "Product")
-                        .WithMany()
+                        .WithMany("OrderItems")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -340,7 +349,7 @@ namespace WebAPI.Migrations
             modelBuilder.Entity("WebAPI.Models.Product", b =>
                 {
                     b.HasOne("WebAPI.Models.Category", "Category")
-                        .WithMany()
+                        .WithMany("Products")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -351,12 +360,17 @@ namespace WebAPI.Migrations
             modelBuilder.Entity("WebAPI.Models.User", b =>
                 {
                     b.HasOne("WebAPI.Models.Role", "Role")
-                        .WithMany()
+                        .WithMany("Users")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("WebAPI.Models.Category", b =>
+                {
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("WebAPI.Models.Order", b =>
@@ -370,6 +384,23 @@ namespace WebAPI.Migrations
             modelBuilder.Entity("WebAPI.Models.Product", b =>
                 {
                     b.Navigation("Inventories");
+
+                    b.Navigation("OrderItems");
+                });
+
+            modelBuilder.Entity("WebAPI.Models.Role", b =>
+                {
+                    b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("WebAPI.Models.Table", b =>
+                {
+                    b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("WebAPI.Models.User", b =>
+                {
+                    b.Navigation("Notifications");
                 });
 #pragma warning restore 612, 618
         }

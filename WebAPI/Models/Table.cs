@@ -18,5 +18,7 @@ namespace WebAPI.Models
 
         [Required]
         public bool IsOccupied { get; set; }
+
+        public ICollection<Order> Orders { get; } = new List<Order>();
     }
 }

@@ -16,15 +16,15 @@ namespace WebAPI.Models
         public DateTime OrderDate { get; set; }
 
         [Required]
-        public int TableId { get; set; } 
+        public int TableId { get; set; }
 
-        public Table Table { get; set; } 
+        public Table? Table { get; set; } 
 
-        public ICollection<OrderItem> OrderItems { get; set; }
+        public ICollection<OrderItem> OrderItems { get; } = new List<OrderItem>();
 
-        public Payment Payment { get; set; }
+        public Payment? Payment { get; set; } 
 
         [Required]
-        public string Status { get; set; }
+        public OrderStatus Status { get; set; }
     }
 }

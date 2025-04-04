@@ -10,5 +10,7 @@ namespace WebAPI.Models
         [Required]
         [MaxLength(50)]
         public string Name { get; set; }
+
+        public ICollection<User> Users { get; } = new List<User>();
     }
 }
