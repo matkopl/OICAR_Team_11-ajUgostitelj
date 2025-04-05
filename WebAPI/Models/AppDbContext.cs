@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace WebAPI.Models
 {
-    public class AppDbContext : DbContext 
+    public class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -31,48 +31,55 @@ namespace WebAPI.Models
                 .HasOne(u => u.Role)
                 .WithMany(r => r.Users)
                 .HasForeignKey(u => u.RoleId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Notification>()
                 .HasOne(n => n.User)
                 .WithMany(u => u.Notifications)
-                .HasForeignKey(u => u.UserId);
+                .HasForeignKey(u => u.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Order -> Table (One-to-Many)
             modelBuilder.Entity<Order>()
                 .HasOne(o => o.Table)
-                .WithMany()
-                .HasForeignKey(o => o.TableId);
+                .WithMany(t => t.Orders)
+                .HasForeignKey(o => o.TableId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Order -> Payment (One-to-One)
             modelBuilder.Entity<Order>()
                 .HasOne(o => o.Payment)
                 .WithOne(p => p.Order)
-                .HasForeignKey<Payment>(p => p.OrderId);
+                .HasForeignKey<Payment>(p => p.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Order -> OrderItem (One-to-Many)
             modelBuilder.Entity<OrderItem>()
                 .HasOne(oi => oi.Order)
                 .WithMany(o => o.OrderItems)
-                .HasForeignKey(oi => oi.OrderId);
+                .HasForeignKey(oi => oi.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // OrderItem -> Product (Many-to-one)
             modelBuilder.Entity<OrderItem>()
                 .HasOne(oi => oi.Product)
                 .WithMany(p => p.OrderItems)
-                .HasForeignKey(oi => oi.ProductId);
+                .HasForeignKey(oi => oi.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Product -> Category (Many-to-one)
             modelBuilder.Entity<Product>()
                 .HasOne(p => p.Category)
                 .WithMany(c => c.Products)
-                .HasForeignKey(p => p.CategoryId);
+                .HasForeignKey(p => p.CategoryId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             // Product -> Inventory (One-to-Many)
             modelBuilder.Entity<Inventory>()
                 .HasOne(i => i.Product)
                 .WithMany(p => p.Inventories)
-                .HasForeignKey(i => i.ProductId);
+                .HasForeignKey(i => i.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
