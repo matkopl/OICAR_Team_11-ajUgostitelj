@@ -4,6 +4,7 @@ using WebAPI.DTOs;
 using WebAPI.Models;
 using WebAPI.Repository;
 using System.Linq.Dynamic.Core;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebAPI.Services
 {
