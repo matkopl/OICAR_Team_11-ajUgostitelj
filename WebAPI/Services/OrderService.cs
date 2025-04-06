@@ -3,6 +3,7 @@ using Serilog;
 using WebAPI.DTOs;
 using WebAPI.Models;
 using WebAPI.Repository;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
 
 namespace WebAPI.Services
