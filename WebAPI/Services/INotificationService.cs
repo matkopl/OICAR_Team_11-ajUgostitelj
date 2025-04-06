@@ -11,5 +11,8 @@ namespace WebAPI.Services
         Task<NotificationDto> CreateNotificationAsync(NotificationDto notificationDto);
         Task UpdateNotificationAsync(int id, NotificationDto notificationDto);
         Task DeleteNotificationAsync(int id);
+        Task<(List<NotificationDto> Notifications, int TotalCount)> GetNotificationsPagedAsync(NotificationQueryDto query);
+        List<int> GetAvailablePageSizes();
+        List<string> GetAvailableSortColumns();
     }
 }

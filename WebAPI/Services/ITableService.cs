@@ -10,5 +10,7 @@ namespace WebAPI.Services
         Task UpdateTableAsync(int id, TableDto tableDto);
         Task DeleteTableAsync(int id);
         Task<bool> TableExistsAsync(int id);
+        Task<(List<TableDto> Tables, int TotalCount)> GetTablesPagedAsync(TableQueryDto query);
+        List<string> GetAvailableSortColumns();
     }
 }

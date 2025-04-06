@@ -177,24 +177,16 @@ namespace WebAPI.Controllers
             }
         }
 
-        // OrderController.cs
         [HttpGet("paged")]
         public async Task<ActionResult> GetPaged([FromQuery] OrderQueryDto query)
         {
-            try
-            {
-                var result = await _orderService.GetOrdersPagedAsync(query);
+            var (orders, totalCount) = await _orderService.GetOrdersPagedAsync(query);
 
-                Response.Headers.Add("X-Total-Count", result.TotalCount.ToString());
-                Response.Headers.Add("X-Page-Size", query.PageSize.ToString());
-                Response.Headers.Add("X-Current-Page", query.Page.ToString());
+            Response.Headers.Add("X-Total-Count", totalCount.ToString());
+            Response.Headers.Add("X-Page-Size", query.PageSize.ToString());
+            Response.Headers.Add("X-Current-Page", query.Page.ToString());
 
-                return Ok(result.Orders ?? new List<OrderDto>());
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, "Internal server error: " + ex.Message);
-            }
+            return Ok(orders);
         }
 
         [HttpGet("options")]
