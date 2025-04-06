@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 using WebAPI.DTOs;
 using WebAPI.Services;
 
@@ -20,62 +21,107 @@ namespace WebAPI.Controllers
 
         [HttpGet("get_all")]
         public async Task<IActionResult> GetAllUsers() 
-        { 
-            var users = await _userService.GetAllUsersAsync();
-            return Ok(users);
+        {
+            try
+            {
+                var users = await _userService.GetAllUsersAsync();
+                Log.Information("All users fetched successfully!");
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                return BadRequest("Error fetching all tables, please see error log!");
+            }
         }
 
         [HttpGet("get/{id}")]
         public async Task<IActionResult> GetUserById(int id)
         {
-            var user = await _userService.GetUserByIdAsync(id);
-            if (user == null)
+            try
             {
-                return NotFound();
-            }
+                var user = await _userService.GetUserByIdAsync(id);
+                if (user == null)
+                {
+                    Log.Error($"User with ID {id} not found");
+                    return NotFound();
+                }
 
-            return Ok(user);
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message, $"Error fetching user with ID {id}");
+                return BadRequest($"Error fetching user with ID {id}, please see error log!");
+            }
         }
 
         [HttpPost("create")]
         public async Task<IActionResult> CreateUser(CreateUserDto createUserDto)
         {
-            var success = await _userService.CreateUserAsync(createUserDto);
-
-            if (!success)
+            try
             {
-                return BadRequest($"User with username {createUserDto.Username} already exists");
-            }
+                var success = await _userService.CreateUserAsync(createUserDto);
 
-            return Ok($"Sucessfully created user: {createUserDto.Username}");
+                if (!success)
+                {
+                    Log.Error($"User with username {createUserDto.Username} already exists");
+                    return BadRequest($"User with username {createUserDto.Username} already exists");
+                }
+
+                return Ok($"Successfully created user: {createUserDto.Username}");
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                throw;
+            }
         }
 
         [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateUser(int id, UpdateUserDto updateUserDto)
         {
-            updateUserDto.Id = id;
-
-            var sucess = await _userService.UpdateUserAsync(updateUserDto);
-
-            if (!sucess)
+            try
             {
-                return NotFound();
-            }
+                updateUserDto.Id = id;
 
-            return Ok($"User {updateUserDto.Username} with id {updateUserDto.Id} has been sucessfully updated");
+                var sucess = await _userService.UpdateUserAsync(updateUserDto);
+
+                if (!sucess)
+                {
+                    Log.Error($"User {updateUserDto.Username} update failed!");
+                    return NotFound();
+                }
+                Log.Information("Updating user successfully!");
+                return Ok($"User {updateUserDto.Username} with id {updateUserDto.Id} has been successfully updated");
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                throw;
+            }
         }
 
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            var sucess = await _userService.DeleteUserAsync(id);
-
-            if (!sucess)
+            try
             {
-                return NotFound();
-            }
+                var sucess = await _userService.DeleteUserAsync(id);
 
-            return Ok("User deleted sucessfully");
+                if (!sucess)
+                {
+                    Log.Error($"User delete failed!");
+                    return NotFound();
+                }
+
+                return Ok("User deleted successfully");
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                throw;
+            }
         }
     }
 }
