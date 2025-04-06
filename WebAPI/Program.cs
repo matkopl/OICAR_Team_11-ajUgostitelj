@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using System.Text;
 using WebAPI.Models;
 using WebAPI.Repository;
@@ -17,6 +19,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
 builder.Services.AddSwaggerGen(option =>
 {
     option.SwaggerDoc("v1",
@@ -50,6 +60,23 @@ builder.Services.AddSwaggerGen(option =>
         });
 });
 
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        foreach (var item in context.ModelState)
+        {
+            if (item.Value.Errors.Count > 0)
+            {
+                var error = item.Value.Errors[0].ErrorMessage;
+                Log.Error("Error: {Error}", error);
+                return new BadRequestObjectResult(new { message = error });
+            }
+        }
+        return new BadRequestResult();
+    };
+});
+
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer(options =>
     {
@@ -72,6 +99,7 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<ITableService, TableService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 
 var app = builder.Build();
@@ -86,7 +114,7 @@ if (app.Environment.IsDevelopment())
 app.UseExceptionHandler("/error");
 
 app.UseAuthentication();
-
+app.UseSerilogRequestLogging();
 app.UseAuthorization();
 
 app.MapControllers();
