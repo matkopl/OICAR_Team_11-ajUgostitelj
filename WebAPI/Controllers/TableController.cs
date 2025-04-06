@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.DTOs;
 using WebAPI.Services;
+using Serilog;
 
 namespace WebAPI.Controllers
 {
@@ -19,22 +20,54 @@ namespace WebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TableDto>>> GetAllTables()
         {
-            var tables = await _tableService.GetAllTablesAsync();
-            return Ok(tables);
+            try
+            {
+                var tables = await _tableService.GetAllTablesAsync();
+                Log.Information("All tables fetched successfully!");
+                return Ok(tables);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                return BadRequest("Error fetching all tables, please see error log!");
+            }
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<TableDto>> GetTable(int id)
         {
-            var table = await _tableService.GetTableByIdAsync(id);
-            return table != null ? Ok(table) : NotFound();
+            try
+            {
+                var table = await _tableService.GetTableByIdAsync(id);
+                if (table == null)
+                {
+                    Log.Warning($"Table with ID {id} not found");
+                    return NotFound();
+                }
+                return Ok(table);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message, $"Error fetching table with ID {id}");
+                return BadRequest($"Error fetching table with ID {id}, please see error log!");
+            }
         }
 
         [HttpPost]
         public async Task<ActionResult<TableDto>> CreateTable(TableDto tableDto)
         {
-            var createdTable = await _tableService.CreateTableAsync(tableDto);
-            return CreatedAtAction(nameof(GetTable), new { id = createdTable.Id }, createdTable);
+            try
+            {
+                Log.Information($"Creating table...");
+                var createdTable = await _tableService.CreateTableAsync(tableDto);
+                Log.Information($"Successfully created {createdTable.Name} with ID:{createdTable.Id}");
+                return CreatedAtAction(nameof(GetTable), new { id = createdTable.Id }, createdTable);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error creating table");
+                return BadRequest($"Error creating table, please see error log!");
+            }
         }
 
         [HttpPut("{id}")]
@@ -42,17 +75,26 @@ namespace WebAPI.Controllers
         {
             if (id != tableDto.Id)
             {
-                return BadRequest("ID in URL does not match ID in body");
+                Log.Error($"ID in URL does not match ID in body)", id, tableDto.Id);
+                return BadRequest($"ID in URL does not match ID in body");
             }
 
             try
             {
+                Log.Information($"Updating Table with ID {id}...");
                 await _tableService.UpdateTableAsync(id, tableDto);
+                Log.Information($"Table with ID {id} updated successfully");
                 return NoContent();
             }
-            catch (KeyNotFoundException)
+            catch (KeyNotFoundException ex)
             {
+                Log.Error(ex, $"Table with ID {id} not found during update", id);
                 return NotFound();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Error updating table with ID {id}");
+                return StatusCode(500, "Error occurred");
             }
         }
 
@@ -61,12 +103,20 @@ namespace WebAPI.Controllers
         {
             try
             {
+                Log.Information($"Deleting table ID:{id}...");
                 await _tableService.DeleteTableAsync(id);
+                Log.Information($"Successfully deleted table with ID {id}");
                 return NoContent();
             }
-            catch (KeyNotFoundException)
+            catch (KeyNotFoundException ex)
             {
+                Log.Error(ex, $"Table with ID {id} not found during deletion");
                 return NotFound();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Error while deleting table with ID {id}");
+                return StatusCode(500, "Error with request!");
             }
         }
     }

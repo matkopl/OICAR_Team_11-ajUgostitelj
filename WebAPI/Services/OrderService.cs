@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Serilog;
 using WebAPI.DTOs;
 using WebAPI.Models;
 using WebAPI.Repository;
@@ -19,27 +20,51 @@ namespace WebAPI.Services
         public async Task<IEnumerable<OrderDto>> GetAllOrdersAsync()
         {
             var repo = _repositoryFactory.GetRepository<Order>();
-            var orders = await repo.GetAllAsync();
-            return _mapper.Map<IEnumerable<OrderDto>>(orders);
+            try
+            {
+                var orders = await repo.GetAllAsync();
+                return _mapper.Map<IEnumerable<OrderDto>>(orders);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error fetching all orders in the service layer");
+                throw;
+            }
         }
 
         public async Task<OrderDto?> GetOrderByIdAsync(int id)
         {
             var repo = _repositoryFactory.GetRepository<Order>();
-            var order = await repo.GetByIdAsync(id);
-            return _mapper.Map<OrderDto>(order);
+            try
+            {
+                var order = await repo.GetByIdAsync(id);
+                return _mapper.Map<OrderDto>(order);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Error fetching order with ID {id} in the service layer");
+                throw;
+            }
         }
 
         public async Task<OrderDto> CreateOrderAsync(OrderDto orderDto)
         {
             var repo = _repositoryFactory.GetRepository<Order>();
-            var order = _mapper.Map<Order>(orderDto);
-            order.OrderDate = DateTime.UtcNow;
+            try
+            {
+                var order = _mapper.Map<Order>(orderDto);
+                order.OrderDate = DateTime.UtcNow;
 
-            await repo.AddAsync(order);
-            await repo.SaveChangesAsync();
+                await repo.AddAsync(order);
+                await repo.SaveChangesAsync();
 
-            return _mapper.Map<OrderDto>(order);
+                return _mapper.Map<OrderDto>(order);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error creating order in the service layer");
+                throw;
+            }
         }
 
         public async Task UpdateOrderAsync(int id, OrderDto orderDto)
@@ -48,8 +73,11 @@ namespace WebAPI.Services
             var existingOrder = await repo.GetByIdAsync(id);
 
             if (existingOrder == null)
+            {
+                Log.Error($"Table with ID {id} not found for update in the service layer");
                 throw new KeyNotFoundException("Order not found");
-
+            }
+                
             _mapper.Map(orderDto, existingOrder);
             repo.Update(existingOrder);
             await repo.SaveChangesAsync();
@@ -64,7 +92,15 @@ namespace WebAPI.Services
                 throw new KeyNotFoundException("Order not found");
 
             repo.Remove(order);
-            await repo.SaveChangesAsync();
+            try
+            {
+                await repo.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Error deleting order with ID {id} in the service layer");
+                throw;
+            }
         }
 
         public async Task UpdateOrderStatusAsync(OrderStatusDto statusDto)
@@ -72,8 +108,10 @@ namespace WebAPI.Services
             var repo = _repositoryFactory.GetRepository<Order>();
             var order = await repo.GetByIdAsync(statusDto.OrderId);
 
-            if (order == null)
-                throw new KeyNotFoundException($"Order with ID {statusDto.OrderId} not found");
+            if (order == null) 
+            {
+               throw new KeyNotFoundException($"Order with ID {statusDto.OrderId} not found");
+            }
 
             if (!Enum.TryParse<OrderStatus>(statusDto.Status, out var newStatus))
                 throw new ArgumentException($"Invalid status value: {statusDto.Status}");

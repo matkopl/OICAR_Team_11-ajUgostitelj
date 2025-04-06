@@ -19,7 +19,17 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+    <PackageReference Include="Serilog" Version="4.2.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+    <PackageReference Include="Serilog.Expressions" Version="5.0.0" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.1" />
+    <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Logs\InformationLogs\" />
+    <Folder Include="Logs\ErrorLogs\" />
   </ItemGroup>
 
 </Project>

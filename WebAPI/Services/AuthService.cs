@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Serilog;
 using WebAPI.DTOs;
 using WebAPI.Models;
 using WebAPI.Repository;
@@ -19,69 +20,111 @@ namespace WebAPI.Services
 
         public async Task<bool> ChangePasswordAsync(string username, ChangePasswordDto changePasswordDto)
         {
-            var userRepository = _repositoryFactory.GetRepository<User>();
-            var user = (await userRepository.GetAllAsync())
-                .FirstOrDefault(u => u.Username == username);
-
-            if (user == null || !PasswordHashProvider.VerifyPassword(changePasswordDto.CurrentPassword, user.PwdHash, user.PwdSalt))
+            try
             {
-                return false;
+                var userRepository = _repositoryFactory.GetRepository<User>();
+                var user = (await userRepository.GetAllAsync())
+                    .FirstOrDefault(u => u.Username == username);
+
+                if (user == null)
+                {
+                    Log.Warning($"User {username} not found.");
+                    return false;
+                }
+
+                if (!PasswordHashProvider.VerifyPassword(changePasswordDto.CurrentPassword, user.PwdHash, user.PwdSalt)) 
+                {
+                    Log.Warning($"Incorrect current password for user {username}.");
+                    return false;
+                }
+
+                var salt = PasswordHashProvider.GetSalt();
+                var hash = PasswordHashProvider.GetHash(changePasswordDto.NewPassword, salt);
+
+                user.PwdSalt = salt;
+                user.PwdHash = hash;
+
+                userRepository.Update(user);
+                await userRepository.SaveChangesAsync();
+                Log.Information($"Password changed for user {username}");
+                return true;
             }
-
-            var salt = PasswordHashProvider.GetSalt();
-            var hash = PasswordHashProvider.GetHash(changePasswordDto.NewPassword, salt);
-
-            user.PwdSalt = salt;
-            user.PwdHash = hash;
-
-            userRepository.Update(user);
-            await userRepository.SaveChangesAsync();
-            return true;
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Error occurred for user {username}.");
+                throw;
+            }
         }
 
         public async Task<string> LoginAsync(LoginDto loginDto)
         {
-            var userRepository = _repositoryFactory.GetRepository<User>();
-
-            var user = (await userRepository.GetAllAsync())
-                .FirstOrDefault(u => u.Username == loginDto.Username);
-
-            if (user == null || !PasswordHashProvider.VerifyPassword(loginDto.Password, user.PwdHash, user.PwdSalt))
+            try
             {
-                return "Login failed. Username or password is incorrect. Please try again.";
+                var userRepository = _repositoryFactory.GetRepository<User>();
+
+                var user = (await userRepository.GetAllAsync())
+                    .FirstOrDefault(u => u.Username == loginDto.Username);
+
+                if (user == null)
+                {
+                    Log.Warning($"Login failed. Username is incorrect. Please try again. {loginDto.Username}");
+                    return "Login failed. Username  is incorrect. Please try again.";
+                }
+
+                if(!PasswordHashProvider.VerifyPassword(loginDto.Password, user.PwdHash, user.PwdSalt))
+                {
+                    Log.Warning($"Login failed. Password is incorrect. Please try again. {loginDto.Username}");
+                    return "Login failed. Password is incorrect. Please try again.";
+                }
+
+                var token = JwtTokenProvider.CreateToken(
+                    secureKey: "12345678901234567890123456789012",
+                    expirationMinutes: 120,
+                    user: user
+                );
+                Log.Information($"Login: User {loginDto.Username} logged in successfully.");
+                return token;
             }
-
-            var token = JwtTokenProvider.CreateToken(
-                secureKey: "12345678901234567890123456789012",
-                expirationMinutes: 120,
-                user: user
-            );
-
-            return token;
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Login: Error occurred for user {loginDto.Username}.");
+                throw;
+            }
         }
 
         public async Task<bool> RegisterAsync(RegisterDto registerDto)
         {
-            var userRepository = _repositoryFactory.GetRepository<User>();
-            var existingUser = (await userRepository.GetAllAsync())
-                .FirstOrDefault(u => u.Username == registerDto.Username);
-
-            if (existingUser != null)
+            try
             {
-                return false;
+                var userRepository = _repositoryFactory.GetRepository<User>();
+                var existingUser = (await userRepository.GetAllAsync())
+                    .FirstOrDefault(u => u.Username == registerDto.Username);
+                var username = registerDto.Username;
+                
+                if (existingUser != null)
+                {
+                    Log.Warning($"Username {username} already taken.");
+                    return false;
+                }
+
+                var salt = PasswordHashProvider.GetSalt();
+                var hash = PasswordHashProvider.GetHash(registerDto.Password, salt);
+
+                var newUser = _mapper.Map<User>(registerDto);
+                newUser.PwdSalt = salt;
+                newUser.PwdHash = hash;
+                newUser.RoleId = 2;
+
+                await userRepository.AddAsync(newUser);
+                await userRepository.SaveChangesAsync();
+                Log.Information($"User {username} registered successfully.");
+                return true;
             }
-
-            var salt = PasswordHashProvider.GetSalt();
-            var hash = PasswordHashProvider.GetHash(registerDto.Password, salt);
-
-            var newUser = _mapper.Map<User>(registerDto);
-            newUser.PwdSalt = salt;
-            newUser.PwdHash = hash;
-            newUser.RoleId = 2;
-
-            await userRepository.AddAsync(newUser);
-            await userRepository.SaveChangesAsync();
-            return true;
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Error occurred while registering user {registerDto.Username}.");
+                throw;
+            }
         }
     }
 }
