@@ -71,6 +71,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<ITableService, TableService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 var app = builder.Build();
 
