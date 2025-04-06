@@ -46,14 +46,49 @@ namespace WebAPI.Services
 
         public async Task<NotificationDto> CreateNotificationAsync(NotificationDto notificationDto)
         {
-            var repo = _repositoryFactory.GetRepository<Notification>();
-            var notification = _mapper.Map<Notification>(notificationDto);
-            notification.CreatedAt = DateTime.UtcNow;
+            try
+            {
+                // Detaljna validacija
+                if (notificationDto == null)
+                {
+                    throw new ArgumentNullException(nameof(notificationDto), "Notification DTO cannot be null");
+                }
 
-            await repo.AddAsync(notification);
-            await repo.SaveChangesAsync();
+                if (string.IsNullOrWhiteSpace(notificationDto.Message))
+                {
+                    throw new ArgumentException("Message is required", nameof(notificationDto.Message));
+                }
 
-            return _mapper.Map<NotificationDto>(notification);
+                if (notificationDto.UserId <= 0)
+                {
+                    throw new ArgumentException("User ID must be greater than 0", nameof(notificationDto.UserId));
+                }
+
+                // Provjera postoji li korisnik
+                var userExists = await _context.Users.AnyAsync(u => u.Id == notificationDto.UserId);
+                if (!userExists)
+                {
+                    throw new KeyNotFoundException($"User with ID {notificationDto.UserId} not found");
+                }
+
+                var notification = new Notification
+                {
+                    Message = notificationDto.Message.Trim(),
+                    UserId = notificationDto.UserId,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                await _context.Notifications.AddAsync(notification);
+                await _context.SaveChangesAsync();
+
+                return _mapper.Map<NotificationDto>(notification);
+            }
+            catch (Exception ex)
+            {
+                // Detaljno logiranje greške
+                Console.WriteLine($"Error creating notification: {ex}");
+                throw new ApplicationException("Error creating notification, please check the logs", ex);
+            }
         }
 
         public async Task UpdateNotificationAsync(int id, NotificationDto notificationDto)

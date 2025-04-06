@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
+using System.Diagnostics;
 using WebAPI.DTOs;
 using WebAPI.Models;
 using WebAPI.Services;
@@ -72,17 +73,54 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<NotificationDto>> Create(NotificationDto notificationDto)
+        public async Task<ActionResult<NotificationDto>> Create([FromBody] NotificationDto notificationDto)
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(new
+                    {
+                        Title = "Validation Error",
+                        Status = 400,
+                        Errors = ModelState.ToDictionary(
+                            k => k.Key,
+                            v => v.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                        )
+                    });
+                }
+
                 var createdNotification = await _notificationService.CreateNotificationAsync(notificationDto);
                 return CreatedAtAction(nameof(GetById), new { id = createdNotification.Id }, createdNotification);
             }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new
+                {
+                    Title = "Invalid Input",
+                    Status = 400,
+                    Detail = ex.Message,
+                    Field = ex.ParamName
+                });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new
+                {
+                    Title = "Not Found",
+                    Status = 404,
+                    Detail = ex.Message
+                });
+            }
             catch (Exception ex)
             {
-                Log.Error(ex.Message);
-                return BadRequest($"Error creating notification, please see error log!");
+                return StatusCode(500, new
+                {
+                    Title = "Server Error",
+                    Status = 500,
+                    Detail = "An unexpected error occurred",
+                    TraceId = Activity.Current?.Id
+                });
             }
         }
 
