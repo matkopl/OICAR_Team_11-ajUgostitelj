@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 using WebAPI.DTOs;
+using WebAPI.Models;
 using WebAPI.Services;
 
 namespace WebAPI.Controllers
@@ -19,29 +21,69 @@ namespace WebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<NotificationDto>>> GetAll()
         {
-            var notifications = await _notificationService.GetAllNotificationsAsync();
-            return Ok(notifications);
+            try
+            {
+                var notifications = await _notificationService.GetAllNotificationsAsync();
+                Log.Information("All notifications fetched successfully!");
+                return Ok(notifications);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                return BadRequest("Error fetching all tables, please see error log!");
+            }
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<NotificationDto>> GetById(int id)
         {
-            var notification = await _notificationService.GetNotificationByIdAsync(id);
-            return notification != null ? Ok(notification) : NotFound();
+            try
+            {
+                var notification = await _notificationService.GetNotificationByIdAsync(id);
+
+                if (notification == null)
+                {
+                    Log.Warning($"Notification with ID {id} not found");
+                    return NotFound();
+                }
+
+                return Ok(notification);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                return BadRequest($"Error fetching notification with ID {id}, please see error log!");
+            }
         }
 
         [HttpGet("user/{userId}")]
         public async Task<ActionResult<IEnumerable<NotificationDto>>> GetByUser(int userId)
         {
-            var notifications = await _notificationService.GetNotificationsByUserIdAsync(userId);
-            return Ok(notifications);
+            try
+            {
+                var notifications = await _notificationService.GetNotificationsByUserIdAsync(userId);
+                return Ok(notifications);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                return BadRequest($"Error fetching notification by user with ID {userId}, please see error log!");
+            }
         }
 
         [HttpPost]
         public async Task<ActionResult<NotificationDto>> Create(NotificationDto notificationDto)
         {
-            var createdNotification = await _notificationService.CreateNotificationAsync(notificationDto);
-            return CreatedAtAction(nameof(GetById), new { id = createdNotification.Id }, createdNotification);
+            try
+            {
+                var createdNotification = await _notificationService.CreateNotificationAsync(notificationDto);
+                return CreatedAtAction(nameof(GetById), new { id = createdNotification.Id }, createdNotification);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                return BadRequest($"Error creating notification, please see error log!");
+            }
         }
 
         [HttpPut("{id}")]
@@ -55,8 +97,9 @@ namespace WebAPI.Controllers
                 await _notificationService.UpdateNotificationAsync(id, notificationDto);
                 return NoContent();
             }
-            catch (KeyNotFoundException)
+            catch (KeyNotFoundException ex)
             {
+                Log.Error(ex.Message);
                 return NotFound();
             }
         }
@@ -69,8 +112,9 @@ namespace WebAPI.Controllers
                 await _notificationService.DeleteNotificationAsync(id);
                 return NoContent();
             }
-            catch (KeyNotFoundException)
+            catch (KeyNotFoundException ex)
             {
+                Log.Error(ex.Message);
                 return NotFound();
             }
         }
@@ -78,23 +122,39 @@ namespace WebAPI.Controllers
         [HttpGet("paged")]
         public async Task<ActionResult> GetPaged([FromQuery] NotificationQueryDto query)
         {
-            var (notifications, totalCount) = await _notificationService.GetNotificationsPagedAsync(query);
+            try
+            {
+                var (notifications, totalCount) = await _notificationService.GetNotificationsPagedAsync(query);
 
-            Response.Headers.Add("X-Total-Count", totalCount.ToString());
-            Response.Headers.Add("X-Page-Size", query.PageSize.ToString());
-            Response.Headers.Add("X-Current-Page", query.Page.ToString());
+                Response.Headers.Add("X-Total-Count", totalCount.ToString());
+                Response.Headers.Add("X-Page-Size", query.PageSize.ToString());
+                Response.Headers.Add("X-Current-Page", query.Page.ToString());
 
-            return Ok(notifications);
+                return Ok(notifications);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                throw;
+            }
         }
 
         [HttpGet("options")]
         public ActionResult GetOptions()
         {
-            return Ok(new
+            try
             {
-                PageSizes = _notificationService.GetAvailablePageSizes(),
-                SortColumns = _notificationService.GetAvailableSortColumns()
-            });
+                return Ok(new
+                {
+                    PageSizes = _notificationService.GetAvailablePageSizes(),
+                    SortColumns = _notificationService.GetAvailableSortColumns()
+                });
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                return NotFound(ex.Message);
+            }
         }
     }
 }
