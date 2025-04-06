@@ -5,6 +5,8 @@ using WebAPI.Models;
 using WebAPI.Repository;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Serilog;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace WebAPI.Services
 {
@@ -22,26 +24,50 @@ namespace WebAPI.Services
         public async Task<IEnumerable<TableDto>> GetAllTablesAsync()
         {
             var repo = _repositoryFactory.GetRepository<Table>();
-            var tables = await repo.GetAllAsync();
-            return _mapper.Map<IEnumerable<TableDto>>(tables);
+            try
+            {
+                var tables = await repo.GetAllAsync();
+                return _mapper.Map<IEnumerable<TableDto>>(tables);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error fetching all tables in the service layer");
+                throw;
+            }
         }
 
         public async Task<TableDto?> GetTableByIdAsync(int id)
         {
             var repo = _repositoryFactory.GetRepository<Table>();
-            var table = await repo.GetByIdAsync(id);
-            return _mapper.Map<TableDto>(table);
+            try
+            {
+                var table = await repo.GetByIdAsync(id);
+                return _mapper.Map<TableDto>(table);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Error fetching table with ID {id} in the service layer");
+                throw;
+            }
         }
 
         public async Task<TableDto> CreateTableAsync(TableDto tableDto)
         {
             var repo = _repositoryFactory.GetRepository<Table>();
-            var table = _mapper.Map<Table>(tableDto);
+            try
+            {
+                var table = _mapper.Map<Table>(tableDto);
 
-            await repo.AddAsync(table);
-            await repo.SaveChangesAsync();
+                await repo.AddAsync(table);
+                await repo.SaveChangesAsync();
 
-            return _mapper.Map<TableDto>(table);
+                return _mapper.Map<TableDto>(table);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error creating table in the service layer");
+                throw;
+            }
         }
 
         public async Task UpdateTableAsync(int id, TableDto tableDto)
@@ -50,14 +76,25 @@ namespace WebAPI.Services
             var existingTable = await repo.GetByIdAsync(id);
 
             if (existingTable == null)
+            {
+                Log.Error($"Table with ID {id} not found for update in the service layer");
                 throw new KeyNotFoundException("Table not found");
+            }
 
             // Osiguravamo da ID u URL-u i DTO-u matchaju
             tableDto.Id = id;
             _mapper.Map(tableDto, existingTable);
-
             repo.Update(existingTable);
-            await repo.SaveChangesAsync();
+
+            try
+            {
+                await repo.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Error updating table with ID {id} in the service layer");
+                throw;
+            }
         }
 
         public async Task DeleteTableAsync(int id)
@@ -66,16 +103,35 @@ namespace WebAPI.Services
             var table = await repo.GetByIdAsync(id);
 
             if (table == null)
+            {
+                Log.Error($"Table with ID {id} not found for deleting it, error in the service layer");
                 throw new KeyNotFoundException("Table not found");
+            }
 
             repo.Remove(table);
-            await repo.SaveChangesAsync();
+            try
+            {
+                await repo.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Error deleting table with ID {id} in the service layer");
+                throw;
+            }
         }
 
         public async Task<bool> TableExistsAsync(int id)
         {
             var repo = _repositoryFactory.GetRepository<Table>();
-            return await repo.GetByIdAsync(id) != null;
+            try
+            {
+                return await repo.GetByIdAsync(id) != null;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Table doesn't exists table with ID: {id}");
+                throw;
+            }
         }
     }
 }
