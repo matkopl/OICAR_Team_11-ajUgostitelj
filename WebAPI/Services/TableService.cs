@@ -5,8 +5,11 @@ using WebAPI.Models;
 using WebAPI.Repository;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Dynamic.Core;
 using Serilog;
 using Microsoft.AspNetCore.Http.HttpResults;
+
 
 namespace WebAPI.Services
 {
@@ -14,11 +17,13 @@ namespace WebAPI.Services
     {
         private readonly IRepositoryFactory _repositoryFactory;
         private readonly IMapper _mapper;
+        private readonly AppDbContext _context;
 
-        public TableService(IRepositoryFactory repositoryFactory, IMapper mapper)
+        public TableService(IRepositoryFactory repositoryFactory, IMapper mapper, AppDbContext context)
         {
             _repositoryFactory = repositoryFactory;
             _mapper = mapper;
+            _context = context;
         }
 
         public async Task<IEnumerable<TableDto>> GetAllTablesAsync()
@@ -132,6 +137,36 @@ namespace WebAPI.Services
                 Log.Error(ex, $"Table doesn't exists table with ID: {id}");
                 throw;
             }
+        }
+
+        // Services/TableService.cs
+        public async Task<(List<TableDto> Tables, int TotalCount)> GetTablesPagedAsync(TableQueryDto query)
+        {
+            query ??= new TableQueryDto();
+            query.Page = Math.Max(1, query.Page);
+            query.PageSize = new[] { 5, 10, 15 }.Contains(query.PageSize) ? query.PageSize : 5;
+
+            var baseQuery = _context.Tables.AsQueryable();
+
+            // Filtriranje po statusu zauzetosti
+            if (query.IsOccupied.HasValue)
+            {
+                baseQuery = baseQuery.Where(t => t.IsOccupied == query.IsOccupied.Value);
+            }
+
+            // Paginacija
+            var totalCount = await baseQuery.CountAsync();
+            var tables = await baseQuery
+                .Skip((query.Page - 1) * query.PageSize)
+                .Take(query.PageSize)
+                .ToListAsync();
+
+            return (_mapper.Map<List<TableDto>>(tables), totalCount);
+        }
+
+        public List<string> GetAvailableSortColumns()
+        {
+            return new List<string> { "Id", "Name", "IsOccupied" };
         }
     }
 }

@@ -74,5 +74,27 @@ namespace WebAPI.Controllers
                 return NotFound();
             }
         }
+
+        [HttpGet("paged")]
+        public async Task<ActionResult> GetPaged([FromQuery] NotificationQueryDto query)
+        {
+            var (notifications, totalCount) = await _notificationService.GetNotificationsPagedAsync(query);
+
+            Response.Headers.Add("X-Total-Count", totalCount.ToString());
+            Response.Headers.Add("X-Page-Size", query.PageSize.ToString());
+            Response.Headers.Add("X-Current-Page", query.Page.ToString());
+
+            return Ok(notifications);
+        }
+
+        [HttpGet("options")]
+        public ActionResult GetOptions()
+        {
+            return Ok(new
+            {
+                PageSizes = _notificationService.GetAvailablePageSizes(),
+                SortColumns = _notificationService.GetAvailableSortColumns()
+            });
+        }
     }
 }

@@ -149,51 +149,29 @@ namespace WebAPI.Services
 
         public async Task<(List<OrderDto> Orders, int TotalCount)> GetOrdersPagedAsync(OrderQueryDto query)
         {
-            // Inicijalizacija ako je query null
             query ??= new OrderQueryDto();
-
-            // Validacija parametara
             query.Page = Math.Max(1, query.Page);
-            query.PageSize = new[] { 5, 10, 15 }.Contains(query.PageSize)
-                ? query.PageSize
-                : 5;
+            query.PageSize = new[] { 5, 10, 15 }.Contains(query.PageSize) ? query.PageSize : 5;
 
-            // Osnovni upit sa osiguranjem da nije null
-            IQueryable<Order> baseQuery = _context.Orders?
+            var baseQuery = _context.Orders
                 .Include(o => o.Table)
                 .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Product)
-                .AsQueryable() ?? throw new Exception("Database context is not initialized");
+                .AsQueryable();
 
-            // Sortiranje sa null check
-            if (!string.IsNullOrWhiteSpace(query.SortBy))
+            // Filtriranje po statusu
+            if (query.Status.HasValue)
             {
-                var validColumns = new[] { "Status", "TotalAmount", "TableId", "OrderDate" };
-                if (validColumns.Contains(query.SortBy))
-                {
-                    var sortDirection = query.SortDescending ? "descending" : "ascending";
-                    try
-                    {
-                        baseQuery = baseQuery.OrderBy($"{query.SortBy} {sortDirection}");
-                    }
-                    catch
-                    {
-                        // Fallback na default sort
-                        baseQuery = baseQuery.OrderByDescending(o => o.OrderDate);
-                    }
-                }
-            }
-            else
-            {
-                baseQuery = baseQuery.OrderByDescending(o => o.OrderDate);
+                baseQuery = baseQuery.Where(o => o.Status == query.Status.Value);
             }
 
-            // Paginacija sa null check
+            // Paginacija
             var totalCount = await baseQuery.CountAsync();
             var orders = await baseQuery
+                .OrderByDescending(o => o.OrderDate) // Default sort po datumu
                 .Skip((query.Page - 1) * query.PageSize)
                 .Take(query.PageSize)
-                .ToListAsync() ?? new List<Order>();
+                .ToListAsync();
 
             return (_mapper.Map<List<OrderDto>>(orders), totalCount);
         }
