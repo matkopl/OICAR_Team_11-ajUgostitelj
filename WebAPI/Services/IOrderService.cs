@@ -12,5 +12,8 @@ namespace WebAPI.Services
         Task<string> GetOrderStatusAsync(int orderId);
         Task UpdateOrderStatusAsync(OrderStatusDto statusDto);
         Task<Dictionary<string, string>> GetStatusDefinitionsAsync();
+        Task<(List<OrderDto> Orders, int TotalCount)> GetOrdersPagedAsync(OrderQueryDto query);
+        List<int> GetAvailablePageSizes();
+        List<string> GetAvailableSortColumns();
     }
 }
