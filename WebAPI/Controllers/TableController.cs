@@ -69,5 +69,23 @@ namespace WebAPI.Controllers
                 return NotFound();
             }
         }
+
+        [HttpGet("paged")]
+        public async Task<ActionResult> GetPaged([FromQuery] TableQueryDto query)
+        {
+            var (tables, totalCount) = await _tableService.GetTablesPagedAsync(query);
+
+            Response.Headers.Add("X-Total-Count", totalCount.ToString());
+            Response.Headers.Add("X-Page-Size", query.PageSize.ToString());
+            Response.Headers.Add("X-Current-Page", query.Page.ToString());
+
+            return Ok(tables);
+        }
+
+        [HttpGet("sort-options")]
+        public ActionResult GetSortOptions()
+        {
+            return Ok(_tableService.GetAvailableSortColumns());
+        }
     }
 }

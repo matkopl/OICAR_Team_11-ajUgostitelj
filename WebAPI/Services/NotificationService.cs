@@ -4,6 +4,9 @@ using WebAPI.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using WebAPI.Repository;
+using AutoMapper.QueryableExtensions;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Dynamic.Core;
 
 namespace WebAPI.Services
 {
@@ -77,5 +80,62 @@ namespace WebAPI.Services
             repo.Remove(notification);
             await repo.SaveChangesAsync();
         }
+
+        public async Task<(List<NotificationDto> Notifications, int TotalCount)> GetNotificationsPagedAsync(NotificationQueryDto query)
+        {
+            query ??= new NotificationQueryDto();
+            query.Page = Math.Max(1, query.Page);
+            query.PageSize = GetAvailablePageSizes().Contains(query.PageSize)
+                ? query.PageSize
+                : 10;
+
+            var baseQuery = _context.Notifications.AsQueryable();
+
+            // Filtriranje po korisniku (ako je navedeno)
+            if (query.UserId.HasValue)
+            {
+                baseQuery = baseQuery.Where(n => n.UserId == query.UserId.Value);
+            }
+
+            // Sortiranje
+            var validSortColumns = GetAvailableSortColumns();
+            if (!string.IsNullOrWhiteSpace(query.SortBy) && validSortColumns.Contains(query.SortBy))
+            {
+                var sortDirection = query.SortDescending ? "descending" : "ascending";
+                baseQuery = baseQuery.OrderBy($"{query.SortBy} {sortDirection}");
+            }
+            else
+            {
+                // Default sort
+                baseQuery = baseQuery.OrderByDescending(n => n.CreatedAt);
+            }
+
+            // Paginacija
+            var totalCount = await baseQuery.CountAsync();
+            var notifications = await baseQuery
+                .Skip((query.Page - 1) * query.PageSize)
+                .Take(query.PageSize)
+                .ProjectTo<NotificationDto>(_mapper.ConfigurationProvider)
+                .ToListAsync();
+
+            return (notifications, totalCount);
+        }
+
+        public List<int> GetAvailablePageSizes()
+        {
+            return new List<int> { 5, 10, 15, 20, 50 };
+        }
+
+        public List<string> GetAvailableSortColumns()
+        {
+            return new List<string>
+        {
+            "Id",
+            "Message",
+            "CreatedAt",
+            "UserId"
+        };
+        }
+
     }
 }
