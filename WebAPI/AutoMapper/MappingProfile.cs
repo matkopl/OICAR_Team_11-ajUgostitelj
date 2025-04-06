@@ -13,6 +13,10 @@ namespace WebAPI.AutoMapper
             CreateMap<User, LoginDto>().ReverseMap();
             CreateMap<User, RegisterDto>().ReverseMap();
             CreateMap<User, ChangePasswordDto>().ReverseMap();
+            CreateMap<Notification, NotificationDto>().ReverseMap();
+            CreateMap<User, UserDto>().ReverseMap();
+            CreateMap<User, CreateUserDto>().ReverseMap();
+            CreateMap<User, UpdateUserDto>().ReverseMap();  
         }
     }
 }

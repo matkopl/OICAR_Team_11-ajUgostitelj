@@ -176,5 +176,36 @@ namespace WebAPI.Controllers
                 return BadRequest("Error updating order status");
             }
         }
+
+        // OrderController.cs
+        [HttpGet("paged")]
+        public async Task<ActionResult> GetPaged([FromQuery] OrderQueryDto query)
+        {
+            try
+            {
+                var result = await _orderService.GetOrdersPagedAsync(query);
+
+                Response.Headers.Add("X-Total-Count", result.TotalCount.ToString());
+                Response.Headers.Add("X-Page-Size", query.PageSize.ToString());
+                Response.Headers.Add("X-Current-Page", query.Page.ToString());
+
+                return Ok(result.Orders ?? new List<OrderDto>());
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error: " + ex.Message);
+            }
+        }
+
+        [HttpGet("options")]
+        public ActionResult GetOptions()
+        {
+            return Ok(new
+            {
+                PageSizes = _orderService.GetAvailablePageSizes(),
+                SortColumns = _orderService.GetAvailableSortColumns()
+            });
+        }
+
     }
 }
