@@ -21,6 +21,7 @@ namespace WebAPI.AutoMapper
             CreateMap<Category, CategoryDto>().ReverseMap();
             CreateMap<Inventory, InventoryDto>().ReverseMap();
             CreateMap<Role, RoleDto>().ReverseMap();
+            CreateMap<OrderItem, OrderItemDto>().ReverseMap();
 
         }
     }
