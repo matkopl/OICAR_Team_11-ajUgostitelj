@@ -1,10 +1,159 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Naručivanje Online - Menu";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/Menu.css" />
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">Naručivanje Online</div>
+            <div class="tagline">Premium coffee experience at your fingertips</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="menu-categories">
+            <button class="category-btn active">All</button>
+            <button class="category-btn">Coffee</button>
+            <button class="category-btn">Tea</button>
+            <button class="category-btn">Pastries</button>
+            <button class="category-btn">Specialties</button>
+        </div>
+
+        <div class="menu-section">
+            <h2 class="section-title">Coffee Selection</h2>
+            <div class="menu-items">
+                <!-- Coffee Item 1 -->
+                <div class="menu-item">
+                    <img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5" alt="Espresso" class="item-image">
+                    <div class="item-details">
+                        <div class="item-name">Espresso</div>
+                        <div class="item-description">Strong, concentrated coffee served in a small cup</div>
+                        <div class="item-price">2.50 €</div>
+                        <button class="order-btn">Add to Order</button>
+                    </div>
+                </div>
+
+                <!-- Coffee Item 2 -->
+                <div class="menu-item">
+                    <img src="https://images.unsplash.com/photo-1534687941688-651ccaafbff8" alt="Cappuccino" class="item-image">
+                    <div class="item-details">
+                        <div class="item-name">Cappuccino</div>
+                        <div class="item-description">Espresso with steamed milk and a silky layer of foam</div>
+                        <div class="item-price">3.20 €</div>
+                        <button class="order-btn">Add to Order</button>
+                    </div>
+                </div>
+
+                <!-- Coffee Item 3 -->
+                <div class="menu-item">
+                    <img src="https://images.unsplash.com/photo-1568649929103-28ffbefaca1e" alt="Latte" class="item-image">
+                    <div class="item-details">
+                        <div class="item-name">Latte</div>
+                        <div class="item-description">Smooth espresso with a generous amount of steamed milk</div>
+                        <div class="item-price">3.50 €</div>
+                        <button class="order-btn">Add to Order</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-section">
+            <h2 class="section-title">Tea Selection</h2>
+            <div class="menu-items">
+                <!-- Tea Item 1 -->
+                <div class="menu-item">
+                    <img src="https://images.unsplash.com/photo-1567393528670-3d01d0804a5b" alt="Green Tea" class="item-image">
+                    <div class="item-details">
+                        <div class="item-name">Green Tea</div>
+                        <div class="item-description">Refreshing and antioxidant-rich tea</div>
+                        <div class="item-price">2.20 €</div>
+                        <button class="order-btn">Add to Order</button>
+                    </div>
+                </div>
+
+                <!-- Tea Item 2 -->
+                <div class="menu-item">
+                    <img src="https://images.unsplash.com/photo-1558160074-4d7d8bdf4256" alt="Chai Latte" class="item-image">
+                    <div class="item-details">
+                        <div class="item-name">Chai Latte</div>
+                        <div class="item-description">Spiced tea with steamed milk and honey</div>
+                        <div class="item-price">3.00 €</div>
+                        <button class="order-btn">Add to Order</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-section">
+            <h2 class="section-title">Pastries</h2>
+            <div class="menu-items">
+                <!-- Pastry Item 1 -->
+                <div class="menu-item">
+                    <img src="https://images.unsplash.com/photo-1559620192-032c4bc4674e" alt="Croissant" class="item-image">
+                    <div class="item-details">
+                        <div class="item-name">Butter Croissant</div>
+                        <div class="item-description">Flaky, buttery French pastry</div>
+                        <div class="item-price">2.00 €</div>
+                        <button class="order-btn">Add to Order</button>
+                    </div>
+                </div>
+
+                <!-- Pastry Item 2 -->
+                <div class="menu-item">
+                    <img src="https://images.unsplash.com/photo-1607013251379-e6aec68aa8a2" alt="Cinnamon Roll" class="item-image">
+                    <div class="item-details">
+                        <div class="item-name">Cinnamon Roll</div>
+                        <div class="item-description">Sweet dough with cinnamon and icing</div>
+                        <div class="item-price">2.50 €</div>
+                        <button class="order-btn">Add to Order</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>© 2023 Maručivanje Online. All rights reserved.</p>
+            <p>Contact us: info@marucivanje.com | +385 123 456</p>
+        </div>
+    </footer>
+
+    <script>
+        // Simple category filtering
+        document.querySelectorAll('.category-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons
+                document.querySelectorAll('.category-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+
+                // Add active class to clicked button
+                button.classList.add('active');
+
+                // Here you would add filtering logic in a real implementation
+                // For now, it just changes the button style
+            });
+        });
+
+        // Order button functionality
+        document.querySelectorAll('.order-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const itemName = button.parentElement.querySelector('.item-name').textContent;
+                alert(`Added ${itemName} to your order!`);
+                // In a real implementation, this would add to a cart
+            });
+        });
+    </script>
+</body>
+</html>
