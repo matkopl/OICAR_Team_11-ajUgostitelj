@@ -1,0 +1,218 @@
+﻿@page
+@model WebApp.Pages.Product.DetailsModel
+@{
+    ViewData["Title"] = "Product Details";
+}
+
+<style>
+        /* Osnovni stilovi */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+        }
+
+        .header-space {
+            height: 60px; /* Visina vašeg navbara */
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .container-details {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* Poboljšan prikaz slike */
+        .product-detail {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1rem;
+            align-items: flex-start; /* Poravnanje na vrhu */
+        }
+
+        .product-image {
+            flex: 1;
+            display: flex;
+            justify-content: center; /* Centriranje slike */
+            align-items: center;
+            overflow: hidden; /* Spriječava izlazak slike iz okvira */
+        }
+
+        .product-image .item-image {
+            max-width: 100%;
+            max-height: 500px; /* Ograničenje visine */
+            width: auto;
+            height: auto;
+            object-fit: contain; /* Prikaz cijele slike bez rezanja */
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Ostali stilovi ostaju isti */
+        .product-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .item-name {
+            font-size: 2rem;
+            color: #6F4E37;
+            margin-bottom: 1rem;
+        }
+
+        .item-description {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .item-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #6F4E37;
+            margin-bottom: 2rem;
+        }
+
+        .quantity-selector {
+            margin-bottom: 2rem;
+        }
+
+        .quantity-selector label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        .quantity-input {
+            padding: 10px;
+            width: 80px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: auto;
+        }
+
+        .add-to-cart-btn {
+            padding: 12px 24px;
+            background-color: #6F4E37;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            flex: 1;
+        }
+
+        .add-to-cart-btn:hover {
+            background-color: #5a3b2b;
+        }
+
+        .go-back-btn {
+            padding: 12px 24px;
+            background-color: #f0f0f0;
+            color: #333;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            text-align: center;
+            text-decoration: none;
+            flex: 1;
+        }
+
+        .go-back-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        .footer {
+            background-color: #6F4E37;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            width: 100%;
+        }
+
+        .footer .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer p {
+            margin: 5px 0;
+        }
+
+        /* Responsivnost */
+    @@media (max-width: 768px) {
+        .product-detail {
+            flex-direction: column;
+        }
+
+        .product-image .item-image {
+            height: 300px;
+        }
+
+        .button-group {
+            flex-direction: column;
+        }
+
+        .add-to-cart-btn,
+        .go-back-btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="container-details">
+    <div class="product-detail">
+        <div class="product-image">
+            <img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5" alt="Espresso" class="item-image">
+        </div>
+        <div class="product-info">
+            <h1 class="item-name">Espresso</h1>
+            <p class="item-description">Strong, concentrated coffee served in a small cup</p>
+            <div class="item-price">2.50 €</div>
+
+            <div class="quantity-selector">
+                <label for="quantity">Quantity:</label>
+                <input type="number" id="quantity" name="quantity" min="1" value="1" class="quantity-input">
+            </div>
+
+            <div class="button-group">
+                <button class="add-to-cart-btn">Add to Cart</button>
+                <a href="/" class="go-back-btn">Go Back</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelector('.add-to-cart-btn').addEventListener('click', () => {
+            const quantity = document.getElementById('quantity').value;
+            alert(`Added ${quantity} item(s) to cart!`);
+            // Ovdje ćete kasnije dodati stvarnu logiku
+        });
+    </script>
+}

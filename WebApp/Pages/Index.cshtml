@@ -1,10 +1,217 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Naručivanje Online - Menu";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/Menu.css" />
+</head>
+<body>
+
+    <div class="container">
+        <div class="menu-categories">
+            <button class="category-btn active" data-category="all">All</button>
+            <button class="category-btn" data-category="coffee">Coffee</button>
+            <button class="category-btn" data-category="tea">Tea</button>
+            <button class="category-btn" data-category="pastries">Pastries</button>
+            <button class="category-btn" data-category="specialties">Specialties</button>
+        </div>
+
+        <!-- Coffee Section -->
+        <div class="menu-section" data-category="coffee">
+            <h2 class="section-title">Coffee Selection</h2>
+            <div class="menu-items">
+                <!-- Espresso -->
+                <div class="menu-item">
+                    <img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5" alt="Espresso" class="item-image">
+                    <div class="item-details">
+                        <div class="item-name">Espresso</div>
+                        <div class="item-description">Strong, concentrated coffee served in a small cup</div>
+                        <div class="item-price">2.50 €</div>
+                        <a href="/Product/Details" class="order-btn">Add to Order</a>
+                    </div>
+                </div>
+
+                <!-- Cappuccino -->
+                <div class="menu-item">
+                    <img src="https://images.unsplash.com/photo-1534687941688-651ccaafbff8" alt="Cappuccino" class="item-image">
+                    <div class="item-details">
+                        <div class="item-name">Cappuccino</div>
+                        <div class="item-description">Espresso with steamed milk and a silky layer of foam</div>
+                        <div class="item-price">3.20 €</div>
+                        <a href="/Product/Details" class="order-btn">Add to Order</a>
+                    </div>
+                </div>
+
+                <!-- Latte -->
+                <div class="menu-item">
+                    <img src="https://images.unsplash.com/photo-1568649929103-28ffbefaca1e" alt="Latte" class="item-image">
+                    <div class="item-details">
+                        <div class="item-name">Latte</div>
+                        <div class="item-description">Smooth espresso with a generous amount of steamed milk</div>
+                        <div class="item-price">3.50 €</div>
+                        <a href="/Product/Details" class="order-btn">Add to Order</a>
+                    </div>
+                </div>
+
+                <!-- Mocha -->
+                <div class="menu-item">
+                    <img src="https://images.unsplash.com/photo-1511920170033-f8396924c348" alt="Mocha" class="item-image">
+                    <div class="item-details">
+                        <div class="item-name">Mocha</div>
+                        <div class="item-description">Espresso with chocolate and steamed milk</div>
+                        <div class="item-price">3.80 €</div>
+                        <a href="/Product/Details" class="order-btn">Add to Order</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tea Section -->
+        <div class="menu-section" data-category="tea">
+            <h2 class="section-title">Tea Selection</h2>
+            <div class="menu-items">
+                <!-- Green Tea -->
+                <div class="menu-item">
+                    <img src="https://images.unsplash.com/photo-1597318181409-cf64d0b5d8a2" alt="Green Tea" class="item-image">
+                    <div class="item-details">
+                        <div class="item-name">Green Tea</div>
+                        <div class="item-description">Refreshing and antioxidant-rich tea</div>
+                        <div class="item-price">2.20 €</div>
+                        <a href="/Product/Details" class="order-btn">Add to Order</a>
+                    </div>
+                </div>
+
+                <!-- Chai Latte -->
+                <div class="menu-item">
+                    <img src="https://images.unsplash.com/photo-1558160074-4d7d8bdf4256" alt="Chai Latte" class="item-image">
+                    <div class="item-details">
+                        <div class="item-name">Chai Latte</div>
+                        <div class="item-description">Spiced tea with steamed milk and honey</div>
+                        <div class="item-price">3.00 €</div>
+                        <a href="/Product/Details" class="order-btn">Add to Order</a>
+                    </div>
+                </div>
+
+                <!-- Earl Grey -->
+                <div class="menu-item">
+                    <img src="https://images.unsplash.com/photo-1597318181409-cf64d0b5d8a2" alt="Earl Grey" class="item-image">
+                    <div class="item-details">
+                        <div class="item-name">Earl Grey</div>
+                        <div class="item-description">Black tea flavored with bergamot oil</div>
+                        <div class="item-price">2.50 €</div>
+                        <a href="/Product/Details" class="order-btn">Add to Order</a>
+                    </div>
+                </div>
+
+                <!-- Peppermint Tea -->
+                <div class="menu-item">
+                    <img src="https://images.unsplash.com/photo-1597318181409-cf64d0b5d8a2" alt="Peppermint Tea" class="item-image">
+                    <div class="item-details">
+                        <div class="item-name">Peppermint Tea</div>
+                        <div class="item-description">Refreshing herbal tea perfect for digestion</div>
+                        <div class="item-price">2.30 €</div>
+                        <a href="/Product/Details" class="order-btn">Add to Order</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pastries Section -->
+        <div class="menu-section" data-category="pastries">
+            <h2 class="section-title">Pastries</h2>
+            <div class="menu-items">
+                <!-- Croissant -->
+                <div class="menu-item">
+                    <img src="https://images.unsplash.com/photo-1559620192-032c4bc4674e" alt="Croissant" class="item-image">
+                    <div class="item-details">
+                        <div class="item-name">Butter Croissant</div>
+                        <div class="item-description">Flaky, buttery French pastry</div>
+                        <div class="item-price">2.00 €</div>
+                        <a href="/Product/Details" class="order-btn">Add to Order</a>
+                    </div>
+                </div>
+
+                <!-- Blueberry Muffin -->
+                <div class="menu-item">
+                    <img src="https://images.unsplash.com/photo-1550583724-b2692b85b150" alt="Blueberry Muffin" class="item-image">
+                    <div class="item-details">
+                        <div class="item-name">Blueberry Muffin</div>
+                        <div class="item-description">Soft muffin packed with fresh blueberries</div>
+                        <div class="item-price">2.70 €</div>
+                        <a href="/Product/Details" class="order-btn">Add to Order</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Specialties Section -->
+        <div class="menu-section" data-category="specialties">
+            <h2 class="section-title">Specialties</h2>
+            <div class="menu-items">
+                <!-- Turkish Coffee -->
+                <div class="menu-item">
+                    <img src="https://images.unsplash.com/photo-1534687941688-651ccaafbff8" alt="Turkish Coffee" class="item-image">
+                    <div class="item-details">
+                        <div class="item-name">Turkish Coffee</div>
+                        <div class="item-description">Traditional unfiltered coffee prepared in a cezve</div>
+                        <div class="item-price">3.50 €</div>
+                        <a href="/Product/Details" class="order-btn">Add to Order</a>
+                    </div>
+                </div>
+
+                <!-- Affogato -->
+                <div class="menu-item">
+                    <img src="https://images.unsplash.com/photo-1551269901-5c5e14c25df7" alt="Affogato" class="item-image">
+                    <div class="item-details">
+                        <div class="item-name">Affogato</div>
+                        <div class="item-description">Vanilla ice cream "drowned" with a shot of hot espresso</div>
+                        <div class="item-price">4.50 €</div>
+                        <a href="/Product/Details" class="order-btn">Add to Order</a>
+                    </div>
+                </div>
+
+                <!-- Iced Latte -->
+                <div class="menu-item">
+                    <img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5" alt="Iced Latte" class="item-image">
+                    <div class="item-details">
+                        <div class="item-name">Iced Latte</div>
+                        <div class="item-description">Chilled espresso with milk over ice</div>
+                        <div class="item-price">4.00 €</div>
+                        <a href="/Product/Details" class="order-btn">Add to Order</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Category filtering functionality
+        document.querySelectorAll('.category-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.category-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+
+                button.classList.add('active');
+
+                const category = button.dataset.category;
+
+                document.querySelectorAll('.menu-section').forEach(section => {
+                    if (category === 'all' || section.dataset.category === category) {
+                        section.style.display = 'block';
+                    } else {
+                        section.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
