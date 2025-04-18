@@ -34,7 +34,7 @@
                         <div class="item-name">Espresso</div>
                         <div class="item-description">Strong, concentrated coffee served in a small cup</div>
                         <div class="item-price">2.50 €</div>
-                        <button class="order-btn">Add to Order</button>
+                        <a href="/Product/Details" class="order-btn">Add to Order</a>
                     </div>
                 </div>
 
@@ -45,7 +45,7 @@
                         <div class="item-name">Cappuccino</div>
                         <div class="item-description">Espresso with steamed milk and a silky layer of foam</div>
                         <div class="item-price">3.20 €</div>
-                        <button class="order-btn">Add to Order</button>
+                        <a href="/Product/Details" class="order-btn">Add to Order</a>
                     </div>
                 </div>
 
@@ -56,7 +56,7 @@
                         <div class="item-name">Latte</div>
                         <div class="item-description">Smooth espresso with a generous amount of steamed milk</div>
                         <div class="item-price">3.50 €</div>
-                        <button class="order-btn">Add to Order</button>
+                        <a href="/Product/Details" class="order-btn">Add to Order</a>
                     </div>
                 </div>
 
@@ -67,7 +67,7 @@
                         <div class="item-name">Mocha</div>
                         <div class="item-description">Espresso with chocolate and steamed milk</div>
                         <div class="item-price">3.80 €</div>
-                        <button class="order-btn">Add to Order</button>
+                        <a href="/Product/Details" class="order-btn">Add to Order</a>
                     </div>
                 </div>
             </div>
@@ -84,7 +84,7 @@
                         <div class="item-name">Green Tea</div>
                         <div class="item-description">Refreshing and antioxidant-rich tea</div>
                         <div class="item-price">2.20 €</div>
-                        <button class="order-btn">Add to Order</button>
+                        <a href="/Product/Details" class="order-btn">Add to Order</a>
                     </div>
                 </div>
 
@@ -95,7 +95,7 @@
                         <div class="item-name">Chai Latte</div>
                         <div class="item-description">Spiced tea with steamed milk and honey</div>
                         <div class="item-price">3.00 €</div>
-                        <button class="order-btn">Add to Order</button>
+                        <a href="/Product/Details" class="order-btn">Add to Order</a>
                     </div>
                 </div>
 
@@ -106,7 +106,7 @@
                         <div class="item-name">Earl Grey</div>
                         <div class="item-description">Black tea flavored with bergamot oil</div>
                         <div class="item-price">2.50 €</div>
-                        <button class="order-btn">Add to Order</button>
+                        <a href="/Product/Details" class="order-btn">Add to Order</a>
                     </div>
                 </div>
 
@@ -117,7 +117,7 @@
                         <div class="item-name">Peppermint Tea</div>
                         <div class="item-description">Refreshing herbal tea perfect for digestion</div>
                         <div class="item-price">2.30 €</div>
-                        <button class="order-btn">Add to Order</button>
+                        <a href="/Product/Details" class="order-btn">Add to Order</a>
                     </div>
                 </div>
             </div>
@@ -134,7 +134,7 @@
                         <div class="item-name">Butter Croissant</div>
                         <div class="item-description">Flaky, buttery French pastry</div>
                         <div class="item-price">2.00 €</div>
-                        <button class="order-btn">Add to Order</button>
+                        <a href="/Product/Details" class="order-btn">Add to Order</a>
                     </div>
                 </div>
 
@@ -145,7 +145,7 @@
                         <div class="item-name">Blueberry Muffin</div>
                         <div class="item-description">Soft muffin packed with fresh blueberries</div>
                         <div class="item-price">2.70 €</div>
-                        <button class="order-btn">Add to Order</button>
+                        <a href="/Product/Details" class="order-btn">Add to Order</a>
                     </div>
                 </div>
             </div>
@@ -162,7 +162,7 @@
                         <div class="item-name">Turkish Coffee</div>
                         <div class="item-description">Traditional unfiltered coffee prepared in a cezve</div>
                         <div class="item-price">3.50 €</div>
-                        <button class="order-btn">Add to Order</button>
+                        <a href="/Product/Details" class="order-btn">Add to Order</a>
                     </div>
                 </div>
 
@@ -173,7 +173,7 @@
                         <div class="item-name">Affogato</div>
                         <div class="item-description">Vanilla ice cream "drowned" with a shot of hot espresso</div>
                         <div class="item-price">4.50 €</div>
-                        <button class="order-btn">Add to Order</button>
+                        <a href="/Product/Details" class="order-btn">Add to Order</a>
                     </div>
                 </div>
 
@@ -184,7 +184,7 @@
                         <div class="item-name">Iced Latte</div>
                         <div class="item-description">Chilled espresso with milk over ice</div>
                         <div class="item-price">4.00 €</div>
-                        <button class="order-btn">Add to Order</button>
+                        <a href="/Product/Details" class="order-btn">Add to Order</a>
                     </div>
                 </div>
             </div>
@@ -210,13 +210,6 @@
                         section.style.display = 'none';
                     }
                 });
-            });
-        });
-
-        document.querySelectorAll('.order-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                const itemName = button.parentElement.querySelector('.item-name').textContent;
-                alert(`Added ${itemName} to your order!`);
             });
         });
     </script>
