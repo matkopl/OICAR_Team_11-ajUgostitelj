@@ -16,42 +16,6 @@ body {
     line-height: 1.6;
 }
 
-/* POBOLJŠANI HEADER */
-header {
-    background-color: var(--primary-color);
-    color: var(--light-text);
-    padding: 1.5rem 0;
-    text-align: center;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.logo {
-    font-size: 2.2rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-    letter-spacing: 1px;
-}
-
-.tagline {
-    font-style: italic;
-    opacity: 0.9;
-    font-size: 1.1rem;
-}
-
-/* POBOLJŠANI FOOTER */
-footer {
-    background-color: var(--primary-color);
-    color: var(--light-text);
-    text-align: center;
-    padding: 2rem 0;
-    margin-top: 3rem;
-}
-
-    footer p {
-        margin: 0.5rem 0;
-    }
-
-/* OSTALI STILOVI (isti kao prije) */
 .container {
     max-width: 1200px;
     margin: 0 auto;

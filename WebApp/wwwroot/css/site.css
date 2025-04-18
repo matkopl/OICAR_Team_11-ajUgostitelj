@@ -21,7 +21,6 @@ body {
   margin-bottom: 60px;
 }
 
-/* Custom Coffee Theme */
 .bg-coffee {
     background-color: #6F4E37;
 }
@@ -72,7 +71,6 @@ body {
         text-decoration: underline;
     }
 
-/* Responsive adjustments */
 @media (max-width: 767.98px) {
     .navbar-collapse {
         padding-top: 1rem;

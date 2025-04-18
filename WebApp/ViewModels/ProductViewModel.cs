@@ -1,9 +1,8 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace WebAPI.DTOs
+namespace WebApp.ViewModels
 {
-    public class ProductDto
+    public class ProductViewModel
     {
         public int Id { get; set; }
 
