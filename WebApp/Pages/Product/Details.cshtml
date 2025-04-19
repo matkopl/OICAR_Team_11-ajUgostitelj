@@ -5,7 +5,6 @@
 }
 
 <style>
-        /* Osnovni stilovi */
         body {
             margin: 0;
             padding: 0;
@@ -17,7 +16,7 @@
         }
 
         .header-space {
-            height: 60px; /* Visina vašeg navbara */
+            height: 60px; 
         }
 
         .main-content {
@@ -34,33 +33,31 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        /* Poboljšan prikaz slike */
         .product-detail {
             display: flex;
             gap: 2rem;
             margin-top: 1rem;
-            align-items: flex-start; /* Poravnanje na vrhu */
+            align-items: flex-start; 
         }
 
         .product-image {
             flex: 1;
             display: flex;
-            justify-content: center; /* Centriranje slike */
+            justify-content: center; 
             align-items: center;
-            overflow: hidden; /* Spriječava izlazak slike iz okvira */
+            overflow: hidden; 
         }
 
         .product-image .item-image {
             max-width: 100%;
-            max-height: 500px; /* Ograničenje visine */
+            max-height: 500px; 
             width: auto;
             height: auto;
-            object-fit: contain; /* Prikaz cijele slike bez rezanja */
+            object-fit: contain; 
             border-radius: 8px;
             box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
 
-        /* Ostali stilovi ostaju isti */
         .product-info {
             flex: 1;
             display: flex;
@@ -159,9 +156,9 @@
             padding: 0 20px;
         }
 
-        .footer p {
-            margin: 5px 0;
-        }
+    .footer {
+        display: none; 
+    }
 
         /* Responsivnost */
     @@media (max-width: 768px) {
@@ -200,7 +197,7 @@
             </div>
 
             <div class="button-group">
-                <button class="add-to-cart-btn">Add to Cart</button>
+                <button class="add-to-cart-btn" onclick="addToCart()">Add to Cart</button>
                 <a href="/" class="go-back-btn">Go Back</a>
             </div>
         </div>
@@ -209,10 +206,8 @@
 
 @section Scripts {
     <script>
-        document.querySelector('.add-to-cart-btn').addEventListener('click', () => {
-            const quantity = document.getElementById('quantity').value;
-            alert(`Added ${quantity} item(s) to cart!`);
-            // Ovdje ćete kasnije dodati stvarnu logiku
-        });
+        function addToCart() {
+            window.location.href = '/Cart';
+        }
     </script>
 }
