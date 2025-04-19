@@ -9,7 +9,6 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -20,7 +19,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("get_all")]
-        public async Task<IActionResult> GetAllUsers() 
+        public async Task<IActionResult> GetAllUsers()
         {
             try
             {
@@ -54,6 +53,19 @@ namespace WebAPI.Controllers
                 Log.Error(ex.Message, $"Error fetching user with ID {id}");
                 return BadRequest($"Error fetching user with ID {id}, please see error log!");
             }
+        }
+
+        [HttpGet("{username}")]
+        public async Task<IActionResult> GetUserByUsernameAsync(string username)
+        {
+            var userDetails = await _userService.GetUserByUsernameAsync(username);
+
+            if (userDetails == null)
+            {
+                return NotFound("User not found");
+            }
+
+            return Ok(userDetails);
         }
 
         [HttpPost("create")]

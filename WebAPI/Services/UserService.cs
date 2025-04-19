@@ -77,6 +77,24 @@ namespace WebAPI.Services
             return _mapper.Map<UserDto>(user);
         }
 
+        public async Task<UserDto?> GetUserByUsernameAsync(string username)
+        {
+            var userRepo = _repositoryFactory.GetRepository<User>();
+            var user = (await userRepo.GetAllAsync()).FirstOrDefault(u => u.Username == username);
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            return new UserDto
+            {
+                Username = user.Username,
+                Email = user.Email,
+                Role = user.RoleId == 1 ? "Admin" : "User"
+            };
+        }
+
         public async Task<bool> UpdateUserAsync(UpdateUserDto updateUserDto)
         {
             var userRepo = _repositoryFactory.GetRepository<User>();

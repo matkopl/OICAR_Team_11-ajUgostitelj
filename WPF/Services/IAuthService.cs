@@ -12,5 +12,6 @@ namespace WPF.Services
         Task<string> LoginAsync(string username, string password);
         Task<bool> RegisterAsync(RegisterDto registerDto);
         Task<bool> ChangePasswordAsync(string token, ChangePasswordDto changePasswordDto);
+        Task<UserDto?> GetUserDetailsAsync(string username, string token);
     }
 }
