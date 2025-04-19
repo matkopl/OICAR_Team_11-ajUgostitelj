@@ -17,6 +17,7 @@ namespace WPF
         public MainWindow()
         {
             InitializeComponent();
+            WindowStartupLocation = WindowStartupLocation.CenterScreen;
             _authService = ((App)Application.Current).ServiceProvider.GetRequiredService<IAuthService>();
         }
 
@@ -35,7 +36,14 @@ namespace WPF
             {
                 var token = await _authService.LoginAsync(username, password);
 
-                var mainUi = new MainUiWindow(username);
+
+                if (string.IsNullOrEmpty(token))
+                {
+                    MessageBox.Show("Login failed. JwtToken is not valid");
+                    return;
+                }
+
+                var mainUi = new MainUiWindow(username, token);
                 mainUi.Show();
                 Close();
             }

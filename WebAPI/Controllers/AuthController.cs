@@ -49,13 +49,13 @@ namespace WebAPI.Controllers
                 Log.Information($"Logging in for user: {loginDto.Username}");
                 var token = await _authService.LoginAsync(loginDto);
 
-                if (token == null)
+                if (string.IsNullOrEmpty(token))
                 {
                     Log.Error($"Login failed for user , {loginDto.Username}");
-                    return Unauthorized();
+                    return Unauthorized("Invalid username or password");
                 }
                 Log.Information($"User {loginDto.Username} logged in successfully");
-                return Ok(new { Token = token });
+                return Ok(token);
             }
             catch (Exception ex)
             {

@@ -30,15 +30,15 @@ namespace WPF.Repositories
                 if (!response.IsSuccessStatusCode)
                 {
                     var error = await response.Content.ReadAsStringAsync();
-                    throw new Exception($"Login failed: {error}");
+                    throw new Exception(error);
                 }
 
-                var result = await response.Content.ReadFromJsonAsync<LoginResponseDto>();
-                return result.Token ?? throw new Exception("Token is missing in response");
+                var token = await response.Content.ReadAsStringAsync();
+                return token ?? throw new Exception("Token is missing in response");
             }
             catch (Exception e)
             {
-                throw new Exception($"Error during logging in: {e.Message}");
+                throw new Exception(e.Message);
             }
         }
 
@@ -51,14 +51,14 @@ namespace WPF.Repositories
                 if (!response.IsSuccessStatusCode)
                 {
                     var error = await response.Content.ReadAsStringAsync();
-                    throw new Exception($"Registration failed: {error}");
+                    throw new Exception(error);
                 }
 
                 return true;
             }
             catch (Exception e)
             {
-                throw new Exception($"Error during registration: {e.Message}");
+                throw new Exception(e.Message);
             }
         }
 
@@ -74,14 +74,36 @@ namespace WPF.Repositories
                 if (!response.IsSuccessStatusCode)
                 {
                     var error = await response.Content.ReadAsStringAsync();
-                    throw new Exception($"Change password failed: {error}");
+                    throw new Exception(error);
                 }
 
                 return true;
             }
             catch (Exception e)
             {
-                throw new Exception($"Error during password change: {e.Message}");
+                throw new Exception(e.Message);
+            }
+        }
+
+        public async Task<UserDto?> GetUserDetailsAsync(string username, string token)
+        {
+            try
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                var response = await _httpClient.GetAsync($"api/user/{username}");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"Failed to load user details: {error}");
+                }
+
+                return await response.Content.ReadFromJsonAsync<UserDto>();
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Error loading user details: {e.Message}");
             }
         }
     }

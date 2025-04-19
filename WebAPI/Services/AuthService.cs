@@ -65,16 +65,10 @@ namespace WebAPI.Services
                 var user = (await userRepository.GetAllAsync())
                     .FirstOrDefault(u => u.Username == loginDto.Username);
 
-                if (user == null)
+                if(user == null || !PasswordHashProvider.VerifyPassword(loginDto.Password, user.PwdHash, user.PwdSalt))
                 {
-                    Log.Warning($"Login failed. Username is incorrect. Please try again. {loginDto.Username}");
-                    return "Login failed. Username  is incorrect. Please try again.";
-                }
-
-                if(!PasswordHashProvider.VerifyPassword(loginDto.Password, user.PwdHash, user.PwdSalt))
-                {
-                    Log.Warning($"Login failed. Password is incorrect. Please try again. {loginDto.Username}");
-                    return "Login failed. Password is incorrect. Please try again.";
+                    Log.Warning($"Login failed. Username or password is incorrect. Please try again. {loginDto.Username}");
+                    return null;
                 }
 
                 var token = JwtTokenProvider.CreateToken(

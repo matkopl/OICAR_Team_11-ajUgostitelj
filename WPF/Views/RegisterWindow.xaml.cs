@@ -28,6 +28,7 @@ namespace WPF.Views
         public RegisterWindow(IAuthService authService)
         {
             InitializeComponent();
+            WindowStartupLocation = WindowStartupLocation.CenterScreen;
             _authService = ((App)Application.Current).ServiceProvider.GetRequiredService<IAuthService>();
         }
 
