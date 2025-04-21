@@ -1,0 +1,44 @@
+﻿namespace WebApp.css
+{
+    public class Menu
+{
+    /* make container a flex row */
+    .page-content
+
+{
+    display: flex;
+    gap: 2rem; /* space between panels */
+    align-items: flex-start; /* top align */
+}
+
+/* products take most of the width */
+.products-panel {
+    flex: 3;
+}
+
+/* cart sits on the right, sticks as you scroll */
+.cart-panel {
+    flex: 1;
+    max-width: 300px; /* optional cap */
+    position: sticky;
+    top: 1rem; /* stick 1rem from top */
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* smaller tweaks for the cart list */
+#cart-items {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 1rem;
+}
+
+    #cart-items li {
+        margin-bottom: 0.5rem;
+    }
+
+    }
+}

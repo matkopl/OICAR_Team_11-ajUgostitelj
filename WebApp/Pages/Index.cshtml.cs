@@ -1,20 +1,30 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using WebApp.ApiClients;  
+using WebAPI.DTOs;        
 
-namespace WebApp.Pages
+namespace WebApp.Pages.Menu
 {
     public class IndexModel : PageModel
     {
-        private readonly ILogger<IndexModel> _logger;
+        private readonly ProductApiClient _api;
+        public IndexModel(ProductApiClient api) => _api = api;
 
-        public IndexModel(ILogger<IndexModel> logger)
+        public List<ProductDto> Products { get; private set; } = new();
+        public List<string> Categories { get; private set; } = new();
+
+        public async Task OnGetAsync()
         {
-            _logger = logger;
+            Products = await _api.LoadProductsAsync();
+
+            Categories = Products
+                .Select(p => p.CategoryName)
+                .Distinct()
+                .ToList();
         }
 
-        public void OnGet()
-        {
 
-        }
     }
 }
