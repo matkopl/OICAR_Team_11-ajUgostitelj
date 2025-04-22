@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using WebAPI.DTOs;
+using System.Windows.Threading;            
 using Microsoft.Extensions.DependencyInjection;
+using WebAPI.DTOs;
 using WPF.Repositories;
 
 namespace WPF.Views
@@ -13,12 +14,14 @@ namespace WPF.Views
     {
         private readonly IOrderRepository _orderRepo;
         private readonly IProductRepository _productRepo;
+        private readonly ITableRepository _tableRepo;
         private readonly string _token;
+        private readonly DispatcherTimer _refreshTimer;  
 
-        // Wrapper
         private class OrderDisplay
         {
             public OrderDto Order { get; set; } = default!;
+            public string TableName { get; set; } = "";
             public IEnumerable<OrderItemDto> Items { get; set; } = Array.Empty<OrderItemDto>();
         }
 
@@ -30,7 +33,17 @@ namespace WPF.Views
             var sp = ((App)Application.Current).ServiceProvider;
             _orderRepo = sp.GetRequiredService<IOrderRepository>();
             _productRepo = sp.GetRequiredService<IProductRepository>();
+            _tableRepo = sp.GetRequiredService<ITableRepository>();
 
+            
+            _refreshTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(5)
+            };
+            _refreshTimer.Tick += async (_, __) => await LoadAllAsync();
+            _refreshTimer.Start();
+
+            
             Loaded += async (_, __) => await LoadAllAsync();
         }
 
@@ -38,40 +51,49 @@ namespace WPF.Views
         {
             try
             {
-                // 1) Dohvati sve proizvode jednom
+                
                 var products = await _productRepo.GetAllAsync(_token);
                 var prodDict = products.ToDictionary(p => p.Id, p => p);
 
-                // 2) Dohvati sve narudžbe
+                var tables = await _tableRepo.GetAllAsync(_token);
+                var tableDict = tables.ToDictionary(t => t.Id, t => t.Name);
+
                 var orders = await _orderRepo.GetAllAsync(_token);
 
+                
                 var displayList = new List<OrderDisplay>();
                 foreach (var o in orders)
                 {
-                    // 3) Dohvati stavke
                     var items = (await _orderRepo.GetItemsAsync(_token, o.Id)).ToList();
-
-                    // 4) Spoji ih s proizvodima
                     foreach (var it in items)
-                    {
                         if (prodDict.TryGetValue(it.ProductId, out var prod))
                         {
                             it.ProductName = prod.Name;
                             it.UnitPrice = prod.Price;
                         }
-                    }
 
-                    displayList.Add(new OrderDisplay { Order = o, Items = items });
+                    displayList.Add(new OrderDisplay
+                    {
+                        Order = o,
+                        TableName = tableDict.GetValueOrDefault(o.TableId, $"#{o.TableId}"),
+                        Items = items
+                    });
                 }
 
-                // 5) Pokaži
                 dgOrders.ItemsSource = displayList;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Greška pri učitavanju:\n{ex.Message}",
-                                "Greška", MessageBoxButton.OK, MessageBoxImage.Error);
+                
+                Console.WriteLine($"Greška pri učitavanju: {ex.Message}");
             }
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            
+            _refreshTimer.Stop();
+            base.OnClosed(e);
         }
     }
 }

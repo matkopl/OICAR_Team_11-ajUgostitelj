@@ -14,17 +14,18 @@
                   FontSize="14">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Stol"
-                                    Binding="{Binding Order.TableId}"
-                                    Width="80" MinWidth="50"/>
+                        Binding="{Binding TableName}"
+                        Width="120"
+                        MinWidth="80"/>
                 <DataGridTextColumn Header="Datum"
-                                    Binding="{Binding Order.OrderDate, StringFormat=dd.MM.yyyy HH:mm}"
-                                    Width="180" MinWidth="120"/>
+                        Binding="{Binding Order.OrderDate, StringFormat=dd.MM.yyyy HH:mm}"
+                        Width="180" MinWidth="120"/>
                 <DataGridTextColumn Header="Status"
-                                    Binding="{Binding Order.Status}"
-                                    Width="100" MinWidth="80"/>
+                        Binding="{Binding Order.Status}"
+                        Width="100" MinWidth="80"/>
                 <DataGridTextColumn Header="Ukupno (€)"
-                                    Binding="{Binding Order.TotalAmount, StringFormat=N2}"
-                                    Width="100" MinWidth="80"/>
+                        Binding="{Binding Order.TotalAmount, StringFormat=N2}"
+                        Width="100" MinWidth="80"/>
             </DataGrid.Columns>
 
             <DataGrid.RowDetailsTemplate>
