@@ -51,7 +51,8 @@ namespace WPF.Views
 
         private void OrdersButton_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("orders click");
+            var ordersWindow = new OrdersWindow(_token);
+            ordersWindow.Show();
         }
 
         private void TablesButton_Click(object sender, RoutedEventArgs e)

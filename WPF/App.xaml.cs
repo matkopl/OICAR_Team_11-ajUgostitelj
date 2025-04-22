@@ -32,7 +32,9 @@ namespace WPF
             serviceCollection.AddScoped<MainWindow>();
             serviceCollection.AddScoped<IAuthService, AuthService>();
             serviceCollection.AddScoped<IAuthRepository, AuthRepository>();
-
+            serviceCollection.AddScoped<IOrderRepository, OrderRepository>();
+            serviceCollection.AddScoped<IOrderService, OrderService>();
+            serviceCollection.AddScoped<IProductRepository, ProductRepository>();
         }
     }
 }
