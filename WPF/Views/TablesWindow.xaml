@@ -1,0 +1,74 @@
+﻿<Window x:Class="WPF.Views.TablesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Upravljanje stolovima"
+        Height="450" Width="400"
+        WindowStartupLocation="CenterScreen"
+        Background="#FAFAFA">
+    <Grid Margin="10">
+        <!-- Definicija 3 reda -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Red 0: Dodavanje novog stola -->
+        <StackPanel Orientation="Horizontal"
+                    Grid.Row="0"
+                    Margin="0,0,0,8">
+            <TextBox x:Name="tbNewTableName"
+                     Width="200"
+                     VerticalContentAlignment="Center"
+                     Margin="0,0,8,0"
+                     Text="Unesite naziv stola..."
+                     Foreground="Gray"
+                     GotFocus="TbNewTableName_GotFocus"
+                     LostFocus="TbNewTableName_LostFocus"/>
+            <Button x:Name="btnAdd"
+                    Content="Dodaj stol"
+                    Width="100"
+                    Click="BtnAdd_Click"/>
+        </StackPanel>
+
+        <!-- Red 1: DataGrid s postojećim stolovima -->
+        <DataGrid x:Name="dgTables"
+                  Grid.Row="1"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  IsReadOnly="True"
+                  AlternatingRowBackground="#F0F0F0"
+                  RowHeight="30"
+                  FontSize="14">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Naziv stola"
+                                    Binding="{Binding Name}"
+                                    Width="*" />
+                <DataGridTemplateColumn Header="Akcije" Width="180">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Button Content="Obriši"
+                        Padding="4,0"
+                        Click="BtnDelete_Click"/>
+                                <Button Content="Generiraj QR kod"
+                        Padding="4,0"
+                        Margin="8,0,0,0"
+                        Click="BtnGenerateQr_Click"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Red 2: Gumb Zatvori -->
+        <Button Content="Zatvori"
+                Grid.Row="2"
+                HorizontalAlignment="Right"
+                Width="80"
+                Margin="0,8,0,0"
+                Click="BtnClose_Click"/>
+    </Grid>
+</Window>

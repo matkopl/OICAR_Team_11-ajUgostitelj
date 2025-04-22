@@ -57,7 +57,8 @@ namespace WPF.Views
 
         private void TablesButton_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("tables click");
+            var tablesWindow = new TablesWindow(_token);
+            tablesWindow.Show();
         }
     }
 }
