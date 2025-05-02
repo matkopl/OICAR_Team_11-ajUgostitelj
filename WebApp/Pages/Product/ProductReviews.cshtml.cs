@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 using WebAPI.Models;
 
 namespace WebApp.Pages.Product
@@ -33,29 +34,29 @@ namespace WebApp.Pages.Product
         {
             if (!ModelState.IsValid)
             {
-                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    Console.WriteLine($"Validation error: {error.ErrorMessage}");
-                }
-
                 await LoadDataAsync();
                 return Page();
             }
 
-            try
+            // Dohvati odabrani proizvod
+            var selectedProduct = await _context.Products
+                .FirstOrDefaultAsync(p => p.Id == NewReview.ProductId);
+
+            if (selectedProduct == null)
             {
-                NewReview.ReviewDate = DateTime.UtcNow;
-                _context.Reviews.Add(NewReview);
-                await _context.SaveChangesAsync();
-                return RedirectToPage();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Database error: {ex.Message}");
-                ModelState.AddModelError("", "Došlo je do greške pri spremanju recenzije.");
+                ModelState.AddModelError("", "Selected product not found");
                 await LoadDataAsync();
                 return Page();
             }
+
+            // Postavi ProductName automatski
+            NewReview.ProductName = selectedProduct.Name;
+            NewReview.ReviewDate = DateTime.UtcNow;
+
+            _context.Reviews.Add(NewReview);
+            await _context.SaveChangesAsync();
+
+            return RedirectToPage();
         }
 
         private async Task LoadDataAsync()

@@ -5,166 +5,176 @@
 }
 
 <style>
-    :root {
-        --primary-color: #6F4E37; /* Coffee brown */
-        --secondary-color: #C4A484; /* Light coffee */
-        --accent-color: #E5C3A6; /* Cream */
-        --text-color: #333;
-        --light-text: #f8f9fa;
-        --dark-coffee: #5a3b2b;
-    }
+   :root {
+    --primary-color: #6F4E37;      /* Coffee brown */
+    --secondary-color: #C4A484;    /* Light coffee */
+    --accent-color: #E5C3A6;       /* Cream */
+    --text-color: #333;
+    --light-text: #f8f9fa;
+    --dark-coffee: #5a3b2b;
+}
 
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        margin: 0;
-        padding: 0;
-        color: var(--text-color);
-        background-color: #f5f5f5;
-        line-height: 1.6;
-    }
+/* Reset */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+    color: var(--text-color);
+    line-height: 1.6;
+}
 
-    .container-reviews {
-        max-width: 1200px;
-        margin: 30px auto;
-        padding: 30px;
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
+/* Main container */
+.container-reviews {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 30px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
 
-    .page-title {
-        font-size: 2.2rem;
-        color: var(--primary-color);
-        margin-bottom: 30px;
-        text-align: center;
-        position: relative;
-        padding-bottom: 15px;
-    }
+/* Title */
+.page-title {
+    font-size: 2.2rem;
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 30px;
+    position: relative;
+    padding-bottom: 15px;
+}
 
-    .page-title:after {
-        content: "";
-        display: block;
-        width: 100px;
-        height: 3px;
-        background-color: var(--secondary-color);
-        margin: 15px auto 0;
-    }
+.page-title::after {
+    content: "";
+    display: block;
+    width: 100px;
+    height: 3px;
+    background-color: var(--secondary-color);
+    margin: 15px auto 0;
+}
 
-    .review-form {
-        background-color: var(--accent-color);
-        padding: 30px;
-        border-radius: 8px;
-        margin-bottom: 40px;
-    }
+/* Review Form */
+.review-form {
+    background-color: var(--accent-color);
+    padding: 30px;
+    border-radius: 8px;
+    margin-bottom: 40px;
+}
 
-    .form-group {
-        margin-bottom: 20px;
-    }
+.form-group {
+    margin-bottom: 20px;
+}
 
-    .form-label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: bold;
-        color: var(--primary-color);
-    }
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: var(--primary-color);
+}
 
-    .form-control {
-        width: 100%;
-        padding: 12px;
-        border: 2px solid var(--secondary-color);
-        border-radius: 8px;
-        font-size: 1rem;
-    }
+.form-control {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border: 2px solid var(--secondary-color);
+    border-radius: 8px;
+    box-sizing: border-box;
+}
 
-    textarea.form-control {
-        min-height: 120px;
-        resize: vertical;
-    }
+textarea.form-control {
+    min-height: 120px;
+    resize: vertical;
+}
 
-    .rating-container {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 15px;
-    }
+/* Rating Stars */
+.rating-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
 
-    .rating-star {
-        font-size: 2rem;
-        color: var(--secondary-color);
-        cursor: pointer;
-        transition: all 0.2s;
-    }
+.rating-star {
+    font-size: 2rem;
+    color: var(--secondary-color);
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+}
 
-    .rating-star:hover,
-    .rating-star.active {
-        color: var(--primary-color);
-        transform: scale(1.1);
-    }
+.rating-star:hover,
+.rating-star.active {
+    color: var(--primary-color);
+    transform: scale(1.1);
+}
 
-    .submit-btn {
-        padding: 15px 30px;
-        background-color: var(--primary-color);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: bold;
-        font-size: 1.1rem;
-        transition: all 0.3s;
-    }
+/* Submit Button */
+.submit-btn {
+    display: inline-block;
+    padding: 15px 30px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
 
-    .submit-btn:hover {
-        background-color: var(--dark-coffee);
-        transform: translateY(-2px);
-    }
+.submit-btn:hover {
+    background-color: var(--dark-coffee);
+    transform: translateY(-2px);
+}
 
-    .reviews-list {
-        margin-top: 40px;
-    }
+/* Reviews List */
+.reviews-list {
+    margin-top: 40px;
+}
 
-    .review-item {
-        padding: 25px;
-        margin-bottom: 20px;
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-        border-left: 5px solid var(--secondary-color);
-    }
+.review-item {
+    padding: 25px;
+    margin-bottom: 20px;
+    background-color: #fff;
+    border-left: 5px solid var(--secondary-color);
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+}
 
-    .review-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 15px;
-    }
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
 
-    .review-author {
-        font-weight: bold;
-        color: var(--primary-color);
-        font-size: 1.1rem;
-    }
+.review-author {
+    font-weight: bold;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+}
 
-    .review-date {
-        color: #666;
-        font-size: 0.9rem;
-    }
+.review-date {
+    color: #666;
+    font-size: 0.9rem;
+}
 
-    .review-rating {
-        color: var(--primary-color);
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
+.review-rating {
+    color: var(--primary-color);
+    font-weight: bold;
+    margin-bottom: 10px;
+}
 
-    .review-text {
-        line-height: 1.7;
-    }
+.review-text {
+    line-height: 1.7;
+}
 
-    .no-reviews {
-        text-align: center;
-        color: #666;
-        padding: 40px 0;
-        font-style: italic;
-    }
+.no-reviews {
+    text-align: center;
+    color: #666;
+    padding: 40px 0;
+    font-style: italic;
+}
 
+/* Responsive */
     @@media (max-width: 768px) {
         .container-reviews {
             padding: 20px;
@@ -183,20 +193,33 @@
 <div class="container-reviews">
     <h1 class="page-title">Product Reviews</h1>
 
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <p>@error.ErrorMessage</p>
+            }
+        </div>
+    }
+
     <div class="review-form">
         <h2>Leave Your Review</h2>
         <form method="post" id="reviewForm" enctype="multipart/form-data">
-            <div class="form-group">
-                <label class="form-label" asp-for="NewReview.ProductId">Product:</label>
-                <select class="form-control" asp-for="NewReview.ProductId" required>
-                    <option value="">Select a product...</option>
-                    @foreach (var product in Model.Products)
-                    {
-                        <option value="@product.Id">@product.Name</option>
-                    }
-                </select>
-                <span asp-validation-for="NewReview.ProductId" class="text-danger"></span>
-            </div>
+        <!-- Skriveno polje za ProductName -->
+        <input type="hidden" asp-for="NewReview.ProductName" id="productNameField">
+
+        <div class="form-group">
+            <label class="form-label" asp-for="NewReview.ProductId">Product:</label>
+            <select class="form-control" asp-for="NewReview.ProductId" id="productSelect" required
+                    onchange="document.getElementById('productNameField').value = this.options[this.selectedIndex].text">
+                <option value="">Select a product...</option>
+                @foreach (var product in Model.Products)
+                {
+                    <option value="@product.Id">@product.Name</option>
+                }
+            </select>
+        </div>
 
             <div class="form-group">
                 <label class="form-label">Your Rating:</label>
@@ -283,6 +306,15 @@
                     }
                 });
             }
+        });
+        document.getElementById('reviewForm').addEventListener('submit', function (e) {
+            const rating = document.getElementById('ratingValue').value;
+            if (!rating) {
+                e.preventDefault();
+                alert('Please select a rating');
+                return false;
+            }
+            return true;
         });
     </script>
 }
