@@ -11,8 +11,17 @@ builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
 
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrEmpty(connectionString))
+{
+    Console.WriteLine("ERROR: Connection string is missing!");
+    // Za development možete hardcodirati za testiranje:
+    connectionString = "Server=localhost;Port=5432;Database=fretfully-serene-crane.data-1.use1.tembo.io;User Id=postgres;Password=1ssKI1zsVZ965lZH;";
+    // U produkciji bacite iznimku umjesto hardcodiranja
+}
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("conStr")));
+    options.UseNpgsql("Server=fretfully-serene-crane.data-1.use1.tembo.io;Port=5432;Database=postgres;User Id=postgres;Password=1ssKI1zsVZ965lZH;"));
 
 builder.Services.AddHttpClient("ProductsAPI", client =>
 {

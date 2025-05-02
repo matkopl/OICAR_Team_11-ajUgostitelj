@@ -21,6 +21,7 @@ namespace WebAPI.Models
         public DbSet<Table> Tables { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<Review> Reviews { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -79,6 +80,12 @@ namespace WebAPI.Models
                 .HasOne(i => i.Product)
                 .WithMany(p => p.Inventories)
                 .HasForeignKey(i => i.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Review>()
+                .HasOne(r => r.Product)
+                .WithMany(p => p.Reviews)
+                .HasForeignKey(r => r.ProductId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }
