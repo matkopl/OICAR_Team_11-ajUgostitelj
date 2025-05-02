@@ -4,6 +4,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebAPI.Models
 {
@@ -30,5 +32,6 @@ namespace WebAPI.Models
         public ICollection<Inventory> Inventories { get; } = new List<Inventory>();
 
         public ICollection<OrderItem> OrderItems { get; } = new List<OrderItem>();
+        public ICollection<Review> Reviews { get; set; } = new List<Review>();
     }
 }

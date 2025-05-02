@@ -1,0 +1,288 @@
+﻿@page
+@model WebApp.Pages.Product.ReviewModel
+@{
+    ViewData["Title"] = "Product Reviews";
+}
+
+<style>
+    :root {
+        --primary-color: #6F4E37; /* Coffee brown */
+        --secondary-color: #C4A484; /* Light coffee */
+        --accent-color: #E5C3A6; /* Cream */
+        --text-color: #333;
+        --light-text: #f8f9fa;
+        --dark-coffee: #5a3b2b;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+        color: var(--text-color);
+        background-color: #f5f5f5;
+        line-height: 1.6;
+    }
+
+    .container-reviews {
+        max-width: 1200px;
+        margin: 30px auto;
+        padding: 30px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .page-title {
+        font-size: 2.2rem;
+        color: var(--primary-color);
+        margin-bottom: 30px;
+        text-align: center;
+        position: relative;
+        padding-bottom: 15px;
+    }
+
+    .page-title:after {
+        content: "";
+        display: block;
+        width: 100px;
+        height: 3px;
+        background-color: var(--secondary-color);
+        margin: 15px auto 0;
+    }
+
+    .review-form {
+        background-color: var(--accent-color);
+        padding: 30px;
+        border-radius: 8px;
+        margin-bottom: 40px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid var(--secondary-color);
+        border-radius: 8px;
+        font-size: 1rem;
+    }
+
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .rating-container {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .rating-star {
+        font-size: 2rem;
+        color: var(--secondary-color);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .rating-star:hover,
+    .rating-star.active {
+        color: var(--primary-color);
+        transform: scale(1.1);
+    }
+
+    .submit-btn {
+        padding: 15px 30px;
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 1.1rem;
+        transition: all 0.3s;
+    }
+
+    .submit-btn:hover {
+        background-color: var(--dark-coffee);
+        transform: translateY(-2px);
+    }
+
+    .reviews-list {
+        margin-top: 40px;
+    }
+
+    .review-item {
+        padding: 25px;
+        margin-bottom: 20px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        border-left: 5px solid var(--secondary-color);
+    }
+
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .review-author {
+        font-weight: bold;
+        color: var(--primary-color);
+        font-size: 1.1rem;
+    }
+
+    .review-date {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .review-rating {
+        color: var(--primary-color);
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .review-text {
+        line-height: 1.7;
+    }
+
+    .no-reviews {
+        text-align: center;
+        color: #666;
+        padding: 40px 0;
+        font-style: italic;
+    }
+
+    @@media (max-width: 768px) {
+        .container-reviews {
+            padding: 20px;
+        }
+
+        .review-form {
+            padding: 20px;
+        }
+
+        .rating-star {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+
+<div class="container-reviews">
+    <h1 class="page-title">Product Reviews</h1>
+
+    <div class="review-form">
+        <h2>Leave Your Review</h2>
+        <form method="post" id="reviewForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label class="form-label" asp-for="NewReview.ProductId">Product:</label>
+                <select class="form-control" asp-for="NewReview.ProductId" required>
+                    <option value="">Select a product...</option>
+                    @foreach (var product in Model.Products)
+                    {
+                        <option value="@product.Id">@product.Name</option>
+                    }
+                </select>
+                <span asp-validation-for="NewReview.ProductId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Your Rating:</label>
+                <div class="rating-container" id="ratingStars">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <span class="rating-star" data-rating="@i">★</span>
+                    }
+                </div>
+                <input type="hidden" asp-for="NewReview.Rating" id="ratingValue" required>
+                <span asp-validation-for="NewReview.Rating" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" asp-for="NewReview.Comment">Your Review:</label>
+                <textarea class="form-control" asp-for="NewReview.Comment" required></textarea>
+                <span asp-validation-for="NewReview.Comment" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" asp-for="NewReview.ReviewerName">Your Name:</label>
+                <input type="text" class="form-control" asp-for="NewReview.ReviewerName" required>
+                <span asp-validation-for="NewReview.ReviewerName" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="submit-btn">Submit Review</button>
+        </form>
+    </div>
+
+    <div class="reviews-list">
+        <h2>Customer Reviews</h2>
+
+        @if (Model.Reviews.Any())
+        {
+            @foreach (var review in Model.Reviews)
+            {
+                <div class="review-item">
+                    <div class="review-header">
+                        <div class="review-author">@review.ReviewerName</div>
+                        <div class="review-date">@review.ReviewDate.ToString("dd.MM.yyyy HH:mm")</div>
+                    </div>
+                    <div class="review-rating">Rating: @Html.Raw(new string('★', review.Rating))@Html.Raw(new string('☆', 5 - review.Rating))</div>
+                    <div class="review-text">@review.Comment</div>
+                    <div style="margin-top: 10px; color: #666; font-size: 0.9rem;">
+                        Product: @review.Product?.Name
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="no-reviews">No reviews yet. Be the first to review!</div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Rating stars functionality
+        document.querySelectorAll('.rating-star').forEach(star => {
+            star.addEventListener('click', () => {
+                const rating = star.getAttribute('data-rating');
+                document.getElementById('ratingValue').value = rating;
+
+                document.querySelectorAll('.rating-star').forEach((s, index) => {
+                    if (index < rating) {
+                        s.classList.add('active');
+                    } else {
+                        s.classList.remove('active');
+                    }
+                });
+            });
+        });
+
+        // Initialize stars if returning with model error
+        document.addEventListener('DOMContentLoaded', function () {
+            const currentRating = document.getElementById('ratingValue').value;
+            if (currentRating) {
+                document.querySelectorAll('.rating-star').forEach((s, index) => {
+                    if (index < currentRating) {
+                        s.classList.add('active');
+                    }
+                });
+            }
+        });
+    </script>
+}
