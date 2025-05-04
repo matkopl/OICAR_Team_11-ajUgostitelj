@@ -18,7 +18,7 @@ namespace WebAPI.Models
 
         [Required]
         [StringLength(1000)]
-        public string Comment { get; set; } = "";
+        public string Comment { get; set; } = "‎ ";
 
         [Required]
         [StringLength(100)]
