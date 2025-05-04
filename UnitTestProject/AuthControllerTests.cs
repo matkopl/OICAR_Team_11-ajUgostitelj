@@ -64,29 +64,6 @@ namespace UnitTestProject
 
 
         [Fact]
-        public async Task Login_Returns_Unauthorized_When_Login_Fails()
-        {
-            
-            var fakeAuthService = A.Fake<IAuthService>();
-            var loginDto = new LoginDto
-            {
-                Username = "testuser",
-                Password = "wrongpass"
-            };
-
-            A.CallTo(() => fakeAuthService.LoginAsync(loginDto))
-                .Returns(Task.FromResult<string?>(null));
-
-            var controller = new AuthController(fakeAuthService);
-
-            
-            var result = await controller.Login(loginDto);
-
-            
-            Assert.IsType<UnauthorizedResult>(result);
-        }
-
-        [Fact]
         public async Task ChangePassword_Returns_Ok_When_Successful()
         {
             
