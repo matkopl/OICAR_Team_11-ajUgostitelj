@@ -22,7 +22,8 @@ namespace WebAPI.Models
 
         public ICollection<OrderItem> OrderItems { get; } = new List<OrderItem>();
 
-        public Payment? Payment { get; set; } 
+        public Payment? Payment { get; set; }
+        public decimal TotalAmount { get; set; }
 
         [Required]
         public OrderStatus Status { get; set; }
