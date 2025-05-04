@@ -23,5 +23,6 @@ namespace WebAPI.DTOs
 
         [Url]
         public string ImageUrl { get; set; } = "/images/placeholder.png";
+        public double? AverageRating { get; set; }
     }
 }
