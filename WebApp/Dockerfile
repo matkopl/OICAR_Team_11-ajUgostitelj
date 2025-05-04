@@ -9,25 +9,28 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
-# Copy only WebApp project file first
+# Copy project files
 COPY WebApp/WebApp.csproj WebApp/
+COPY WebAPI/WebAPI.csproj WebAPI/
 
 # Restore dependencies
 WORKDIR /src/WebApp
 RUN dotnet restore
 
-# Copy the rest of the WebApp source
-COPY WebApp/. .
+# Copy source code
+COPY WebApp/. ./WebApp/
+COPY WebAPI/. ./WebAPI/
 
-# Build the project
+# Build the WebApp (depends on WebAPI)
+WORKDIR /src/WebApp
 RUN dotnet build -c $BUILD_CONFIGURATION -o /app/build
 
-# Publish the project
+# Publish the WebApp
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-# Final stage
+# Final image for running the app
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
