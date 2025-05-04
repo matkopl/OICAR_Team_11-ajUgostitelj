@@ -31,12 +31,13 @@
                              data-name="@item.Name"
                              data-price="@item.Price"
                              data-image="@item.ImageUrl">
-                            <img src="@(Url.Content("~/images/placeholder.png"))"
+                            <img src="@(Url.Content("https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"))"
                                  alt="@item.Name" class="item-image" />
                             <div class="item-details">
                                 <div class="item-name">@item.Name</div>
                                 <div class="item-description">@item.Description</div>
                                 <div class="item-price">@item.Price.ToString("F2") €</div>
+                                <div class="item-rating" data-product-id="@item.Id">Učitavanje ocjene...</div>
                                 <button type="button" class="order-btn">Add to Order</button>
                             </div>
                         </div>
@@ -56,71 +57,84 @@
 </div>
 
 @section Scripts {
-<script>
-    // Category filtering
-    document.querySelectorAll('.category-btn').forEach(button => {
-        button.addEventListener('click', () => {
-            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-            button.classList.add('active');
-            const cat = button.dataset.category;
-            document.querySelectorAll('.menu-section').forEach(sec => {
-                sec.style.display = (cat === 'all' || sec.dataset.category === cat) ? 'block' : 'none';
+    <script>
+        // Category filtering
+        document.querySelectorAll('.category-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                button.classList.add('active');
+                const cat = button.dataset.category;
+                document.querySelectorAll('.menu-section').forEach(sec => {
+                    sec.style.display = (cat === 'all' || sec.dataset.category === cat) ? 'block' : 'none';
+                });
             });
         });
-    });
 
-    // Cart logic using localStorage
-    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        // Cart logic using localStorage
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
-    function renderCart() {
-        const listEl = document.getElementById('cart-items');
-        const totalEl = document.getElementById('cart-total');
-        listEl.innerHTML = '';
-        let total = 0;
+        function renderCart() {
+            const listEl = document.getElementById('cart-items');
+            const totalEl = document.getElementById('cart-total');
+            listEl.innerHTML = '';
+            let total = 0;
 
-        cart.forEach(item => {
-            const li = document.createElement('li');
-            li.innerHTML = `
-                <span class="cart-item-text">${item.name} × ${item.qty} — €${(item.price * item.qty).toFixed(2)}</span>
-                <button type="button" class="remove-btn" data-id="${item.id}" aria-label="Remove">&times;</button>
-            `;
-            listEl.appendChild(li);
-            total += item.price * item.qty;
-        });
+            cart.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                        <span class="cart-item-text">${item.name} × ${item.qty} — €${(item.price * item.qty).toFixed(2)}</span>
+                        <button type="button" class="remove-btn" data-id="${item.id}" aria-label="Remove">&times;</button>
+                    `;
+                listEl.appendChild(li);
+                total += item.price * item.qty;
+            });
 
-        totalEl.textContent = total.toFixed(2);
-        localStorage.setItem('cart', JSON.stringify(cart));
+            totalEl.textContent = total.toFixed(2);
+            localStorage.setItem('cart', JSON.stringify(cart));
 
-        // Attach remove handlers
-        document.querySelectorAll('.remove-btn').forEach(btn => {
+            document.querySelectorAll('.remove-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.dataset.id;
+                    cart = cart.filter(x => x.id !== id);
+                    renderCart();
+                });
+            });
+        }
+
+        document.querySelectorAll('.order-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                const id = btn.dataset.id;
-                cart = cart.filter(x => x.id !== id);
+                const card = btn.closest('.menu-item');
+                const id = card.dataset.id;
+                const name = card.dataset.name;
+                const price = parseFloat(card.dataset.price);
+
+                const existing = cart.find(x => x.id === id);
+                if (existing) {
+                    existing.qty++;
+                } else {
+                    cart.push({ id, name, price, qty: 1 });
+                }
+
                 renderCart();
             });
         });
-    }
 
-    // Add to Order button logic
-    document.querySelectorAll('.order-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const card = btn.closest('.menu-item');
-            const id = card.dataset.id;
-            const name = card.dataset.name;
-            const price = parseFloat(card.dataset.price);
+        // Initial cart render
+        renderCart();
 
-            const existing = cart.find(x => x.id === id);
-            if (existing) {
-                existing.qty++;
-            } else {
-                cart.push({ id, name, price, qty: 1 });
-            }
-
-            renderCart();
+        document.querySelectorAll('.item-rating').forEach(div => {
+            const id = div.dataset.productId;
+            fetch(`/api/review/average/${id}`)
+                .then(res => res.json())
+                .then(avg => {
+                    div.textContent = avg !== null
+                        ? `Ocjena: ${avg.toFixed(1)} ★`
+                        : "Još nije ocijenjen";
+                })
+                .catch(err => {
+                    console.error(`Greška dohvaćanja ocjene za proizvod ${id}`, err);
+                    div.textContent = "Ovaj proizvod nema ocijenu.";
+                });
         });
-    });
-
-    // Initial render
-    renderCart();
-</script>
+    </script>
 }
