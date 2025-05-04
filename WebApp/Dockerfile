@@ -23,7 +23,7 @@ COPY WebAPI/. ./WebAPI/
 
 # Build the WebApp (depends on WebAPI)
 WORKDIR /src/WebApp
-RUN dotnet build -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build -c $BUILD_CONFIGURATION
 
 # Publish the WebApp
 FROM build AS publish
