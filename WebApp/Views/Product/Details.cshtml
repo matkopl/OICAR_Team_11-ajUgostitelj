@@ -1,0 +1,36 @@
+﻿@model WebAPI.DTOs.ProductDto
+
+@{
+    ViewData["Title"] = "Product Details";
+}
+
+<div class="container-details">
+    <div class="product-detail">
+        <div class="product-image">
+            <img src="@Model.ImageUrl ?? "https://via.placeholder.com/400x300?text=No+Image"" alt="@Model.Name" class="item-image">
+        </div>
+        <div class="product-info">
+            <h1 class="item-name">@Model.Name</h1>
+            <p class="item-description">@Model.Description</p>
+            <div class="item-price">@Model.Price.ToString("F2") €</div>
+
+            <div class="quantity-selector">
+                <label for="quantity">Quantity:</label>
+                <input type="number" id="quantity" name="quantity" min="1" value="1" class="quantity-input">
+            </div>
+
+            <div class="button-group">
+                <button class="add-to-cart-btn" onclick="addToCart()">Add to Cart</button>
+                <a href="@Url.Action("Index", "Product")" class="go-back-btn">Go Back</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function addToCart() {
+            window.location.href = '/Cart'; // or post to /Cart/Add
+        }
+    </script>
+}

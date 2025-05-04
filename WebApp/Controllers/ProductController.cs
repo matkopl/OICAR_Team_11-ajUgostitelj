@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using WebAPI.DTOs;
 using WebApp.ApiClients;
+using WebApp.ViewModels;
 
 namespace WebApp.Controllers
 {
@@ -13,7 +14,28 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Index()
         {
             var products = await _api.LoadProductsAsync();
-            return View(products);
+
+            var categories = products
+                .Select(p => p.CategoryName)
+                .Distinct()
+                .ToList();
+
+            var vm = new ProductIndexViewModel
+            {
+                Products = products.Select(p => new ProductViewModel
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Description = p.Description,
+                    Price = p.Price,
+                    CategoryId = p.CategoryId,
+                    CategoryName = p.CategoryName,
+                    ImageUrl = p.ImageUrl
+                }).ToList(),
+                Categories = categories
+            };
+
+            return View(vm);
         }
 
         public async Task<IActionResult> Details(int id)
