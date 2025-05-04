@@ -18,11 +18,11 @@ namespace WebAPI.Models
 
         [Required]
         [StringLength(1000)]
-        public string Comment { get; set; }
+        public string Comment { get; set; } = "‎ ";
 
         [Required]
         [StringLength(100)]
-        public string ReviewerName { get; set; }
+        public string ReviewerName { get; set; } = "Anonymous User";
 
         public DateTime ReviewDate { get; set; } = DateTime.UtcNow;
 

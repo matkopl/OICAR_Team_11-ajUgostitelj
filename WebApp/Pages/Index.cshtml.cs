@@ -17,13 +17,21 @@ namespace WebApp.Pages.Menu
 
         public async Task OnGetAsync()
         {
-            Products = await _api.LoadProductsAsync();
+            try
+            {
+                Products = await _api.LoadProductsAsync();
 
-            Categories = Products
-                .Select(p => p.CategoryName)
-                .Distinct()
-                .ToList();
+                Categories = Products
+                    .Select(p => p.CategoryName)
+                    .Distinct()
+                    .ToList();
+            }
+            catch (HttpRequestException ex) 
+            {
+               Console.WriteLine($"Error fetching products: {ex.Message}");
+            }
         }
+     
 
 
     }
