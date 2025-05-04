@@ -159,44 +159,59 @@
 
         
         document.getElementById('checkout-btn').addEventListener('click', async () => {
-            if (cart.length === 0) {
-                alert("Your cart is empty.");
-                return;
-            }
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
-            const orderDto = {
-                orderDate: new Date().toISOString(),
-                status: "Paid",
-                totalAmount: cart.reduce((sum, item) => sum + (item.price * item.qty), 0),
-                tableId: 2
-            };
+    if (cart.length === 0) {
+        alert("Your cart is empty.");
+        return;
+    }
 
-            try {
-                const response = await fetch("/Order/Checkout", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(orderDto)
-                });
+    const orderDto = {
+        orderDate: new Date().toISOString(),
+        status: "Paid",
+        totalAmount: cart.reduce((sum, item) => sum + (item.price * item.qty), 0),
+        tableId: 2
+    };
 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error("Failed response:", errorText);
-                    alert("Failed to create order. See console.");
-                    return;
-                }
-
-                const createdOrder = await response.json();
-                alert(`Order #${createdOrder.id} created successfully!`);
-
-               
-                localStorage.removeItem("cart");
-                cart = [];
-                renderCart();
-            } catch (err) {
-                console.error("Checkout error:", err);
-                alert("Error during checkout.");
-            }
+    try {
+        // 1. Create the order
+        const orderRes = await fetch("/Order/Checkout", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(orderDto)
         });
+
+        if (!orderRes.ok) throw new Error("Failed to create order");
+
+        const createdOrder = await orderRes.json();
+        const orderId = createdOrder.id;
+
+        // 2. Create order items
+        const orderItems = cart.map(item => ({
+            orderId: orderId,
+            productId: parseInt(item.id),
+            quantity: item.qty,
+            unitPrice: item.price
+        }));
+
+        const itemRes = await fetch("/Order/AddOrderItems", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(orderItems)
+        });
+
+        if (!itemRes.ok) throw new Error("Failed to add order items");
+
+        alert("Order and items added successfully!");
+        localStorage.removeItem("cart");
+        cart.length = 0;
+        renderCart();
+
+    } catch (err) {
+        console.error("Checkout error:", err);
+        alert("There was an issue processing your order.");
+    }
+});
 
         // Ratings
         fetch(`/api/review/average/${id}`)
