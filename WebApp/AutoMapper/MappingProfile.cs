@@ -8,7 +8,7 @@ namespace WebApp.AutoMapper
     {
         public MappingProfile()
         {
-            CreateMap<ProductDto, ProductViewModel>();
+            CreateMap<ProductDto, ProductIndexViewModel>();
             CreateMap<CategoryDto, CategoryViewModel>();
             // Dodajte druge potrebne mape
         }

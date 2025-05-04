@@ -13,7 +13,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-coffee mb-3">
             <div class="container">
-                <a class="navbar-brand d-flex align-items-center" asp-area="" asp-page="/Index">
+                <a class="navbar-brand d-flex align-items-center" asp-controller="Home" asp-action="Index">
                     <i class="fas fa-coffee me-2"></i>
                     <span class="fw-bold">Naručivanje Online</span>
                 </a>
@@ -24,16 +24,16 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/Index">Početna</a>
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">Početna</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/Product/Details">Details Mock</a>
+                            <a class="nav-link" asp-controller="Product" asp-action="Details" asp-route-id="1">Details Mock</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/Cart">Your Cart</a>
+                            <a class="nav-link" href="/Cart">Your Cart</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/Product/ProductReviews">Add Review</a>
+                            <a class="nav-link" asp-controller="Review" asp-action="Create">Add Review</a>
                         </li>
                     </ul>
                 </div>
@@ -46,21 +46,23 @@
             @RenderBody()
         </main>
     </div>
-    <!--
+
+    <!-- Optional Footer (Uncomment if needed)
     <footer class="border-top footer text-white bg-coffee">
         <div class="container py-3">
             <div class="row">
                 <div class="col-md-6 text-center text-md-start">
-                    &copy; 2025 - Maručivanje Online
+                    &copy; 2025 - Naručivanje Online
                 </div>
                 <div class="col-md-6 text-center text-md-end">
-                    <a class="text-white text-decoration-none me-3" asp-area="" asp-page="/Privacy">Privatnost</a>
-                    <a class="text-white text-decoration-none" asp-area="" asp-page="/Terms">Uvjeti korištenja</a>
+                    <a class="text-white text-decoration-none me-3" asp-controller="Home" asp-action="Privacy">Privatnost</a>
+                    <a class="text-white text-decoration-none" asp-controller="Home" asp-action="Terms">Uvjeti korištenja</a>
                 </div>
             </div>
         </div>
     </footer>
     -->
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

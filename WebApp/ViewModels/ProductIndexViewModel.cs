@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebApp.ViewModels
 {
@@ -18,6 +19,15 @@ namespace WebApp.ViewModels
 
         [Required]
         public int CategoryId { get; set; }
+
         public string CategoryName { get; set; }
+
+        public string? ImageUrl { get; set; }
+    }
+
+    public class ProductIndexViewModel
+    {
+        public List<ProductViewModel> Products { get; set; } = new();
+        public List<string> Categories { get; set; } = new();
     }
 }
