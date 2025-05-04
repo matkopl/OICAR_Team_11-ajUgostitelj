@@ -86,7 +86,7 @@
 
  @section Scripts {
     <script>
-        // Category filter
+        
         document.querySelectorAll('.category-btn').forEach(button => {
             button.addEventListener('click', () => {
                 document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
@@ -98,11 +98,11 @@
             });
         });
 
-        // Initial cart load
+        
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
         renderCart();
 
-        // Render cart UI
+        
         function renderCart() {
             const list = document.querySelector('.cart-items');
             const totalDisplay = document.querySelector('.total-price');
@@ -127,7 +127,7 @@
             totalDisplay.textContent = `Total: ${total.toFixed(2)} €`;
             localStorage.setItem('cart', JSON.stringify(cart));
 
-            // Remove handler
+            
             document.querySelectorAll('.remove-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const id = btn.dataset.id;
@@ -137,7 +137,7 @@
             });
         }
 
-        // Add to cart
+        
         document.querySelectorAll('.order-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const card = btn.closest('.menu-item');
@@ -157,7 +157,7 @@
             });
         });
 
-        // Submit checkout order (only OrderDto for now)
+        
         document.getElementById('checkout-btn').addEventListener('click', async () => {
             if (cart.length === 0) {
                 alert("Your cart is empty.");
@@ -172,7 +172,7 @@
             };
 
             try {
-                const response = await fetch("https://oicar-team-11-ajugostitelj-11.onrender.com/api/order", {
+                const response = await fetch("/Order/Checkout", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(orderDto)
@@ -188,7 +188,7 @@
                 const createdOrder = await response.json();
                 alert(`Order #${createdOrder.id} created successfully!`);
 
-                // Optional: clear cart after checkout
+               
                 localStorage.removeItem("cart");
                 cart = [];
                 renderCart();
