@@ -37,6 +37,22 @@ namespace WebApp.Controllers
             }
         }
 
+        [HttpPost("AddOrderItems")]
+        public async Task<IActionResult> AddOrderItems([FromBody] List<OrderItemDto> items)
+        {
+            if (items == null || !items.Any())
+                return BadRequest("No items provided.");
+
+            foreach (var item in items)
+            {
+                var res = await _http.PostAsJsonAsync("orderitems", item);
+                if (!res.IsSuccessStatusCode)
+                    return BadRequest("Failed to add item: " + item.ProductId);
+            }
+
+            return Ok("All items added.");
+        }
+
         public IActionResult Index()
         {
             return View();
