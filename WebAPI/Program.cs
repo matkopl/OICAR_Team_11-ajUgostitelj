@@ -1,16 +1,16 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿ using Microsoft.AspNetCore.Mvc;
+ using Microsoft.EntityFrameworkCore;
+ using Microsoft.IdentityModel.Tokens;
+ using Microsoft.OpenApi.Models;
+ using Serilog;
+ using System.Text;
+ using WebAPI.Models;
+ using WebAPI.Repository;
+ using WebAPI.Services;
+ using Microsoft.AspNetCore.Builder;
+ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using Serilog;
-using System.Text;
-using WebAPI.Models;
-using WebAPI.Repository;
-using WebAPI.Services;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
