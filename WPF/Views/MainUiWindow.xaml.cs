@@ -46,7 +46,9 @@ namespace WPF.Views
 
         private void AdminPanelButton_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("admin panel click");
+            var authService = ((App)Application.Current).ServiceProvider.GetRequiredService<IAuthService>();
+            var adminPanel = new AdminPanelWindow(_token, authService);
+            adminPanel.Show();
         }
 
         private void OrdersButton_Click(object sender, RoutedEventArgs e)
@@ -54,7 +56,5 @@ namespace WPF.Views
             var ordersWindow = new OrdersWindow(_token);
             ordersWindow.Show();
         }
-
-        
     }
 }
