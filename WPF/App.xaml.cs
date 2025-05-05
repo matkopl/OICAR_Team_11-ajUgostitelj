@@ -36,7 +36,7 @@ namespace WPF
             serviceCollection.AddScoped<IOrderService, OrderService>();
             serviceCollection.AddScoped<IProductRepository, ProductRepository>();
             serviceCollection.AddScoped<ITableRepository, TableRepository>();
-
+            serviceCollection.AddScoped<ICategoryRepository, CategoryRepository>();
         }
     }
 }
