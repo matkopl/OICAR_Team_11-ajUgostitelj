@@ -62,7 +62,17 @@ namespace WPF.Views
         {
             try
             {
-                var all = await _service.GetAllProductsAsync();
+               
+                var all = (await _service.GetAllProductsAsync()).ToList();
+
+                
+                foreach (var prod in all)
+                {
+                    var cat = _categories.FirstOrDefault(c => c.Id == prod.CategoryId);
+                    prod.CategoryName = cat?.Name ?? "(nedefinirano)";
+                }
+
+               
                 _products = new ObservableCollection<ProductDto>(all);
                 dgProducts.ItemsSource = _products;
             }
@@ -73,11 +83,7 @@ namespace WPF.Views
             }
         }
 
-        // ***********************
-        // SVI EVENT HANDLERI I METODE
-        // ***********************
-
-        // Placeholder support
+        
         private void Tb_GotFocus(object sender, RoutedEventArgs e)
         {
             if (sender is TextBox tb && tb.Foreground == Brushes.Gray)
