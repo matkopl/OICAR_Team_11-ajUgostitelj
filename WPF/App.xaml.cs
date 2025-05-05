@@ -39,6 +39,8 @@ namespace WPF
             serviceCollection.AddScoped<IUserRepository, UserRepository>();
             serviceCollection.AddScoped<IUserService, UserService>();
             serviceCollection.AddScoped<ICategoryRepository, CategoryRepository>();
+            serviceCollection.AddScoped<IPaymentRepository, PaymentRepository>();
+            serviceCollection.AddScoped<IPaymentService, PaymentService>();
         }
     }
 }
