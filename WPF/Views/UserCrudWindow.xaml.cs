@@ -66,6 +66,7 @@ namespace WPF.Views
             if (UserListBox.SelectedItem is null)
             {
                 MessageBox.Show("No user is selected", "Select a user", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
 
             var selectedUser = UserListBox.SelectedItem as UserDto;
