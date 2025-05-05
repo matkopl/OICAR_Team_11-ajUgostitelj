@@ -12,7 +12,7 @@
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
             <Button Content="Profile details" Width="150" Height="40" Margin="10" Click="ProfileButton_Click" />
             <Button Content="Orders" Width="150" Height="40" Margin="10" Click="OrdersButton_Click" />
-            <Button Content="Tables" Width="150" Height="40" Margin="10" Click="TablesButton_Click" />
+            
         </StackPanel>
         
         <Button x:Name="AdminPanelButton" Content="Admin Panel"
