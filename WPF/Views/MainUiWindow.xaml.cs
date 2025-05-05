@@ -40,14 +40,16 @@ namespace WPF.Views
         private void ProfileButton_Click(object sender, RoutedEventArgs e)
         {
             var authService =  ((App)Application.Current).ServiceProvider.GetRequiredService<IAuthService>();
-            var profileWindow = new ProfileWindow(_username, _token, authService);
+            var userService = ((App)Application.Current).ServiceProvider.GetRequiredService<IUserService>();
+            var profileWindow = new ProfileWindow(_username, _token, authService, userService);
             profileWindow.Show();
         }
 
         private void AdminPanelButton_Click(object sender, RoutedEventArgs e)
         {
             var authService = ((App)Application.Current).ServiceProvider.GetRequiredService<IAuthService>();
-            var adminPanel = new AdminPanelWindow(_token, authService);
+            var userService = ((App)Application.Current).ServiceProvider.GetService<IUserService>();
+            var adminPanel = new AdminPanelWindow(_token, _username, authService, userService);
             adminPanel.Show();
         }
 

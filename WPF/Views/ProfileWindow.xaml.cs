@@ -24,12 +24,14 @@ namespace WPF.Views
         private readonly string _username;
         private readonly string _token;
         private readonly IAuthService _authService;
-        public ProfileWindow(string username, string token, IAuthService authService)
+        private readonly IUserService _userService;
+        public ProfileWindow(string username, string token, IAuthService authService, IUserService userService)
         {
             InitializeComponent();
             _username = username;
             _token = token;
             _authService = authService;
+            _userService = userService;
 
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
@@ -40,7 +42,7 @@ namespace WPF.Views
         {
             try
             {
-                var userDetails = await _authService.GetUserDetailsAsync(_username, _token);
+                var userDetails = await _userService.GetUserByUsernameAsync(_username, _token);
 
                 if (userDetails != null)
                 {

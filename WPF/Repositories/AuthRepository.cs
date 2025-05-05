@@ -84,32 +84,5 @@ namespace WPF.Repositories
                 throw new Exception(e.Message);
             }
         }
-
-        public async Task<UserDto?> GetUserDetailsAsync(string username, string token)
-        {
-            try
-            {
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-                var response = await _httpClient.GetAsync($"api/user/{username}");
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    var error = await response.Content.ReadAsStringAsync();
-                    throw new Exception($"Failed to load user details: {error}");
-                }
-
-                return await response.Content.ReadFromJsonAsync<UserDto>();
-            }
-            catch (Exception e)
-            {
-                throw new Exception($"Error loading user details: {e.Message}");
-            }
-        }
-    }
-
-    public class LoginResponseDto
-    {
-        public string Token { get; set; }
     }
 }

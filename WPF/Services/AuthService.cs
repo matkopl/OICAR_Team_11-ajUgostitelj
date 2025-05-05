@@ -22,11 +22,6 @@ namespace WPF.Services
             return await _authRepository.ChangePasswordAsync(token, changePasswordDto);
         }
 
-        public async Task<UserDto?> GetUserDetailsAsync(string username, string token)
-        {
-            return await _authRepository.GetUserDetailsAsync(username, token);
-        }
-
         public async Task<string> LoginAsync(string username, string password)
         {
             return await _authRepository.LoginAsync(username, password);
