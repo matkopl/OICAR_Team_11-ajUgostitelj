@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -54,5 +55,11 @@ namespace WPF.Views
             tableCrudWindow.Show();
         }
 
+        private void OpenPaymentsCrud_Click(object sender, RoutedEventArgs e)
+        {
+            var _paymentsService = ((App)Application.Current).ServiceProvider.GetRequiredService<IPaymentService>();
+            var paymentsCrudWindow = new PaymentsCrudWindow(_token, _paymentsService);
+            paymentsCrudWindow.Show();
+        }
     }
 }
