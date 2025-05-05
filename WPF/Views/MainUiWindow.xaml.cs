@@ -55,10 +55,6 @@ namespace WPF.Views
             ordersWindow.Show();
         }
 
-        private void TablesButton_Click(object sender, RoutedEventArgs e)
-        {
-            var tablesWindow = new TablesWindow(_token);
-            tablesWindow.Show();
-        }
+        
     }
 }
