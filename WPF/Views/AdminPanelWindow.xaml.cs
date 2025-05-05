@@ -44,7 +44,7 @@ namespace WPF.Views
 
         private void OpenProductCrud_Click(object sender, RoutedEventArgs e)
         {
-            var productCrudWindow = new ProductCrudWindow();
+            var productCrudWindow = new ProductWindow(_token);
             productCrudWindow.Show();
         }
 
