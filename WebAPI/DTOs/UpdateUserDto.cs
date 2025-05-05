@@ -15,6 +15,10 @@ namespace WebAPI.DTOs
         public string Email { get; set; }
 
         [MinLength(8)]
-        public string Password { get; set; }
+        public string? Password { get; set; }
+
+        [Required]
+        [Range(1, 2, ErrorMessage = "Invalid role. Allowed values are 1 (Admin) or 2 (User).")]
+        public int RoleId { get; set; }
     }
 }

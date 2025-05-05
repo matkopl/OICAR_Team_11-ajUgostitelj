@@ -61,7 +61,13 @@ namespace WebAPI.Services
         {
             var userRepo = _repositoryFactory.GetRepository<User>();
             var users = await userRepo.GetAllAsync();
-            return _mapper.Map<IEnumerable<UserDto>>(users);
+            return users.Select(user => new UserDto
+            {
+                Id = user.Id,
+                Username = user.Username,
+                Email = user.Email,
+                Role = user.Role != null ? user.Role.Name : (user.RoleId == 1 ? "Admin" : "User") 
+            }).ToList();
         }
 
         public async Task<UserDto?> GetUserByIdAsync(int id)
@@ -107,15 +113,7 @@ namespace WebAPI.Services
 
             user.Username = updateUserDto.Username;
             user.Email = updateUserDto.Email;
-
-            if (!string.IsNullOrEmpty(updateUserDto.Password))
-            {
-                var salt = PasswordHashProvider.GetSalt();
-                var hash = PasswordHashProvider.GetHash(updateUserDto.Password, salt);
-                user.PwdSalt = salt;
-                user.PwdHash = hash;
-            }
-
+            user.RoleId = updateUserDto.RoleId;
             userRepo.Update(user);
             await userRepo.SaveChangesAsync();
 

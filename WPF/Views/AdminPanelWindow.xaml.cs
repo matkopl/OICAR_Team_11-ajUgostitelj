@@ -22,20 +22,24 @@ namespace WPF.Views
     {
         private readonly string _token;
         private readonly IAuthService _authService;
+        private readonly IUserService _userService;
+        private readonly string _username;
 
-        public AdminPanelWindow(string token, IAuthService authService)
+        public AdminPanelWindow(string token, string username, IAuthService authService, IUserService userService)
         {
             InitializeComponent();
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
+            _username = username;
             _token = token;
             _authService = authService;
+            _userService = userService;
         }
 
         private void OpenUserCrud_Click(object sender, RoutedEventArgs e)
         {
-            //var userCrudWindow = new UserCrudWindow(_token, _authService);
-            //userCrudWindow.Show();
+            var userCrudWindow = new UserCrudWindow(_token, _userService, _username);
+            userCrudWindow.Show();
         }
 
         private void OpenProductCrud_Click(object sender, RoutedEventArgs e)
