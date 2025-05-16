@@ -125,22 +125,11 @@
             }
         });
 
-        // Add to Order button logic
         document.querySelectorAll('.order-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const card = btn.closest('.menu-item');
                 const id = card.dataset.id;
-                const name = card.dataset.name;
-                const price = parseFloat(card.dataset.price);
-
-                const existing = cart.find(x => x.id === id);
-                if (existing) {
-                    existing.qty++;
-                } else {
-                    cart.push({ id, name, price, qty: 1 });
-                }
-
-                renderCart();
+                window.location.href = `/Product/Details/${id}`;
             });
         });
 
