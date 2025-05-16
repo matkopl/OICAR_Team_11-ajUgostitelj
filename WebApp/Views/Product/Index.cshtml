@@ -6,27 +6,6 @@
 
 <link rel="stylesheet" href="~/css/Menu.css" />
 
-<style>
-    .page-content {
-        display: flex;
-        gap: 30px;
-        align-items: flex-start;
-    }
-
-    .products-panel {
-        flex: 2;
-    }
-
-    .cart-panel {
-        flex: 1;
-        max-width: 400px;
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        padding: 30px;
-    }
-</style>
-
 <div class="container page-content">
     <!-- PRODUCTS PANEL -->
     <div class="products-panel">
@@ -52,13 +31,13 @@
                              data-name="@item.Name"
                              data-price="@item.Price"
                              data-image="@item.ImageUrl">
-                            <img src="@(Url.Content("https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"))"
+                            <img src="@(Url.Content("~/images/placeholder.png"))"
                                  alt="@item.Name" class="item-image" />
                             <div class="item-details">
                                 <div class="item-name">@item.Name</div>
                                 <div class="item-description">@item.Description</div>
                                 <div class="item-price">@item.Price.ToString("F2") €</div>
-                                <div class="item-rating" data-product-id="@item.Id">Učitavanje ocjene...</div>
+                                <div class="item-rating"></div> <!-- Rating display -->
                                 <button type="button" class="order-btn">Add to Order</button>
                             </div>
                         </div>
@@ -67,26 +46,19 @@
             </div>
         }
     </div>
-</div>
-<div class="cart-panel">
-        <h2 class="cart-title">Your Cart</h2>
-        <div class="cart-items"></div>
-        <div class="cart-summary">
-            <div class="total-price">Total: 0 €</div>
-            <div class="payment-method" style="margin-bottom: 1rem;">
-                <label for="paymentSelect">Payment Method:</label>
-                <select id="paymentSelect" class="form-control">
-                    <option value="Cash">Cash</option>
-                    <option value="PayPal">PayPal (Dummy)</option>
-                </select>
-            </div>
-            <button id="checkout-btn" class="checkout-btn">Proceed to Checkout</button>
-        </div>
- </div>
 
- @section Scripts {
+    <!-- CART PANEL -->
+    <div id="cart-panel" class="cart-panel">
+        <h2>Your Cart</h2>
+        <ul id="cart-items"></ul>
+        <p><strong>Total: </strong><span id="cart-total">0.00</span> €</p>
+        <button id="checkout-btn" class="checkout-btn">Proceed to Checkout</button>
+    </div>
+</div>
+
+@section Scripts {
     <script>
-        
+        // Category filtering
         document.querySelectorAll('.category-btn').forEach(button => {
             button.addEventListener('click', () => {
                 document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
@@ -98,36 +70,29 @@
             });
         });
 
-        
+        // Cart logic using localStorage
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        renderCart();
 
-        
         function renderCart() {
-            const list = document.querySelector('.cart-items');
-            const totalDisplay = document.querySelector('.total-price');
-            list.innerHTML = '';
-
+            const listEl = document.getElementById('cart-items');
+            const totalEl = document.getElementById('cart-total');
+            listEl.innerHTML = '';
             let total = 0;
+
             cart.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                        <span class="cart-item-text">${item.name} × ${item.qty} — €${(item.price * item.qty).toFixed(2)}</span>
+                        <button type="button" class="remove-btn" data-id="${item.id}" aria-label="Remove">&times;</button>
+                    `;
+                listEl.appendChild(li);
                 total += item.price * item.qty;
-                const itemHtml = `
-                    <div class="cart-item">
-                        <div class="item-info" style="flex: 1; display: flex; justify-content: space-between; align-items: center;">
-                            <span class="item-name">${item.name}</span>
-                            <span class="item-price">${item.price.toFixed(2)} €</span>
-                            <span class="item-qty">Qty: ${item.qty}</span>
-                            <button class="remove-btn" data-id="${item.id}" style="margin-left: 10px;">×</button>
-                        </div>
-                    </div>
-                `;
-                list.insertAdjacentHTML('beforeend', itemHtml);
             });
 
-            totalDisplay.textContent = `Total: ${total.toFixed(2)} €`;
+            totalEl.textContent = total.toFixed(2);
             localStorage.setItem('cart', JSON.stringify(cart));
 
-            
+            // Attach remove handlers
             document.querySelectorAll('.remove-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const id = btn.dataset.id;
@@ -137,96 +102,83 @@
             });
         }
 
-        
+        // Add rating display for each product
+        document.querySelectorAll('.menu-item').forEach(item => {
+            const id = item.dataset.id;
+            const ratingDiv = item.querySelector('.item-rating');
+
+            if (ratingDiv) {
+                fetch(`/api/review/average/${id}`)
+                    .then(res => {
+                        if (!res.ok) throw new Error(`Status: ${res.status}`);
+                        return res.json();
+                    })
+                    .then(avg => {
+                        ratingDiv.textContent = avg !== null
+                            ? `Rating: ${avg.toFixed(1)} ★`
+                            : "Not rated yet";
+                    })
+                    .catch(err => {
+                        console.error(`Rating fetch error for product ${id}`, err);
+                        ratingDiv.textContent = "Rating unavailable";
+                    });
+            }
+        });
+
+        // Add to Order button logic
         document.querySelectorAll('.order-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const card = btn.closest('.menu-item');
                 const id = card.dataset.id;
                 const name = card.dataset.name;
                 const price = parseFloat(card.dataset.price);
-                const image = card.dataset.image;
 
                 const existing = cart.find(x => x.id === id);
                 if (existing) {
                     existing.qty++;
                 } else {
-                    cart.push({ id, name, price, qty: 1, image });
+                    cart.push({ id, name, price, qty: 1 });
                 }
 
                 renderCart();
             });
         });
 
-        
+        // Checkout button logic
         document.getElementById('checkout-btn').addEventListener('click', async () => {
-    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            if (cart.length === 0) {
+                alert("Your cart is empty.");
+                return;
+            }
 
-    if (cart.length === 0) {
-        alert("Your cart is empty.");
-        return;
-    }
+            const orderDto = {
+                orderDate: new Date().toISOString(),
+                status: "Pending",
+                totalAmount: cart.reduce((sum, item) => sum + (item.price * item.qty), 0),
+                tableId: 1 // You might want to make this dynamic
+            };
 
-    const orderDto = {
-        orderDate: new Date().toISOString(),
-        status: "Paid",
-        totalAmount: cart.reduce((sum, item) => sum + (item.price * item.qty), 0),
-        tableId: 2
-    };
+            try {
+                const response = await fetch("/Order/Checkout", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(orderDto)
+                });
 
-    try {
-        // 1. Create the order
-        const orderRes = await fetch("/Order/Checkout", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(orderDto)
+                if (!response.ok) throw new Error("Checkout failed");
+
+                // Clear cart on success
+                cart = [];
+                localStorage.removeItem('cart');
+                renderCart();
+                alert("Order placed successfully!");
+            } catch (error) {
+                console.error("Checkout error:", error);
+                alert("There was an error processing your order.");
+            }
         });
 
-        if (!orderRes.ok) throw new Error("Failed to create order");
-
-        const createdOrder = await orderRes.json();
-        const orderId = createdOrder.id;
-
-        // 2. Create order items
-        const orderItems = cart.map(item => ({
-            orderId: orderId,
-            productId: parseInt(item.id),
-            quantity: item.qty,
-            unitPrice: item.price
-        }));
-
-        const itemRes = await fetch("/Order/AddOrderItems", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(orderItems)
-        });
-
-        if (!itemRes.ok) throw new Error("Failed to add order items");
-
-        alert("Order and items added successfully!");
-        localStorage.removeItem("cart");
-        cart.length = 0;
+        // Initial render
         renderCart();
-
-    } catch (err) {
-        console.error("Checkout error:", err);
-        alert("There was an issue processing your order.");
-    }
-});
-
-        // Ratings
-        fetch(`/api/review/average/${id}`)
-        .then(res => {
-        if (!res.ok) throw new Error(`Status: ${res.status}`);
-        return res.json();
-        })
-            .then(avg => {
-        div.textContent = avg !== null
-            ? `Ocjena: ${avg.toFixed(1)} ★`
-                : "Još nije ocijenjen";
-    })
-    .catch(err => {
-        console.error(`Rating fetch error for product ${id}`, err);
-        div.textContent = "Nema ocjene";
-    });
     </script>
 }
