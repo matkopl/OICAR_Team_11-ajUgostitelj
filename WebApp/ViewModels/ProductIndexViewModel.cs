@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using WebAPI.DTOs;
 
 namespace WebApp.ViewModels
 {
@@ -23,6 +24,7 @@ namespace WebApp.ViewModels
         public string CategoryName { get; set; }
 
         public string? ImageUrl { get; set; }
+        public double? AverageRating { get; set; }
     }
 
     public class ProductIndexViewModel
