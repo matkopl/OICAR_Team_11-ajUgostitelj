@@ -24,16 +24,16 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Index">Početna</a>
+                            <a class="nav-link" asp-controller="Product" asp-action="Index">Menu</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Product" asp-action="Details" asp-route-id="1">Details Mock</a>
+                            <a class="nav-link" asp-controller="Cart" asp-action="Index">Your Cart</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/Cart">Your Cart</a>
+                            <a class="nav-link" asp-controller="ProductReviews" asp-action="Create">Add Review</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Review" asp-action="Create">Add Review</a>
+                            <a class="nav-link" asp-controller="Order" asp-action="Track">Track Order</a>
                         </li>
                     </ul>
                 </div>
