@@ -6,227 +6,55 @@
 
 <link rel="stylesheet" href="~/css/Menu.css" />
 
-<style>
-    .page-content {
-        display: flex;
-        gap: 30px;
-        align-items: flex-start;
-    }
-
-    .products-panel {
-        flex: 2;
-    }
-
-    .cart-panel {
-        flex: 1;
-        max-width: 400px;
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        padding: 30px;
-    }
-</style>
-
 <div class="container page-content">
     <!-- PRODUCTS PANEL -->
     <div class="products-panel">
         <!-- Category Buttons -->
         <div class="menu-categories">
-            <button class="category-btn active" data-category="all">All</button>
-            @foreach (var cat in Model.Categories)
+            <a class="category-btn @(string.IsNullOrEmpty(Context.Request.Query["category"]) ? "active" : "")" href="@Url.Action("Index", "Product")">All</a>
+            @foreach (var cat in Model.Categories.Where(c => Model.Products.Any(p => p.CategoryName == c)))
             {
-                <button class="category-btn" data-category="@cat">@cat</button>
+                var isActive = Context.Request.Query["category"] == cat;
+                <a class="category-btn @(isActive ? "active" : "")" href="@Url.Action("Index", "Product", new { category = cat })">@cat</a>
             }
         </div>
 
         <!-- Product Sections -->
-        @foreach (var cat in Model.Categories)
-        {
-            <div class="menu-section" data-category="@cat">
-                <h2 class="section-title">@cat</h2>
-                <div class="menu-items">
-                    @foreach (var item in Model.Products.Where(p => p.CategoryName == cat))
-                    {
-                        <div class="menu-item"
-                             data-id="@item.Id"
-                             data-name="@item.Name"
-                             data-price="@item.Price"
-                             data-image="@item.ImageUrl">
-                            <img src="@(Url.Content("https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"))"
-                                 alt="@item.Name" class="item-image" />
-                            <div class="item-details">
-                                <div class="item-name">@item.Name</div>
-                                <div class="item-description">@item.Description</div>
-                                <div class="item-price">@item.Price.ToString("F2") €</div>
-                                <div class="item-rating" data-product-id="@item.Id">Učitavanje ocjene...</div>
-                                <button type="button" class="order-btn">Add to Order</button>
+        <div class="menu-section">
+            <div class="menu-items">
+                @foreach (var item in Model.Products)
+                {
+                    <div class="menu-item"
+                         data-id="@item.Id"
+                         data-name="@item.Name"
+                         data-price="@item.Price"
+                         data-image="@item.ImageUrl">
+                        <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? Url.Content("~/Img/default-food.jpeg") : Url.Content(item.ImageUrl))"
+                             alt="@item.Name" class="item-image" />
+                        <div class="item-details">
+                            <div class="item-name">@item.Name</div>
+                            <div class="item-description">@item.Description</div>
+                            <div class="item-price">@item.Price.ToString("F2") €</div>
+                            <div class="item-rating">
+                                @(item.AverageRating.HasValue ? $"Rating: {item.AverageRating:F1} ★" : "Not rated yet")
                             </div>
-                        </div>
-                    }
-                </div>
-            </div>
-        }
-    </div>
-</div>
-<div class="cart-panel">
-        <h2 class="cart-title">Your Cart</h2>
-        <div class="cart-items"></div>
-        <div class="cart-summary">
-            <div class="total-price">Total: 0 €</div>
-            <div class="payment-method" style="margin-bottom: 1rem;">
-                <label for="paymentSelect">Payment Method:</label>
-                <select id="paymentSelect" class="form-control">
-                    <option value="Cash">Cash</option>
-                    <option value="PayPal">PayPal (Dummy)</option>
-                </select>
-            </div>
-            <button id="checkout-btn" class="checkout-btn">Proceed to Checkout</button>
-        </div>
- </div>
-
- @section Scripts {
-    <script>
-        
-        document.querySelectorAll('.category-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-                button.classList.add('active');
-                const cat = button.dataset.category;
-                document.querySelectorAll('.menu-section').forEach(sec => {
-                    sec.style.display = (cat === 'all' || sec.dataset.category === cat) ? 'block' : 'none';
-                });
-            });
-        });
-
-        
-        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        renderCart();
-
-        
-        function renderCart() {
-            const list = document.querySelector('.cart-items');
-            const totalDisplay = document.querySelector('.total-price');
-            list.innerHTML = '';
-
-            let total = 0;
-            cart.forEach(item => {
-                total += item.price * item.qty;
-                const itemHtml = `
-                    <div class="cart-item">
-                        <div class="item-info" style="flex: 1; display: flex; justify-content: space-between; align-items: center;">
-                            <span class="item-name">${item.name}</span>
-                            <span class="item-price">${item.price.toFixed(2)} €</span>
-                            <span class="item-qty">Qty: ${item.qty}</span>
-                            <button class="remove-btn" data-id="${item.id}" style="margin-left: 10px;">×</button>
+                            <button type="button" class="order-btn">Add to Order</button>
                         </div>
                     </div>
-                `;
-                list.insertAdjacentHTML('beforeend', itemHtml);
-            });
+                }
+            </div>
+        </div>
+    </div>
+</div>
 
-            totalDisplay.textContent = `Total: ${total.toFixed(2)} €`;
-            localStorage.setItem('cart', JSON.stringify(cart));
-
-            
-            document.querySelectorAll('.remove-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const id = btn.dataset.id;
-                    cart = cart.filter(x => x.id !== id);
-                    renderCart();
-                });
-            });
-        }
-
-        
+@section Scripts {
+    <script>
         document.querySelectorAll('.order-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const card = btn.closest('.menu-item');
                 const id = card.dataset.id;
-                const name = card.dataset.name;
-                const price = parseFloat(card.dataset.price);
-                const image = card.dataset.image;
-
-                const existing = cart.find(x => x.id === id);
-                if (existing) {
-                    existing.qty++;
-                } else {
-                    cart.push({ id, name, price, qty: 1, image });
-                }
-
-                renderCart();
-            });
-        });
-
-        
-        document.getElementById('checkout-btn').addEventListener('click', async () => {
-    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-
-    if (cart.length === 0) {
-        alert("Your cart is empty.");
-        return;
-    }
-
-    const orderDto = {
-        orderDate: new Date().toISOString(),
-        status: "Paid",
-        totalAmount: cart.reduce((sum, item) => sum + (item.price * item.qty), 0),
-        tableId: 2
-    };
-
-    try {
-        // 1. Create the order
-        const orderRes = await fetch("/Order/Checkout", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(orderDto)
-        });
-
-        if (!orderRes.ok) throw new Error("Failed to create order");
-
-        const createdOrder = await orderRes.json();
-        const orderId = createdOrder.id;
-
-        // 2. Create order items
-        const orderItems = cart.map(item => ({
-            orderId: orderId,
-            productId: parseInt(item.id),
-            quantity: item.qty,
-            unitPrice: item.price
-        }));
-
-        const itemRes = await fetch("/Order/AddOrderItems", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(orderItems)
-        });
-
-        if (!itemRes.ok) throw new Error("Failed to add order items");
-
-        alert("Order and items added successfully!");
-        localStorage.removeItem("cart");
-        cart.length = 0;
-        renderCart();
-
-    } catch (err) {
-        console.error("Checkout error:", err);
-        alert("There was an issue processing your order.");
-    }
-});
-
-        // Ratings
-        fetch(`/api/review/average/${id}`)
-        .then(res => {
-        if (!res.ok) throw new Error(`Status: ${res.status}`);
-        return res.json();
-        })
-            .then(avg => {
-        div.textContent = avg !== null
-            ? `Ocjena: ${avg.toFixed(1)} ★`
-                : "Još nije ocijenjen";
-    })
-    .catch(err => {
-        console.error(`Rating fetch error for product ${id}`, err);
-        div.textContent = "Nema ocjene";
-    });
+                window.location.href = `/Product/Details/${id}`;
+                    });
+                });
     </script>
 }

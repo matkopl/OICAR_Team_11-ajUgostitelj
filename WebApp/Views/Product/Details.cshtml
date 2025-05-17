@@ -1,36 +1,159 @@
-﻿@model WebAPI.DTOs.ProductDto
+﻿@model WebApp.ViewModels.ProductViewModel
 
 @{
-    ViewData["Title"] = "Product Details";
+    ViewData["Title"] = "Detalji Proizvoda";
 }
 
-<div class="container-details">
-    <div class="product-detail">
-        <div class="product-image">
-            <img src="@Model.ImageUrl ?? "https://via.placeholder.com/400x300?text=No+Image"" alt="@Model.Name" class="item-image">
-        </div>
-        <div class="product-info">
-            <h1 class="item-name">@Model.Name</h1>
-            <p class="item-description">@Model.Description</p>
-            <div class="item-price">@Model.Price.ToString("F2") €</div>
+<style>
+    .product-detail-container {
+        max-width: 1100px;
+        margin: 40px auto;
+        padding: 30px;
+        background: white;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        border-radius: 16px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+        align-items: flex-start;
+    }
 
-            <div class="quantity-selector">
-                <label for="quantity">Quantity:</label>
-                <input type="number" id="quantity" name="quantity" min="1" value="1" class="quantity-input">
-            </div>
+    .product-image {
+        flex: 1 1 45%;
+        display: flex;
+        justify-content: center;
+    }
 
-            <div class="button-group">
-                <button class="add-to-cart-btn" onclick="addToCart()">Add to Cart</button>
-                <a href="@Url.Action("Index", "Product")" class="go-back-btn">Go Back</a>
-            </div>
+    .product-image img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .product-info {
+        flex: 1 1 50%;
+    }
+
+    .product-info h1 {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 10px;
+    }
+
+    .product-info p {
+        color: #555;
+        margin-bottom: 10px;
+    }
+
+    .product-price {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: var(--primary-color);
+        margin: 20px 0;
+    }
+
+    .product-rating {
+        margin-bottom: 10px;
+        color: #666;
+    }
+
+    .quantity-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin: 20px 0;
+    }
+
+    .quantity-input {
+        width: 80px;
+        padding: 8px;
+        font-size: 1rem;
+    }
+
+    .btn-add, .btn-back {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 10px 22px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        text-decoration: none;
+        display: inline-block;
+        margin-right: 10px;
+        font-size: 1rem;
+    }
+
+    .btn-add:hover, .btn-back:hover {
+        background-color: var(--dark-coffee);
+    }
+
+    @@media (max-width: 768px) {
+        .product-detail-container {
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .product-image, .product-info {
+            flex: 1 1 100%;
+        }
+
+        .product-info h1 {
+            font-size: 1.6rem;
+        }
+
+        .product-price {
+            font-size: 1.4rem;
+        }
+
+        .btn-add, .btn-back {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .quantity-wrapper {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+<div class="product-detail-container">
+    <div class="product-image">
+        <img src="@(string.IsNullOrEmpty(Model.ImageUrl) ? Url.Content("~/Img/default-food.jpeg") : Url.Content(Model.ImageUrl))" alt="@Model.Name" />
+    </div>
+    <div class="product-info">
+        <h1>@Model.Name</h1>
+        <p>@Model.Description</p>
+        <div class="product-price" id="total-price">@Model.Price.ToString("F2") €</div>
+        <div class="product-rating">
+            @(Model.AverageRating.HasValue ? $"Rating: {Model.AverageRating:F1} ★" : "Not rated yet")
         </div>
+        <form asp-action="AddToCart" asp-controller="Product" method="post">
+            <input type="hidden" name="Id" value="@Model.Id" />
+            <input type="hidden" name="Name" value="@Model.Name" />
+            <input type="hidden" name="Price" value="@Model.Price" />
+            <div class="quantity-wrapper">
+                <label for="qty">Količina:</label>
+                <input type="number" name="Quantity" id="qty" class="quantity-input" value="1" min="1" onchange="updatePrice()" />
+            </div>
+            <button type="submit" class="btn-add">Dodaj u košaricu</button>
+            <a href="@Url.Action("Index", "Product")" class="btn-back">Natrag na meni</a>
+        </form>
     </div>
 </div>
 
 @section Scripts {
-    <script>
-        function addToCart() {
-            window.location.href = '/Cart'; // or post to /Cart/Add
-        }
-    </script>
+        <script>
+            const basePrice = @Model.Price;
+
+            function updatePrice() {
+                const qty = parseInt(document.getElementById("qty").value) || 1;
+                const total = (qty * basePrice).toFixed(2);
+                document.getElementById("total-price").textContent = `${total} €`;
+            }
+
+            document.addEventListener("DOMContentLoaded", updatePrice);
+        </script>
 }
