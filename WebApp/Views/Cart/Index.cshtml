@@ -197,18 +197,30 @@
                     }
 
                     const result = await response.json();
-                    alert("Order created! ID: " + result.orderId);
                     localStorage.removeItem("cart");
-                    window.location.href = "/Product";
+                window.location.href = "/Status/Index";
                 } catch (err) {
                     console.error("Error:", err);
                     alert("Order creation failed: " + err.message);
                 }
             });
         });
-    </script>
-<script>
+    document.querySelectorAll(".remove-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            const id = parseInt(btn.previousElementSibling.value); 
+            let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+            cart = cart.filter(item => item.id !== id);
+            localStorage.setItem("cart", JSON.stringify(cart));
+            btn.closest(".cart-item").remove();
+
+            if (!document.querySelectorAll(".cart-item").length) {
+                document.querySelector(".cart-items").innerHTML = "<p>Your cart is empty.</p>";
+            }
+        });
+    });
     const tempCart = @Html.Raw(Json.Serialize(Model));
     localStorage.setItem("cart", JSON.stringify(tempCart));
-</script>
+    </script>
+
 
