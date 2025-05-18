@@ -30,7 +30,7 @@
                             <a class="nav-link" asp-controller="Cart" asp-action="Index">Your Cart</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="ProductReviews" asp-action="Create">Add Review</a>
+                            <a class="nav-link" asp-controller="Product" asp-action="ProductReviews">Add Review</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Order" asp-action="Track">Track Order</a>
@@ -49,22 +49,6 @@
             @RenderBody()
         </main>
     </div>
-
-    <!-- Optional Footer (Uncomment if needed)
-    <footer class="border-top footer text-white bg-coffee">
-        <div class="container py-3">
-            <div class="row">
-                <div class="col-md-6 text-center text-md-start">
-                    &copy; 2025 - Naručivanje Online
-                </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <a class="text-white text-decoration-none me-3" asp-controller="Home" asp-action="Privacy">Privatnost</a>
-                    <a class="text-white text-decoration-none" asp-controller="Home" asp-action="Terms">Uvjeti korištenja</a>
-                </div>
-            </div>
-        </div>
-    </footer>
-    -->
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

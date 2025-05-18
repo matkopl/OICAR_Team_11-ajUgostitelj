@@ -29,16 +29,16 @@ namespace WebApp.Controllers
         [HttpPost]
         public IActionResult Remove(int id)
         {
-            if (!TempData.ContainsKey("Cart"))
-                return Ok();
+            var cart = TempData.ContainsKey("Cart")
+                ? JsonSerializer.Deserialize<List<ProductCartViewModel>>(TempData["Cart"]!.ToString()!)!
+                : new List<ProductCartViewModel>();
 
-            var cart = JsonSerializer.Deserialize<List<ProductCartViewModel>>(TempData["Cart"]!.ToString()!) ?? new List<ProductCartViewModel>();
-            cart = cart.Where(p => p.Id != id).ToList();
+            cart = cart.Where(x => x.Id != id).ToList();
 
             TempData["Cart"] = JsonSerializer.Serialize(cart);
             TempData.Keep("Cart");
 
-            return Ok();
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
@@ -50,20 +50,31 @@ namespace WebApp.Controllers
             var order = new Order
             {
                 OrderDate = DateTime.UtcNow,
-                TableId = 2,
+                TableId = 2, // hardcoded for now
                 Status = OrderStatus.Pending,
-                TotalAmount = items.Sum(i => i.Price * i.Quantity),
-                OrderItems = items.Select(i => new OrderItem
-                {
-                    ProductId = i.Id,
-                    Quantity = i.Quantity
-                }).ToList()
+                TotalAmount = items.Sum(x => x.Price * x.Quantity)
             };
+
+            foreach (var item in items)
+            {
+                order.OrderItems.Add(new OrderItem
+                {
+                    ProductId = item.Id,
+                    Quantity = item.Quantity
+                });
+            }
 
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
             return Ok(new { success = true, orderId = order.Id });
+        }
+
+
+        public IActionResult Success(int id)
+        {
+            ViewBag.OrderId = id;
+            return View();
         }
 
 
