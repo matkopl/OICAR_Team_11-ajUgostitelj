@@ -1,9 +1,13 @@
 ﻿using System;
-using System.Collections.ObjectModel;
-using System.Windows;
-using System.Windows.Media;
+using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media.Imaging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Win32;
+using QRCoder;                        
 using WebAPI.DTOs;
 using WPF.Repositories;
 
@@ -11,129 +15,152 @@ namespace WPF.Views
 {
     public partial class TablesWindow : Window
     {
-        private readonly ITableRepository _tableRepo;
+        private readonly ITableRepository _repo;
         private readonly string _token;
-        private ObservableCollection<TableDto> _tables = new();
+        private byte[]? _lastQrBytes;
 
         public TablesWindow(string token)
         {
             InitializeComponent();
             _token = token;
 
-            _tableRepo = ((App)Application.Current)
-                .ServiceProvider
-                .GetRequiredService<ITableRepository>();
+            
+            _repo = ((App)Application.Current)
+                     .ServiceProvider
+                     .GetRequiredService<ITableRepository>();
 
-            Loaded += async (_, __) => await LoadTablesAsync();
+            Loaded += async (_, __) =>
+            {
+                await RefreshTablesAsync();
+            };
         }
 
-        private async Task LoadTablesAsync()
+        
+        private async Task RefreshTablesAsync()
         {
             try
             {
-                var all = await _tableRepo.GetAllAsync(_token);
-                _tables = new ObservableCollection<TableDto>(all);
-                dgTables.ItemsSource = _tables;
+                var tables = await _repo.GetAllAsync(_token);
+                dgTables.ItemsSource = tables;
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"Greška pri učitavanju stolova:\n{ex.Message}",
-                    "Greška",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
+                MessageBox.Show($"Greška pri učitavanju stolova:\n{ex.Message}",
+                                "Greška", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        private async void BtnAdd_Click(object sender, RoutedEventArgs e)
+        
+        private async void BtnAddTable_Click(object sender, RoutedEventArgs e)
         {
             var name = tbNewTableName.Text?.Trim();
-            if (string.IsNullOrWhiteSpace(name) || name == "Unesite naziv stola...")
+            if (string.IsNullOrEmpty(name))
             {
-                MessageBox.Show(
-                    "Unesite naziv stola.",
-                    "Upozorenje",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
+                MessageBox.Show("Upišite naziv novog stola.", "Upozorenje",
+                                MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             try
             {
-                var dto = new TableDto { Name = name };
-                var created = await _tableRepo.CreateAsync(_token, dto);
-                _tables.Add(created);
-                // reset placeholder
-                tbNewTableName.Text = "Unesite naziv stola...";
-                tbNewTableName.Foreground = Brushes.Gray;
+                var newTable = new TableDto { Name = name };
+                await _repo.CreateAsync(_token, newTable);
+                tbNewTableName.Clear();
+                await RefreshTablesAsync();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"Greška pri dodavanju stola:\n{ex.Message}",
-                    "Greška",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
+                MessageBox.Show($"Greška pri dodavanju stola:\n{ex.Message}",
+                                "Greška", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        private async void BtnDelete_Click(object sender, RoutedEventArgs e)
+        
+        private async void BtnDeleteTable_Click(object sender, RoutedEventArgs e)
         {
-            if (dgTables.SelectedItem is not TableDto toDelete) return;
+            if (dgTables.SelectedItem is not TableDto sel)
+            {
+                MessageBox.Show("Odaberite stol u tablici.", "Upozorenje",
+                                MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
-            var result = MessageBox.Show(
-                $"Obrisati stol '{toDelete.Name}'?",
-                "Potvrdi brisanje",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question);
-
-            if (result != MessageBoxResult.Yes) return;
+            var res = MessageBox.Show(
+                $"Obrisati stol '{sel.Name}'?",
+                "Potvrda brisanja",
+                MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (res != MessageBoxResult.Yes) return;
 
             try
             {
-                await _tableRepo.DeleteAsync(_token, toDelete.Id);
-                _tables.Remove(toDelete);
+                await _repo.DeleteAsync(_token, sel.Id);
+                await RefreshTablesAsync();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"Greška pri brisanju stola:\n{ex.Message}",
-                    "Greška",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
+                MessageBox.Show($"Greška pri brisanju stola:\n{ex.Message}",
+                                "Greška", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
-        private void BtnClose_Click(object sender, RoutedEventArgs e)
-            => Close();
 
         
-        private void TbNewTableName_GotFocus(object sender, RoutedEventArgs e)
-        {
-            if (tbNewTableName.Text == "Unesite naziv stola...")
-            {
-                tbNewTableName.Text = "";
-                tbNewTableName.Foreground = Brushes.Black;
-            }
-        }
-
-        private void TbNewTableName_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(tbNewTableName.Text))
-            {
-                tbNewTableName.Text = "Unesite naziv stola...";
-                tbNewTableName.Foreground = Brushes.Gray;
-            }
-        }
-
         private void BtnGenerateQr_Click(object sender, RoutedEventArgs e)
         {
+            if (dgTables.SelectedItem is not TableDto table)
+            {
+                MessageBox.Show("Prvo odaberite stol.", "Upozorenje",
+                                MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             
-            MessageBox.Show("QR kod generiran. Bravo!",
-                            "Generiranje QR koda",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Information);
+            var payload = new
+            {
+                url = $"https://localhost.com?table={table.Id}",
+                tableName = table.Name
+            };
+            var json = JsonSerializer.Serialize(payload);
+
+            
+            using var qrGen = new QRCodeGenerator();
+            using var qrData = qrGen.CreateQrCode(json, QRCodeGenerator.ECCLevel.Q);
+            _lastQrBytes = new PngByteQRCode(qrData).GetGraphic(20);
+
+            
+            var bmp = new BitmapImage();
+            using var ms = new MemoryStream(_lastQrBytes);
+            bmp.BeginInit();
+            bmp.StreamSource = ms;
+            bmp.CacheOption = BitmapCacheOption.OnLoad;
+            bmp.EndInit();
+
+            imgQr.Source = bmp;
+            btnSaveQr.IsEnabled = true;
         }
 
+       
+        private void BtnSaveQr_Click(object sender, RoutedEventArgs e)
+        {
+            if (_lastQrBytes == null) return;
+
+            var dlg = new SaveFileDialog
+            {
+                Filter = "PNG slika (*.png)|*.png",
+                FileName = $"QR_stol_{DateTime.Now:yyyyMMdd_HHmmss}.png"
+            };
+            if (dlg.ShowDialog() != true) return;
+
+            try
+            {
+                File.WriteAllBytes(dlg.FileName, _lastQrBytes);
+                MessageBox.Show("QR kod spremljen.", "Uspjeh",
+                                MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Greška pri spremanju:\n{ex.Message}",
+                                "Greška", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
     }
 }
