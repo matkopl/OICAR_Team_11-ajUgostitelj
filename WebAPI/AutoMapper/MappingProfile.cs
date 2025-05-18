@@ -23,6 +23,7 @@ namespace WebAPI.AutoMapper
             CreateMap<Role, RoleDto>().ReverseMap();
             CreateMap<OrderItem, OrderItemDto>().ReverseMap();
             CreateMap<Payment, PaymentDto>().ReverseMap();
+            CreateMap<StockCheck, StockCheckDto>().ReverseMap();
         }
     }
 }

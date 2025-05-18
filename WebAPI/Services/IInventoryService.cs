@@ -4,11 +4,12 @@ namespace WebAPI.Services
 {
     public interface IInventoryService
     {
-        Task<IEnumerable<InventoryDto>> GetAllInventoryItemsAsync();
-        Task<InventoryDto?> GetInventoryItemByIdAsync(int id);
-        Task<InventoryDto?> GetInventoryByProductIdAsync(int productId);
-        Task<InventoryDto> CreateInventoryItemAsync(InventoryDto inventoryDto);
-        Task<InventoryDto> UpdateInventoryItemAsync(int id, InventoryDto inventoryDto);
-        Task DeleteInventoryItemAsync(int id);
+        Task<IEnumerable<InventoryDto>> GetAllInventoriesAsync();
+        Task<InventoryDto?> GetInventoryByIdAsync(int id);
+        Task<bool> AddProductToInventoryAsync(InventoryDto inventoryDto);
+        Task<bool> UpdateInventoryAsync(InventoryDto inventoryDto);
+        Task<bool> DeleteInventoryAsync(int id);
+        Task<IEnumerable<StockCheckDto>> GetStockCheckHistoryAsync();
+        Task<bool> PerformStockCheckAsync(List<StockCheckDto> stockChecks);
     }
 }

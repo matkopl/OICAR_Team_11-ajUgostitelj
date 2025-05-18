@@ -10,5 +10,7 @@ namespace WPF.Repositories
     public interface IPaymentRepository
     {
         Task<IEnumerable<PaymentDto>> GetAllPaymentsAsync(string token);
+        Task<bool> UpdatePaymentAsync(string token, PaymentDto payment);
+        Task<bool> DeletePaymentAsync(string token, int paymentId);
     }
 }

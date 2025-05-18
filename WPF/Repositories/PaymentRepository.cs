@@ -29,5 +29,39 @@ namespace WPF.Repositories
 
             return await response.Content.ReadFromJsonAsync<IEnumerable<PaymentDto>>();
         }
+
+        public async Task<bool> UpdatePaymentAsync(string token, PaymentDto payment)
+        {
+            try
+            {
+                _httpClient.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", token);
+
+                var response = await _httpClient.PutAsJsonAsync($"{_apiKey}/update/{payment.Id}", payment);
+
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Error updating payment: {e.Message}");
+            }
+        }
+
+        public async Task<bool> DeletePaymentAsync(string token, int paymentId)
+        {
+            try
+            {
+                _httpClient.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", token);
+
+                var response = await _httpClient.DeleteAsync($"{_apiKey}/delete/{paymentId}");
+
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Error deleting payment: {e.Message}");
+            }
+        }
     }
 }

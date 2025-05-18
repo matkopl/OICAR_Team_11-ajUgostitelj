@@ -19,111 +19,89 @@ namespace WebAPI.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<InventoryDto>> GetAllInventoryItemsAsync()
+        public async Task<IEnumerable<InventoryDto>> GetAllInventoriesAsync()
         {
-            return await _context.Inventories
-                .Include(i => i.Product)
-                .Select(i => new InventoryDto
-                {
-                    Id = i.Id,
-                    ProductId = i.ProductId,
-                    Quantity = i.Quantity,
-                    LastUpdated = i.LastUpdated,
-                    ProductName = i.Product.Name
-                })
-                .ToListAsync();
+            var inventoryRepo = _repositoryFactory.GetRepository<Inventory>();
+            var inventories = await inventoryRepo.GetAllAsync();
+            return _mapper.Map<IEnumerable<InventoryDto>>(inventories);
         }
 
-        public async Task<InventoryDto?> GetInventoryItemByIdAsync(int id)
+        public async Task<InventoryDto?> GetInventoryByIdAsync(int id)
         {
-            var inventory = await _context.Inventories
-                .Include(i => i.Product)
-                .FirstOrDefaultAsync(i => i.Id == id);
-
-            if (inventory == null)
-                return null;
-
-            return new InventoryDto
-            {
-                Id = inventory.Id,
-                ProductId = inventory.ProductId,
-                Quantity = inventory.Quantity,
-                LastUpdated = inventory.LastUpdated,
-                ProductName = inventory.Product?.Name
-            };
+            var inventoryRepo = _repositoryFactory.GetRepository<Inventory>();
+            var inventory = await inventoryRepo.GetByIdAsync(id);
+            return inventory != null ? _mapper.Map<InventoryDto>(inventory) : null;
         }
 
-        public async Task<InventoryDto?> GetInventoryByProductIdAsync(int productId)
+        public async Task<bool> AddProductToInventoryAsync(InventoryDto inventoryDto)
         {
-            var inventory = await _context.Inventories
-                .Include(i => i.Product)
-                .FirstOrDefaultAsync(i => i.ProductId == productId);
+            var inventoryRepo = _repositoryFactory.GetRepository<Inventory>();
+            var newInventory = _mapper.Map<Inventory>(inventoryDto);
+            newInventory.LastUpdated = DateTime.UtcNow;
 
-            if (inventory == null)
-                return null;
+            await inventoryRepo.AddAsync(newInventory);
+            await inventoryRepo.SaveChangesAsync();
 
-            return new InventoryDto
-            {
-                Id = inventory.Id,
-                ProductId = inventory.ProductId,
-                Quantity = inventory.Quantity,
-                LastUpdated = inventory.LastUpdated,
-                ProductName = inventory.Product?.Name
-            };
+            return true;
         }
 
-        public async Task<InventoryDto> CreateInventoryItemAsync(InventoryDto inventoryDto)
+        public async Task<bool> UpdateInventoryAsync(InventoryDto inventoryDto)
         {
-            // Provjera da li proizvod postoji
-            var productExists = await _context.Products.AnyAsync(p => p.Id == inventoryDto.ProductId);
-            if (!productExists)
-                throw new KeyNotFoundException("Product not found");
+            var inventoryRepo = _repositoryFactory.GetRepository<Inventory>();
+            var inventory = await inventoryRepo.GetByIdAsync(inventoryDto.Id);
 
-            // Provjera da li već postoji inventar za proizvod
-            var existingInventory = await _context.Inventories
-                .FirstOrDefaultAsync(i => i.ProductId == inventoryDto.ProductId);
-
-            if (existingInventory != null)
-                throw new InvalidOperationException("Inventory already exists for this product");
-
-            var inventory = new Inventory
-            {
-                ProductId = inventoryDto.ProductId,
-                Quantity = inventoryDto.Quantity,
-                LastUpdated = DateTime.UtcNow
-            };
-
-            await _context.Inventories.AddAsync(inventory);
-            await _context.SaveChangesAsync();
-
-            return await GetInventoryItemByIdAsync(inventory.Id) ??
-                   throw new Exception("Failed to retrieve created inventory");
-        }
-
-        public async Task<InventoryDto> UpdateInventoryItemAsync(int id, InventoryDto inventoryDto)
-        {
-            var inventory = await _context.Inventories.FindAsync(id);
-            if (inventory == null)
-                throw new KeyNotFoundException("Inventory item not found");
+            if (inventory == null) return false;
 
             inventory.Quantity = inventoryDto.Quantity;
             inventory.LastUpdated = DateTime.UtcNow;
 
-            _context.Inventories.Update(inventory);
-            await _context.SaveChangesAsync();
+            inventoryRepo.Update(inventory);
+            await inventoryRepo.SaveChangesAsync();
 
-            return await GetInventoryItemByIdAsync(inventory.Id) ??
-                   throw new Exception("Failed to retrieve updated inventory");
+            return true;
         }
 
-        public async Task DeleteInventoryItemAsync(int id)
+        public async Task<bool> DeleteInventoryAsync(int id)
         {
-            var inventory = await _context.Inventories.FindAsync(id);
-            if (inventory == null)
-                throw new KeyNotFoundException("Inventory item not found");
+            var inventoryRepo = _repositoryFactory.GetRepository<Inventory>();
+            var inventory = await inventoryRepo.GetByIdAsync(id);
 
-            _context.Inventories.Remove(inventory);
-            await _context.SaveChangesAsync();
+            if (inventory == null) return false;
+
+            inventoryRepo.Remove(inventory);
+            await inventoryRepo.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<IEnumerable<StockCheckDto>> GetStockCheckHistoryAsync()
+        {
+            var stockCheckRepo = _repositoryFactory.GetRepository<StockCheck>();
+            var stockChecks = await stockCheckRepo.GetAllAsync();
+            return _mapper.Map<IEnumerable<StockCheckDto>>(stockChecks);
+        }
+
+        public async Task<bool> PerformStockCheckAsync(List<StockCheckDto> stockChecks)
+        {
+            var stockCheckRepo = _repositoryFactory.GetRepository<StockCheck>();
+
+            var stockCheckEntities = stockChecks.Select(stockcheck => new StockCheck
+            {
+                CheckDate = DateTime.UtcNow,
+                ProductId = stockcheck.ProductId,
+                RecordedQuantity = stockcheck.RecordedQuantity,
+                ActualQuantity = stockcheck.ActualQuantity
+            }).ToList();
+
+            foreach (var stockCheck in stockCheckEntities)
+            {
+                await stockCheckRepo.AddAsync(stockCheck);
+            }
+
+            await stockCheckRepo.SaveChangesAsync();
+
+            return true;
         }
     }
+
 }
