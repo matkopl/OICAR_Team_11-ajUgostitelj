@@ -10,5 +10,7 @@ namespace WPF.Services
     public interface IPaymentService
     {
         Task<IEnumerable<PaymentDto>> GetAllPaymentsAsync(string token);
+        Task<bool> UpdatePaymentAsync(string token, PaymentDto payment);
+        Task<bool> DeletePaymentAsync(string token, int paymentId);
     }
 }

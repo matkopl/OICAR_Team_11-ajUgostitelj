@@ -37,6 +37,9 @@
     <Compile Update="Views\TablesWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\UpdatePaymentWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\UpdateUserWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -76,6 +79,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\TablesWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\UpdatePaymentWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\UpdateUserWindow.xaml">
