@@ -13,7 +13,13 @@
     <Compile Update="Views\ChangePasswordWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\CreateInventoryWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\CreateUserWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\InventoryCrudWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\MainUiWindow.xaml.cs">
@@ -57,7 +63,13 @@
     <Page Update="Views\ChangePasswordWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Views\CreateInventoryWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Views\CreateUserWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\InventoryCrudWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\MainUiWindow.xaml">

@@ -21,8 +21,7 @@ namespace WebAPI.Services
 
         public async Task<IEnumerable<InventoryDto>> GetAllInventoriesAsync()
         {
-            var inventoryRepo = _repositoryFactory.GetRepository<Inventory>();
-            var inventories = await inventoryRepo.GetAllAsync();
+            var inventories = await _context.Inventories.Include(i => i.Product).ToListAsync();
             return _mapper.Map<IEnumerable<InventoryDto>>(inventories);
         }
 
@@ -36,6 +35,13 @@ namespace WebAPI.Services
         public async Task<bool> AddProductToInventoryAsync(InventoryDto inventoryDto)
         {
             var inventoryRepo = _repositoryFactory.GetRepository<Inventory>();
+
+            var existingInventory = await inventoryRepo.FindAsync(i => i.ProductId == inventoryDto.ProductId);
+            if (existingInventory.Any())
+            {
+                return false; 
+            }
+
             var newInventory = _mapper.Map<Inventory>(inventoryDto);
             newInventory.LastUpdated = DateTime.UtcNow;
 

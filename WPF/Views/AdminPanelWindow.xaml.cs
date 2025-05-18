@@ -61,5 +61,12 @@ namespace WPF.Views
             var paymentsCrudWindow = new PaymentsCrudWindow(_token, _paymentsService);
             paymentsCrudWindow.Show();
         }
+
+        private void OpenInventoryCrud_Click(object sender, RoutedEventArgs e)
+        {
+            var _inventoryService = ((App)Application.Current).ServiceProvider.GetRequiredService<IInventoryService>();
+            var inventoryCrudWindow = new InventoryCrudWindow(_token, _inventoryService);
+            inventoryCrudWindow.Show();
+        }
     }
 }

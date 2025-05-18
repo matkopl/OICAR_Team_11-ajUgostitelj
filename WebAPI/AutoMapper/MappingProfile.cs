@@ -19,7 +19,10 @@ namespace WebAPI.AutoMapper
             CreateMap<User, UpdateUserDto>().ReverseMap();
             CreateMap<Product, ProductDto>().ReverseMap();
             CreateMap<Category, CategoryDto>().ReverseMap();
-            CreateMap<Inventory, InventoryDto>().ReverseMap();
+            CreateMap<InventoryDto, Inventory>()
+                .ForMember(dest => dest.Product, opt => opt.Ignore()); 
+            CreateMap<Inventory, InventoryDto>()
+                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name));
             CreateMap<Role, RoleDto>().ReverseMap();
             CreateMap<OrderItem, OrderItemDto>().ReverseMap();
             CreateMap<Payment, PaymentDto>().ReverseMap();
