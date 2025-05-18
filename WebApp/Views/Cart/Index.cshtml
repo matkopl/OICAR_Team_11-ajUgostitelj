@@ -61,6 +61,19 @@
         font-size: 1rem;
     }
 
+    .remove-btn {
+        background: none;
+        border: none;
+        color: #ff6b6b;
+        cursor: pointer;
+        font-size: 1.4rem;
+        font-weight: bold;
+    }
+
+        .remove-btn:hover {
+            color: #e63946;
+        }
+
     .cart-summary {
         margin-top: 30px;
         text-align: right;
@@ -118,22 +131,85 @@
             {
                 var subtotal = item.Price * item.Quantity;
                 total += subtotal;
-                <div class="cart-item">
+                <div class="cart-item" data-id="@item.Id">
                     <div class="item-info">
                         <div>
                             <div class="item-name">@item.Name</div>
                             <div class="item-price">@item.Price.ToString("F2") €</div>
-                            <div class="item-qty">Qty: @item.Quantity</div>
-                            <div class="item-subtotal">Subtotal: @subtotal.ToString("F2") €</div>
+                            <div class="item-qty">Količina: @item.Quantity</div>
+                            <div class="item-subtotal">Cijena: @subtotal.ToString("F2") €</div>
                         </div>
                     </div>
+                    <button class="remove-btn" data-id="@item.Id">&times;</button>
                 </div>
             }
             <div class="cart-summary">
                 <div class="total-price">Total: @total.ToString("F2") €</div>
-                <button class="checkout-btn">Proceed to Checkout</button>
+                <button type="button" class="checkout-btn" id="checkout">Proceed to Checkout</button>
                 <a href="@Url.Action("Index", "Product")" class="continue-shopping">Continue Shopping</a>
             </div>
         }
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll('.remove-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = parseInt(btn.dataset.id);
+                    let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+                    cart = cart.filter(item => item.id !== id);
+                    localStorage.setItem("cart", JSON.stringify(cart));
+                    const itemEl = btn.closest(".cart-item");
+                    if (itemEl) itemEl.remove();
+                    location.reload();
+                });
+            });
+
+            checkoutBtn.addEventListener("click", async () => {
+                console.log("Checkout clicked");
+                const cartRaw = localStorage.getItem("cart");
+                console.log("Cart raw from localStorage:", cartRaw);
+
+                if (!cartRaw) {
+                    alert("No cart data found.");
+                    return;
+                }
+
+                const cart = JSON.parse(cartRaw);
+                if (!cart.length) {
+                    alert("Your cart is empty.");
+                    return;
+                }
+
+                try {
+                    console.log("Sending cart to /Cart/CheckoutFromClient...");
+                    const response = await fetch("/Cart/CheckoutFromClient", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(cart)
+                    });
+
+                    console.log("Response status:", response.status);
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error("Server responded with error:", errorText);
+                        throw new Error(errorText);
+                    }
+
+                    const result = await response.json();
+                    console.log("Order created:", result);
+                    alert("Order placed successfully! ID: " + result.orderId);
+                    localStorage.removeItem("cart");
+                    window.location.href = "/Product";
+                } catch (err) {
+                    console.error("Checkout failed:", err);
+                    alert("Order creation failed: " + err.message);
+                }
+            });
+
+    </script>
+}

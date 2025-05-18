@@ -80,6 +80,7 @@ namespace WebApp.Controllers
 
             return View(vm);
         }
+
         [HttpPost("by-ids")]
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetProductsByIds([FromBody] List<int> ids)
         {
@@ -118,8 +119,6 @@ namespace WebApp.Controllers
 
             return RedirectToAction("Index", "Cart");
         }
-
-
     }
 }
 

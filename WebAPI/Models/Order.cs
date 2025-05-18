@@ -18,9 +18,9 @@ namespace WebAPI.Models
         [Required]
         public int TableId { get; set; }
 
-        public Table? Table { get; set; } 
+        public Table? Table { get; set; }
 
-        public ICollection<OrderItem> OrderItems { get; } = new List<OrderItem>();
+        public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
         public Payment? Payment { get; set; }
         public decimal TotalAmount { get; set; }
