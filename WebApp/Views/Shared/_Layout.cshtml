@@ -24,19 +24,16 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Product" asp-action="Index">Menu</a>
+                            <a href="/Product/Index" class="nav-link">Menu</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Cart" asp-action="Index">Your Cart</a>
+                            <a href="/Cart/Index" class="nav-link">Your Cart</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="ProductReviews" asp-action="Create">Add Review</a>
+                            <a href="/Product/ProductReviews" class="nav-link">Reviews</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Order" asp-action="Track">Track Order</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Status" asp-action="Index">Order status</a>
+                            <a href="/Status/Index" class="nav-link">Track your order</a>
                         </li>
                     </ul>
                 </div>
@@ -49,22 +46,6 @@
             @RenderBody()
         </main>
     </div>
-
-    <!-- Optional Footer (Uncomment if needed)
-    <footer class="border-top footer text-white bg-coffee">
-        <div class="container py-3">
-            <div class="row">
-                <div class="col-md-6 text-center text-md-start">
-                    &copy; 2025 - Naručivanje Online
-                </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <a class="text-white text-decoration-none me-3" asp-controller="Home" asp-action="Privacy">Privatnost</a>
-                    <a class="text-white text-decoration-none" asp-controller="Home" asp-action="Terms">Uvjeti korištenja</a>
-                </div>
-            </div>
-        </div>
-    </footer>
-    -->
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

@@ -1,0 +1,6 @@
+﻿@{
+    ViewData["Title"] = "Order Success";
+}
+<h2>Order placed successfully!</h2>
+<p>Your order ID is: <strong>@ViewBag.OrderId</strong></p>
+<a class="btn btn-primary" href="@Url.Action("Index", "Product")">Back to Menu</a>
