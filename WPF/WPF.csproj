@@ -16,4 +16,10 @@
     <Folder Include="Viewmodels\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Page Update="Views\PaymentsCrudWindow.xaml">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Page>
+  </ItemGroup>
+
 </Project>

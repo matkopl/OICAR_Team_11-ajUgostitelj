@@ -19,64 +19,44 @@ namespace WebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<InventoryDto>>> GetAll()
         {
-            var inventory = await _inventoryService.GetAllInventoryItemsAsync();
+            var inventory = await _inventoryService.GetAllInventoriesAsync();
             return Ok(inventory);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<InventoryDto>> GetById(int id)
+        [HttpPost("add")]
+        public async Task<IActionResult> AddProductToInventory(InventoryDto inventoryDto)
         {
-            var inventory = await _inventoryService.GetInventoryItemByIdAsync(id);
-            return inventory != null ? Ok(inventory) : NotFound();
+            var success = await _inventoryService.AddProductToInventoryAsync(inventoryDto);
+            return success ? Ok("Product added to inventory") : BadRequest("Failed to add product");
         }
 
-        [HttpGet("product/{productId}")]
-        public async Task<ActionResult<InventoryDto>> GetByProductId(int productId)
+        [HttpPut("update/{id}")]
+        public async Task<IActionResult> UpdateInventory(int id, InventoryDto inventoryDto)
         {
-            var inventory = await _inventoryService.GetInventoryByProductIdAsync(productId);
-            return inventory != null ? Ok(inventory) : NotFound();
+            inventoryDto.Id = id;
+            var success = await _inventoryService.UpdateInventoryAsync(inventoryDto);
+            return success ? Ok("Inventory updated successfully") : NotFound("Inventory not found");
         }
 
-        [HttpPost]
-        public async Task<ActionResult<InventoryDto>> Create(InventoryDto inventoryDto)
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> DeleteInventory(int id)
         {
-            try
-            {
-                var createdInventory = await _inventoryService.CreateInventoryItemAsync(inventoryDto);
-                return CreatedAtAction(nameof(GetById), new { id = createdInventory.Id }, createdInventory);
-            }
-            catch (Exception ex) when (ex is KeyNotFoundException || ex is InvalidOperationException)
-            {
-                return BadRequest(ex.Message);
-            }
+            var success = await _inventoryService.DeleteInventoryAsync(id);
+            return success ? Ok("Inventory deleted successfully") : NotFound("Inventory not found");
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, InventoryDto inventoryDto)
+        [HttpGet("stock_check/history")]
+        public async Task<IActionResult> GetStockCheckHistory()
         {
-            try
-            {
-                await _inventoryService.UpdateInventoryItemAsync(id, inventoryDto);
-                return NoContent();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
+            var history = await _inventoryService.GetStockCheckHistoryAsync();
+            return Ok(history);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpPost("stock_check/perform")]
+        public async Task<IActionResult> PerformStockCheck(List<StockCheckDto> stockChecks)
         {
-            try
-            {
-                await _inventoryService.DeleteInventoryItemAsync(id);
-                return NoContent();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
+            var success = await _inventoryService.PerformStockCheckAsync(stockChecks);
+            return success ? Ok("Stock check recorded") : BadRequest("Failed to perform stock check");
         }
     }
 }

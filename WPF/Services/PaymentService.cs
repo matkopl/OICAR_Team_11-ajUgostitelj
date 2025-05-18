@@ -21,5 +21,15 @@ namespace WPF.Services
         {
             return await _repository.GetAllPaymentsAsync(token);
         }
+
+        public async Task<bool> UpdatePaymentAsync(string token, PaymentDto paymentDto)
+        {
+            return await _repository.UpdatePaymentAsync(token, paymentDto);
+        }
+
+        public async Task<bool> DeletePaymentAsync(string token, int paymentId)
+        {
+            return await _repository.DeletePaymentAsync(token, paymentId);
+        }
     }
 }
