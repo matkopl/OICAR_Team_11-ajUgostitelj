@@ -16,7 +16,7 @@ namespace WebAPI.Controllers
             _inventoryService = inventoryService;
         }
 
-        [HttpGet]
+        [HttpGet("get_all")]
         public async Task<ActionResult<IEnumerable<InventoryDto>>> GetAll()
         {
             var inventory = await _inventoryService.GetAllInventoriesAsync();
@@ -27,7 +27,7 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> AddProductToInventory(InventoryDto inventoryDto)
         {
             var success = await _inventoryService.AddProductToInventoryAsync(inventoryDto);
-            return success ? Ok("Product added to inventory") : BadRequest("Failed to add product");
+            return success ? Ok("Product added to inventory") : BadRequest("This product is already in inventory!");
         }
 
         [HttpPut("update/{id}")]

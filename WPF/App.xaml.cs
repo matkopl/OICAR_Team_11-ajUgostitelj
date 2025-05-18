@@ -35,12 +35,15 @@ namespace WPF
             serviceCollection.AddScoped<IOrderRepository, OrderRepository>();
             serviceCollection.AddScoped<IOrderService, OrderService>();
             serviceCollection.AddScoped<IProductRepository, ProductRepository>();
+            serviceCollection.AddScoped<IProductService, ProductService>();
             serviceCollection.AddScoped<ITableRepository, TableRepository>();
             serviceCollection.AddScoped<IUserRepository, UserRepository>();
             serviceCollection.AddScoped<IUserService, UserService>();
             serviceCollection.AddScoped<ICategoryRepository, CategoryRepository>();
             serviceCollection.AddScoped<IPaymentRepository, PaymentRepository>();
             serviceCollection.AddScoped<IPaymentService, PaymentService>();
+            serviceCollection.AddScoped<IInventoryRepository, InventoryRepository>();
+            serviceCollection.AddScoped<IInventoryService, InventoryService>();
         }
     }
 }
