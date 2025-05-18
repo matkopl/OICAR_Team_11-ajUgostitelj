@@ -17,6 +17,9 @@
   </ItemGroup>
 
   <ItemGroup>
+
+    <PackageReference Include="QRCoder" Version="1.6.0" />
+
     <Page Update="Views\PaymentsCrudWindow.xaml">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Page>
