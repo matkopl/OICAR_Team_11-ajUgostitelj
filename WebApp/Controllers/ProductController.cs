@@ -119,6 +119,10 @@ namespace WebApp.Controllers
 
             return RedirectToAction("Index", "Cart");
         }
+        public ActionResult ProductReviews()
+        {
+            return View();
+        }
     }
 }
 
