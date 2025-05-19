@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using System.Net.Http.Json;
 using WebAPI.DTOs;
+using WebApp.ApiClients;
 
 namespace WebApp.Controllers
 {

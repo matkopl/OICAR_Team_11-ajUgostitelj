@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using System.Net.Http.Headers;
 using WebAPI.Models;
+using WebAPI.Repository;
+using WebAPI.Services;
 using WebApp.ApiClients;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +19,11 @@ builder.Services.AddHttpClient<ProductApiClient>(client =>
     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 });
 
+builder.Services.AddHttpClient<OrderApiClient>(client =>
+{
+    client.BaseAddress = new Uri("https://oicar-team-11-ajugostitelj-11.onrender.com/api/");
+});
+
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -26,6 +33,7 @@ builder.Services.AddSession(options =>
 });
 
 builder.Services.AddHttpClient();
+builder.Services.AddScoped<PaymentApiClient>();
 
 builder.Services.AddCors(options =>
 {

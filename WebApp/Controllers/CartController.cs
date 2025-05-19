@@ -18,10 +18,7 @@ namespace WebApp.Controllers
         }
         public IActionResult Index()
         {
-            var cart = TempData.ContainsKey("Cart")
-                ? JsonSerializer.Deserialize<List<ProductCartViewModel>>(TempData["Cart"]!.ToString()!)!
-                : new List<ProductCartViewModel>();
-
+            var cart = GetCartFromTempData();
             TempData.Keep("Cart");
             return View(cart);
         }
@@ -47,27 +44,8 @@ namespace WebApp.Controllers
             if (items == null || !items.Any())
                 return BadRequest("Cart is empty.");
 
-            var order = new Order
-            {
-                OrderDate = DateTime.UtcNow,
-                TableId = 2, // hardcoded for now
-                Status = OrderStatus.Pending,
-                TotalAmount = items.Sum(x => x.Price * x.Quantity)
-            };
-
-            foreach (var item in items)
-            {
-                order.OrderItems.Add(new OrderItem
-                {
-                    ProductId = item.Id,
-                    Quantity = item.Quantity
-                });
-            }
-
-            _context.Orders.Add(order);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { success = true, orderId = order.Id });
+            TempData["Cart"] = JsonSerializer.Serialize(items);
+            return Json(new { redirectUrl = Url.Action("Checkout", "Payment") });
         }
 
 
@@ -76,7 +54,12 @@ namespace WebApp.Controllers
             ViewBag.OrderId = id;
             return View();
         }
-
+        private List<ProductCartViewModel> GetCartFromTempData()
+        {
+            return TempData.ContainsKey("Cart")
+                ? JsonSerializer.Deserialize<List<ProductCartViewModel>>(TempData["Cart"]!.ToString()!) ?? new()
+                : new();
+        }
 
     }
 }
