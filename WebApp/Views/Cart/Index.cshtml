@@ -223,7 +223,7 @@
 
                     const result = await response.json();
                     localStorage.removeItem("cart");
-                window.location.href = "/Status/Index";
+                window.location.href = result.redirectUrl;
                 } catch (err) {
                     console.error("Error:", err);
                     alert("Order creation failed: " + err.message);
@@ -231,19 +231,23 @@
             });
         });
     document.querySelectorAll(".remove-btn").forEach(btn => {
-        btn.addEventListener("click", (e) => {
-            e.preventDefault();
-            const id = parseInt(btn.previousElementSibling.value); 
-            let cart = JSON.parse(localStorage.getItem("cart") || "[]");
-            cart = cart.filter(item => item.id !== id);
-            localStorage.setItem("cart", JSON.stringify(cart));
-            btn.closest(".cart-item").remove();
+    btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const id = parseInt(btn.previousElementSibling.value); 
+        let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        cart = cart.filter(item => item.id !== id);
+        localStorage.setItem("cart", JSON.stringify(cart));
+        btn.closest(".cart-item").remove();
 
-            if (!document.querySelectorAll(".cart-item").length) {
-                document.querySelector(".cart-items").innerHTML = "<p>Your cart is empty.</p>";
-            }
-        });
+        const cartItems = document.querySelectorAll(".cart-item");
+        if (cartItems.length === 0) {
+            document.querySelector(".cart-items").innerHTML = "<p>Your cart is empty.</p>";
+        } else {
+            let newTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            document.querySelector(".total-price").textContent = `Total: ${newTotal.toFixed(2)} €`;
+        }
     });
+});
     const tempCart = @Html.Raw(Json.Serialize(Model));
     localStorage.setItem("cart", JSON.stringify(tempCart));
     </script>

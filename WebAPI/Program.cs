@@ -110,6 +110,8 @@ builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IInventoryService, InventoryService>();
 builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddAutoMapper(typeof(Program)); 
+
 
 var app = builder.Build();
 

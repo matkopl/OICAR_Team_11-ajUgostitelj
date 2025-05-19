@@ -198,6 +198,5 @@ namespace WebAPI.Controllers
                 SortColumns = _orderService.GetAvailableSortColumns()
             });
         }
-
     }
 }
