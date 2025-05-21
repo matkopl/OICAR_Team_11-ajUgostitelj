@@ -11,6 +11,11 @@ namespace WebApp.ApiClients
             _httpClient = httpClient;
         }
 
+        public async Task<List<PaymentDto?>> GetAllPayments()
+        {
+            return await _httpClient.GetFromJsonAsync<List<PaymentDto>>("payment/get_all");
+        }
+
         public async Task<PaymentDto?> CreatePaymentAsync(PaymentDto payment)
         {
             var response = await _httpClient.PostAsJsonAsync("payment/create", payment);

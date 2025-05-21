@@ -12,12 +12,12 @@ namespace WebApp.ApiClients
             _httpClient = httpClient;
         }
 
-        public async Task<OrderDto?> GetOrderByIdAsync(int id)
+        public async Task<OrderDto?> GetOrderById(int id)
         {
             return await _httpClient.GetFromJsonAsync<OrderDto>($"order/{id}");
         }
 
-        public async Task<string?> GetOrderStatusAsync(int? orderId)
+        public async Task<string?> GetOrderStatus(int? orderId)
         {
             var response = await _httpClient.GetAsync($"order/{orderId}/status");
             if (!response.IsSuccessStatusCode)
@@ -25,12 +25,23 @@ namespace WebApp.ApiClients
 
             return await response.Content.ReadAsStringAsync();
         }
-
-        public async Task<PaymentDto?> CreatePaymentAsync(PaymentDto payment)
+        public async Task<OrderDto?> CreateOrder(OrderDto newOrder)
         {
-            var response = await _httpClient.PostAsJsonAsync("payment/create", payment);
+            var response = await _httpClient.PostAsJsonAsync("order", newOrder);
             response.EnsureSuccessStatusCode();
-            return await response.Content.ReadFromJsonAsync<PaymentDto>();
+            var createdOrder = await response.Content.ReadFromJsonAsync<OrderDto>();
+            return createdOrder;
         }
+        
+        public async Task<bool> AddOrderItemsToOrder(List<OrderItemDto> newOrderItems)
+        {
+            foreach (var item in newOrderItems) {
+                var added = await _httpClient.PostAsJsonAsync("orderItems", item);
+                if (!added.IsSuccessStatusCode) return false;
+            
+            }
+            return true;
+        }
+
     }
 }
