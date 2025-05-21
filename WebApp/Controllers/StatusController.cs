@@ -8,14 +8,20 @@ namespace WebApp.Controllers
 {
     public class StatusController : Controller
     {
+        private readonly OrderApiClient _orderApiClient;
 
-        public async Task<IActionResult> Index([FromServices] OrderApiClient orderApi)
+        public StatusController(OrderApiClient orderApiClient)
+        {
+            _orderApiClient = orderApiClient;
+        }
+
+        public async Task<IActionResult> Index()
         {
             var lastOrderId = HttpContext.Session.GetInt32("LastOrderId");
             if (lastOrderId == null)
                 return RedirectToAction("Index", "Product");
 
-            var order = await orderApi.GetOrderByIdAsync(lastOrderId.Value);
+            var order = await _orderApiClient.GetOrderById(lastOrderId.Value);
             if (order == null)
                 return NotFound("Order not found.");
 

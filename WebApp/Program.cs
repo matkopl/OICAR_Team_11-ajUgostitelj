@@ -23,6 +23,10 @@ builder.Services.AddHttpClient<OrderApiClient>(client =>
 {
     client.BaseAddress = new Uri("https://oicar-team-11-ajugostitelj-11.onrender.com/api/");
 });
+builder.Services.AddHttpClient<PaymentApiClient>(client =>
+{
+    client.BaseAddress = new Uri("https://oicar-team-11-ajugostitelj-11.onrender.com/api/");
+});
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
@@ -32,8 +36,6 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-builder.Services.AddHttpClient();
-builder.Services.AddScoped<PaymentApiClient>();
 
 builder.Services.AddCors(options =>
 {

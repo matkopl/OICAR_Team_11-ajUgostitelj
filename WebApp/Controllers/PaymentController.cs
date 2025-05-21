@@ -13,10 +13,13 @@ namespace WebApp.Controllers
 {
     public class PaymentController : Controller
     {
-        private readonly IHttpClientFactory _httpClientFactory;
-        public PaymentController(IHttpClientFactory httpClientFactory)
+        private readonly PaymentApiClient _paymentApiClient;
+        private readonly OrderApiClient _orderApiClient;
+
+        public PaymentController(PaymentApiClient paymentApiClient, OrderApiClient orderApiClient)
         {
-            _httpClientFactory = httpClientFactory;
+            _paymentApiClient = paymentApiClient;
+            _orderApiClient = orderApiClient;
         }
 
         [HttpGet, HttpPost]
@@ -30,15 +33,10 @@ namespace WebApp.Controllers
         [HttpGet, HttpPost]
         public async Task<IActionResult> Process([FromForm] string method)
         {
-            var cart = TempData.ContainsKey("Cart")
-                ? JsonSerializer.Deserialize<List<ProductCartViewModel>>(TempData["Cart"]!.ToString()!)!
-                : new List<ProductCartViewModel>();
+            var cart = GetCartFromTempData();
 
             if (!cart.Any())
                 return RedirectToAction("Index", "Cart");
-
-            var client = _httpClientFactory.CreateClient();
-            client.BaseAddress = new Uri("https://oicar-team-11-ajugostitelj-11.onrender.com/api/");
 
             var orderDto = new OrderDto
             {
@@ -48,15 +46,11 @@ namespace WebApp.Controllers
                 TotalAmount = cart.Sum(x => x.Price * x.Quantity)
             };
 
-            // narudzba
-            var orderResponse = await client.PostAsJsonAsync("order", orderDto);
-            if (!orderResponse.IsSuccessStatusCode)
-                return View("Checkout");
-
-            var createdOrder = await orderResponse.Content.ReadFromJsonAsync<OrderDto>();
+            var createdOrder = await _orderApiClient.CreateOrder(orderDto);
+            if (createdOrder == null) return View("Checkout"); 
 
             // kreiranje itemsa narudzbe
-            var itemDtos = cart.Select(c => new OrderItemDto
+            var listOfitemDtos = cart.Select(c => new OrderItemDto
             {
                 OrderId = createdOrder!.Id,
                 ProductId = c.Id,
@@ -65,24 +59,17 @@ namespace WebApp.Controllers
                 Quantity = c.Quantity
             }).ToList();
 
-            foreach (var item in itemDtos)
-            {
-                var res = await client.PostAsJsonAsync("orderItems", item);
-                if (!res.IsSuccessStatusCode)
-                    return BadRequest("Failed to add item: " + item.ProductId);
-            }
-            
+            var itemsAddedToOrder = await _orderApiClient.AddOrderItemsToOrder(listOfitemDtos);
+
             var paymentDto = new PaymentDto
             {
-                Amount = createdOrder!.TotalAmount,
+                Amount = createdOrder.TotalAmount,
                 Method = "CreditCard",
                 PaymentDate = DateTime.UtcNow,
                 OrderId = createdOrder.Id
             };
-            //slanje paymenta u bazu
-            var paymentResponse = await client.PostAsJsonAsync("payment/create", paymentDto);
-            if (!paymentResponse.IsSuccessStatusCode)
-                return View("Checkout");
+            
+            var paymentResponse = await _paymentApiClient.CreatePaymentAsync(paymentDto);
 
             // ovo nam treba za cuvanje ID za tracking, ne brisati
             HttpContext.Session.SetInt32("LastOrderId", createdOrder.Id);
