@@ -6,6 +6,7 @@ using WebApp.ViewModels;
 using WebAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+using System.Runtime.CompilerServices;
 
 
 
@@ -14,30 +15,24 @@ namespace WebApp.Controllers
     public class ProductController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly ProductApiClient _productApiClient;
+        private readonly CategoriesApiClient _categoriesApiClient;
 
-        public ProductController(AppDbContext context)
+        public ProductController(ProductApiClient productApiClient, CategoriesApiClient categoriesApiClient)
         {
-            _context = context;
+            _productApiClient = productApiClient;
+            _categoriesApiClient = categoriesApiClient;
         }
 
         public async Task<IActionResult> Index(string? category)
         {
-            var productsQuery = _context.Products
-                .Include(p => p.Category)
-                .Include(p => p.Reviews)
-                .AsQueryable();
+            var products = await _productApiClient.LoadProductsAsync();
+            var categories = await _categoriesApiClient.LoadCategoriesAsync();
 
             if (!string.IsNullOrWhiteSpace(category))
             {
-                productsQuery = productsQuery.Where(p => p.Category.Name == category);
+                products = products.Where(p => categories.FirstOrDefault(c => c.Id == p.CategoryId)?.Name == category).ToList();
             }
-
-            var products = await productsQuery.ToListAsync();
-
-            var categories = await _context.Categories
-                .Select(c => c.Name)
-                .Distinct()
-                .ToListAsync();
 
             var vm = new ProductIndexViewModel
             {
@@ -47,11 +42,10 @@ namespace WebApp.Controllers
                     Name = p.Name,
                     Description = p.Description,
                     Price = p.Price,
-                    ImageUrl = p.ImgURL,
-                    CategoryName = p.Category?.Name ?? "",
-                    AverageRating = p.Reviews.Any() ? p.Reviews.Average(r => r.Rating) : (double?)null
+                    CategoryName = categories.FirstOrDefault(c => c.Id == p.CategoryId)?.Name ?? "Nema kategoriju",
+                    AverageRating = p.AverageRating
                 }).ToList(),
-                Categories = categories
+                Categories = categories.Select(c => c.Name).Distinct().ToList()
             };
 
             return View(vm);
@@ -59,10 +53,8 @@ namespace WebApp.Controllers
 
         public async Task<IActionResult> Details(int id)
         {
-            var product = await _context.Products
-                .Include(p => p.Category)
-                .Include(p => p.Reviews)
-                .FirstOrDefaultAsync(p => p.Id == id);
+            var product = await _productApiClient.LoadProductAsync(id);
+            var category = product != null ? await _categoriesApiClient.LoadCategoryAsync(product.CategoryId) : null;
 
             if (product == null)
                 return NotFound();
@@ -73,9 +65,8 @@ namespace WebApp.Controllers
                 Name = product.Name,
                 Description = product.Description,
                 Price = product.Price,
-                ImageUrl = product.ImgURL,
-                CategoryName = product.Category?.Name ?? "",
-                AverageRating = product.Reviews.Any() ? product.Reviews.Average(r => r.Rating) : (double?)null
+                CategoryName = category?.Name ?? "Nema kategoriju",
+                AverageRating = product.AverageRating
             };
 
             return View(vm);
@@ -86,20 +77,10 @@ namespace WebApp.Controllers
         {
             if (ids == null || ids.Count == 0) return BadRequest("No product IDs provided.");
 
-            var products = await _context.Products
-                .Include(p => p.Category)
-                .Where(p => ids.Contains(p.Id))
-                .Select(p => new ProductDto
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Price = p.Price,
-                    CategoryId = p.CategoryId,
-                    CategoryName = p.Category.Name
-                })
-                .ToListAsync();
+            var allProducts = await _productApiClient.LoadProductsAsync();
+            var filteredProducts = allProducts.Where(p => ids.Contains(p.Id)).ToList();
 
-            return Ok(products);
+            return Ok(filteredProducts);
         }
         [HttpPost]
         public IActionResult AddToCart(ProductCartViewModel model)
