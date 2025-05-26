@@ -27,6 +27,7 @@ namespace WebAPI.AutoMapper
             CreateMap<OrderItem, OrderItemDto>().ReverseMap();
             CreateMap<Payment, PaymentDto>().ReverseMap();
             CreateMap<StockCheck, StockCheckDto>().ReverseMap();
+            CreateMap<Review,ReviewDTO>().ReverseMap();
         }
     }
 }

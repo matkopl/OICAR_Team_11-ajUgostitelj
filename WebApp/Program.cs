@@ -28,6 +28,12 @@ builder.Services.AddHttpClient<PaymentApiClient>(client =>
     client.BaseAddress = new Uri("https://oicar-team-11-ajugostitelj-11.onrender.com/api/");
 });
 
+builder.Services.AddHttpClient<CategoriesApiClient>(client =>
+{
+    client.BaseAddress = new Uri("https://oicar-team-11-ajugostitelj-11.onrender.com/api/");
+});
+
+
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {

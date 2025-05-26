@@ -103,7 +103,7 @@ namespace WebAPI.Controllers
         {
             try
             {
-                Log.Information($"Deleting table ID:{id}...");
+                Log.Information($"Deleting product ID:{id}...");
                 await _productService.DeleteProductAsync(id);
                 Log.Information($"Successfully deleted product with ID {id}");
                 return NoContent();
