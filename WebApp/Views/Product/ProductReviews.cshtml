@@ -13,6 +13,10 @@
     --dark-coffee: #5a3b2b;
 }
 
+* {
+    box-sizing: border-box;
+}
+
 /* Reset */
 body {
     margin: 0;
@@ -41,24 +45,63 @@ h1 {
 }
 
 /* Inputs & Select */
+/* Form Inputs Polished */
 select,
-input[type="number"],
 input[type="text"],
 textarea {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 20px;
-    font-size: 1rem;
-    border: 2px solid var(--secondary-color);
-    border-radius: 8px;
-    box-sizing: border-box;
-    background-color: #fff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-textarea {
-    min-height: 120px;
-    resize: vertical;
+select:focus,
+input[type="text"]:focus,
+textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(111, 78, 55, 0.1);
+    outline: none;
 }
+
+/* Placeholder spacing for form */
+form.review-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Headings */
+h1 {
+    text-align: center;
+    font-size: 2.4rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-top: 40px;
+    margin-bottom: 30px;
+}
+
+/* Form grouping for spacing */
+form.review-form > * {
+    margin-bottom: 10px;
+}
+
+/* Reviews */
+ul.reviews-list li {
+    transition: transform 0.2s ease;
+}
+ul.reviews-list li:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Responsive polish */
+@@media (max-width: 768px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    .rating-star {
+        font-size: 1.6rem;
+    }
+}
+
 
 /* Button */
 button[type="submit"] {
@@ -146,7 +189,7 @@ p {
 </style>
 
 <h1>Product Reviews</h1>
-<form asp-action="ProductReviews" method="post">
+<form asp-action="ProductReviews" method="post" class="review-form">
     <input type="hidden" asp-for="NewReview.ProductName" id="productNameField" />
     <select asp-for="NewReview.ProductId" id="productSelect" onchange="document.getElementById('productNameField').value = this.options[this.selectedIndex].text">
         <option value="">Select Product...</option>
