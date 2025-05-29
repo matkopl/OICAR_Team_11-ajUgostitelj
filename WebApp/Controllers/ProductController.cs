@@ -7,6 +7,7 @@ using WebAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using System.Runtime.CompilerServices;
+using System.Diagnostics;
 
 
 
@@ -18,10 +19,11 @@ namespace WebApp.Controllers
         private readonly ProductApiClient _productApiClient;
         private readonly CategoriesApiClient _categoriesApiClient;
 
-        public ProductController(ProductApiClient productApiClient, CategoriesApiClient categoriesApiClient)
+        public ProductController(ProductApiClient productApiClient, CategoriesApiClient categoriesApiClient, AppDbContext context)
         {
             _productApiClient = productApiClient;
             _categoriesApiClient = categoriesApiClient;
+            _context = context;
         }
 
         public async Task<IActionResult> Index(string? category)
@@ -99,6 +101,46 @@ namespace WebApp.Controllers
             TempData.Keep("Cart");
 
             return RedirectToAction("Index", "Cart");
+        }
+        [HttpGet]
+        public async Task<IActionResult> ProductReviews()
+        {
+            var products = await _context.Products.ToListAsync();
+            var reviews = await _context.Reviews.Include(r => r.Product).OrderByDescending(r => r.ReviewDate).ToListAsync();
+
+            var vm = new ProductReviewsViewModel
+            {
+                Products = products,
+                Reviews = reviews
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ProductReviews(ProductReviewsViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                model.Products = await _context.Products.ToListAsync();
+                model.Reviews = await _context.Reviews.Include(r => r.Product).OrderByDescending(r => r.ReviewDate).ToListAsync();
+                return View(model);
+            }
+
+            var selectedProduct = await _context.Products.FirstOrDefaultAsync(p => p.Id == model.NewReview.ProductId);
+            if (selectedProduct == null)
+            {
+                ModelState.AddModelError("", "Selected product not found");
+                return View(model);
+            }
+
+            model.NewReview.ProductName = selectedProduct.Name;
+            model.NewReview.ReviewDate = DateTime.UtcNow;
+
+            _context.Reviews.Add(model.NewReview);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("ProductReviews");
         }
     }
 }
