@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Serilog;
 using WebAPI.DTOs;
 using WebAPI.Services;
 
@@ -18,22 +19,46 @@ namespace WebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<OrderItemDto>>> GetAll()
         {
-            var orderItems = await _orderItemService.GetAllOrderItemsAsync();
-            return Ok(orderItems);
+            try
+            {
+                var orderItems = await _orderItemService.GetAllOrderItemsAsync();
+                return Ok(orderItems);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<OrderItemDto>> GetById(int id)
         {
-            var orderItem = await _orderItemService.GetOrderItemByIdAsync(id);
-            return orderItem != null ? Ok(orderItem) : NotFound();
+            try
+            {
+                var orderItem = await _orderItemService.GetOrderItemByIdAsync(id);
+                return orderItem != null ? Ok(orderItem) : NotFound();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("order/{orderId}")]
         public async Task<ActionResult<IEnumerable<OrderItemDto>>> GetByOrderId(int orderId)
         {
-            var orderItems = await _orderItemService.GetOrderItemsByOrderIdAsync(orderId);
-            return Ok(orderItems);
+            try
+            {
+                var orderItems = await _orderItemService.GetOrderItemsByOrderIdAsync(orderId);
+                return Ok(orderItems);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost]

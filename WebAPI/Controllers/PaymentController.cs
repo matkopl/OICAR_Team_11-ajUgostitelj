@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Serilog;
 using WebAPI.DTOs;
 using WebAPI.Services;
 
@@ -18,37 +19,77 @@ namespace WebAPI.Controllers
         [HttpGet("get_all")]
         public async Task<IActionResult> GetAllPayments()
         {
-            var payments = await _paymentService.GetAllPaymentsAsync();
-            return Ok(payments);
+            try
+            {
+                var payments = await _paymentService.GetAllPaymentsAsync();
+                return Ok(payments);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("get/{id}")] 
         public async Task<IActionResult> GetPaymentById(int id)
         {
-            var payment = await _paymentService.GetPaymentByIdAsync(id);
-            return Ok(payment);
+            try
+            {
+                var payment = await _paymentService.GetPaymentByIdAsync(id);
+                return Ok(payment);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("create")]
         public async Task<IActionResult> CreatePayment(PaymentDto paymentDto)
         {
-            var newPayment = await _paymentService.CreatePaymentAsync(paymentDto);
-            return Ok(newPayment);
+            try
+            {
+                var newPayment = await _paymentService.CreatePaymentAsync(paymentDto);
+                return Ok(newPayment);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdatePayment(int id, PaymentDto paymentDto)
         {
-            paymentDto.Id = id;
-            var success = await _paymentService.UpdatePaymentAsync(paymentDto);
-            return success ? Ok("Payment updated successfully") : NotFound("Payment not found");
+            try
+            {
+                paymentDto.Id = id;
+                var success = await _paymentService.UpdatePaymentAsync(paymentDto);
+                return success ? Ok("Payment updated successfully") : NotFound("Payment not found");
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeletePayment(int id)
         {
-            var success = await _paymentService.DeletePaymentAsync(id);
-            return success ? Ok("Payment deleted successfully") : NotFound("Payment not found");
+            try
+            {
+                var success = await _paymentService.DeletePaymentAsync(id);
+                return success ? Ok("Payment deleted successfully") : NotFound("Payment not found");
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

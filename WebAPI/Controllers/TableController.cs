@@ -29,7 +29,7 @@ namespace WebAPI.Controllers
             catch (Exception ex)
             {
                 Log.Error(ex.Message);
-                return BadRequest("Error fetching all tables, please see error log!");
+                return BadRequest(ex.Message);
             }
         }
 
@@ -123,19 +123,35 @@ namespace WebAPI.Controllers
         [HttpGet("paged")]
         public async Task<ActionResult> GetPaged([FromQuery] TableQueryDto query)
         {
-            var (tables, totalCount) = await _tableService.GetTablesPagedAsync(query);
+            try
+            {
+                var (tables, totalCount) = await _tableService.GetTablesPagedAsync(query);
 
-            Response.Headers.Add("X-Total-Count", totalCount.ToString());
-            Response.Headers.Add("X-Page-Size", query.PageSize.ToString());
-            Response.Headers.Add("X-Current-Page", query.Page.ToString());
+                Response.Headers.Add("X-Total-Count", totalCount.ToString());
+                Response.Headers.Add("X-Page-Size", query.PageSize.ToString());
+                Response.Headers.Add("X-Current-Page", query.Page.ToString());
 
-            return Ok(tables);
+                return Ok(tables);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("sort-options")]
         public ActionResult GetSortOptions()
         {
-            return Ok(_tableService.GetAvailableSortColumns());
+            try
+            {
+                return Ok(_tableService.GetAvailableSortColumns());
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

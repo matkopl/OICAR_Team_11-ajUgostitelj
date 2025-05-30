@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Serilog;
 using WebAPI.DTOs;
 using WebAPI.Models;
 using WebAPI.Repository;

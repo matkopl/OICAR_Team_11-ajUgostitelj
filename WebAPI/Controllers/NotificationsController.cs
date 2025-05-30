@@ -30,7 +30,7 @@ namespace WebAPI.Controllers
             catch (Exception ex)
             {
                 Log.Error(ex.Message);
-                return BadRequest("Error fetching all tables, please see error log!");
+                return BadRequest(ex.Message);
             }
         }
 
@@ -52,7 +52,7 @@ namespace WebAPI.Controllers
             catch (Exception ex)
             {
                 Log.Error(ex.Message);
-                return BadRequest($"Error fetching notification with ID {id}, please see error log!");
+                return BadRequest(ex.Message);
             }
         }
 
@@ -67,7 +67,7 @@ namespace WebAPI.Controllers
             catch (Exception ex)
             {
                 Log.Error(ex.Message);
-                return BadRequest($"Error fetching notification by user with ID {userId}, please see error log!");
+                return BadRequest(ex.Message);
             }
         }
 
@@ -82,7 +82,7 @@ namespace WebAPI.Controllers
             catch (Exception ex)
             {
                 Log.Error(ex.Message);
-                return BadRequest($"Error creating notification, please see error log!");
+                return BadRequest(ex.Message);
             }
         }
 
