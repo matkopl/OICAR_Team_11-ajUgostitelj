@@ -32,7 +32,7 @@ namespace WebAPI.Controllers
             catch (Exception ex)
             {
                 Log.Error(ex.Message);
-                return BadRequest("Error fetching all tables, please see error log!");
+                return BadRequest(ex.Message);
             }
         }
 
@@ -70,7 +70,7 @@ namespace WebAPI.Controllers
             catch (Exception ex)
             {
                 Log.Error(ex, "Error creating review");
-                return BadRequest($"Error creating review, please see error log!");
+                return BadRequest(ex.Message);
             }
         }
 

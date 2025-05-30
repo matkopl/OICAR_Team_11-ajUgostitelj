@@ -29,7 +29,7 @@ namespace WebAPI.Controllers
             catch (Exception ex)
             {
                 Log.Error(ex.Message);
-                return BadRequest("Error fetching all tables, please see error log!");
+                return BadRequest(ex.Message);
             }
         }
 
@@ -51,7 +51,7 @@ namespace WebAPI.Controllers
             catch (Exception ex)
             {
                 Log.Error(ex.Message, $"Error fetching product with ID {id}");
-                return BadRequest($"Error fetching product with ID {id}, please see error log!");
+                return BadRequest(ex.Message);
             }
         }
 
@@ -69,7 +69,7 @@ namespace WebAPI.Controllers
             catch (Exception ex)
             {
                 Log.Error(ex, "Error creating product");
-                return BadRequest($"Error creating product, please see error log!");
+                return BadRequest(ex.Message);
             }
         }
 
@@ -93,7 +93,7 @@ namespace WebAPI.Controllers
             catch (Exception ex)
             {
                 Log.Error(ex, $"Error updating product with ID {id}");
-                return StatusCode(500, "Error occurred");
+                return StatusCode(500, ex.Message);
             }
         }
 

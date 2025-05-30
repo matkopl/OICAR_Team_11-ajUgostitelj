@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Serilog;
 using System.ComponentModel.DataAnnotations;
 using WebAPI.DTOs;
 using WebAPI.Services;
@@ -19,15 +20,31 @@ namespace WebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAll()
         {
-            var categories = await _categoryService.GetAllCategoriesAsync();
-            return Ok(categories);
+            try
+            {
+                var categories = await _categoryService.GetAllCategoriesAsync();
+                return Ok(categories);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<CategoryDto>> GetById(int id)
         {
-            var category = await _categoryService.GetCategoryByIdAsync(id);
-            return category != null ? Ok(category) : NotFound();
+            try
+            {
+                var category = await _categoryService.GetCategoryByIdAsync(id);
+                return category != null ? Ok(category) : NotFound();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost]

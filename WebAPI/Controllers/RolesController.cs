@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Serilog;
 using WebAPI.DTOs;
 using WebAPI.Services;
 
@@ -18,15 +19,31 @@ namespace WebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RoleDto>>> GetAll()
         {
-            var roles = await _roleService.GetAllRolesAsync();
-            return Ok(roles);
+            try
+            {
+                var roles = await _roleService.GetAllRolesAsync();
+                return Ok(roles);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<RoleDto>> GetById(int id)
         {
-            var role = await _roleService.GetRoleByIdAsync(id);
-            return role != null ? Ok(role) : NotFound();
+            try
+            {
+                var role = await _roleService.GetRoleByIdAsync(id);
+                return role != null ? Ok(role) : NotFound();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost]
