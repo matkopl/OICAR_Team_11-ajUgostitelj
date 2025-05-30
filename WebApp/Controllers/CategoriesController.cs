@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WebAPI.DTOs;
 using WebApp.ApiClients;
 
 namespace WebApp.Controllers

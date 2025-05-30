@@ -1,13 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 using WebAPI.DTOs;
 using WebApp.ApiClients;
 using WebApp.ViewModels;
 using WebAPI.Models;
-using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
-using System.Runtime.CompilerServices;
-using System.Diagnostics;
 
 
 
@@ -18,12 +14,13 @@ namespace WebApp.Controllers
         private readonly AppDbContext _context;
         private readonly ProductApiClient _productApiClient;
         private readonly CategoriesApiClient _categoriesApiClient;
+        private readonly ReviewApiClient _reviewApiClient;
 
-        public ProductController(ProductApiClient productApiClient, CategoriesApiClient categoriesApiClient, AppDbContext context)
+        public ProductController(ProductApiClient productApiClient, CategoriesApiClient categoriesApiClient, ReviewApiClient reviewApiClient)
         {
             _productApiClient = productApiClient;
             _categoriesApiClient = categoriesApiClient;
-            _context = context;
+            _reviewApiClient = reviewApiClient;
         }
 
         public async Task<IActionResult> Index(string? category)
@@ -102,11 +99,12 @@ namespace WebApp.Controllers
 
             return RedirectToAction("Index", "Cart");
         }
+        
         [HttpGet]
         public async Task<IActionResult> ProductReviews()
         {
-            var products = await _context.Products.ToListAsync();
-            var reviews = await _context.Reviews.Include(r => r.Product).OrderByDescending(r => r.ReviewDate).ToListAsync();
+            var products = await _productApiClient.LoadProductsAsync();
+            var reviews = await _reviewApiClient.LoadReviewsAsync();
 
             var vm = new ProductReviewsViewModel
             {
@@ -122,23 +120,24 @@ namespace WebApp.Controllers
         {
             if (!ModelState.IsValid)
             {
-                model.Products = await _context.Products.ToListAsync();
-                model.Reviews = await _context.Reviews.Include(r => r.Product).OrderByDescending(r => r.ReviewDate).ToListAsync();
+                model.Products = await _productApiClient.LoadProductsAsync();
+                model.Reviews = await _reviewApiClient.LoadReviewsAsync();
                 return View(model);
             }
 
-            var selectedProduct = await _context.Products.FirstOrDefaultAsync(p => p.Id == model.NewReview.ProductId);
+            var selectedProduct = await _productApiClient.LoadProductAsync(model.NewReview.ProductId);
             if (selectedProduct == null)
             {
                 ModelState.AddModelError("", "Selected product not found");
+                model.Products = await _productApiClient.LoadProductsAsync();
+                model.Reviews = await _reviewApiClient.LoadReviewsAsync();
                 return View(model);
             }
 
             model.NewReview.ProductName = selectedProduct.Name;
             model.NewReview.ReviewDate = DateTime.UtcNow;
 
-            _context.Reviews.Add(model.NewReview);
-            await _context.SaveChangesAsync();
+            await _reviewApiClient.CreateReviewAsync(model.NewReview);
 
             return RedirectToAction("ProductReviews");
         }

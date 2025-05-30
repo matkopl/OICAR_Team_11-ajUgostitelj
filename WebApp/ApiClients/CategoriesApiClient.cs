@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using WebAPI.DTOs;
+using WebApp.DTOs;
 
 namespace WebApp.ApiClients
 {

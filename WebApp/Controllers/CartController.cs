@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using WebApp.ViewModels;
-using WebApp.Extensions;
 using WebAPI.Models;
-using WebAPI;
 
 namespace WebApp.Controllers
 {

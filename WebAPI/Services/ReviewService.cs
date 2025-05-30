@@ -79,5 +79,13 @@ namespace WebAPI.Services
                 .AverageAsync();
         }
 
+        public async Task<IEnumerable<ReviewDTO>> GetReviewsByProductIdAsync(int productId)
+        {
+            var repo = _repositoryFactory.GetRepository<Review>();
+            var reviews = await repo.GetAllAsync();
+            var filtered = reviews.Where(r => r.ProductId == productId);
+            return _mapper.Map<IEnumerable<ReviewDTO>>(filtered);
+        }
+
     }
 }
