@@ -47,5 +47,13 @@ namespace WPF.Repositories
             var resp = await _httpClient.DeleteAsync($"{BaseUrl}/{id}");
             resp.EnsureSuccessStatusCode();
         }
+
+        public async Task<ProductDto?> GetProductByIdAsync(string token, int id)
+        {
+            SetAuth(token);
+            var response = await _httpClient.GetAsync($"{BaseUrl}/{id}");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<ProductDto>();
+        }
     }
 }

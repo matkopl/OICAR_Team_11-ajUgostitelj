@@ -55,8 +55,17 @@ namespace WebAPI.Controllers
         [HttpPost("stock_check/perform")]
         public async Task<IActionResult> PerformStockCheck(List<StockCheckDto> stockChecks)
         {
+            Console.WriteLine($"Received {stockChecks.Count} stock check items.");
+            Console.WriteLine($"User Token: {Request.Headers["Authorization"]}");
             var success = await _inventoryService.PerformStockCheckAsync(stockChecks);
             return success ? Ok("Stock check recorded") : BadRequest("Failed to perform stock check");
+        }
+
+        [HttpDelete("stock_check/clear")]
+        public async Task<IActionResult> ClearStockCheckHistory()
+        {
+            var success = await _inventoryService.ClearStockCheckHistoryAsync();
+            return success ? Ok("Stock check history cleared") : BadRequest("Failed to clear stock check history");
         }
     }
 }

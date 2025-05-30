@@ -30,5 +30,8 @@ namespace WPF.Services
 
         public Task DeleteProductAsync(int id) =>
             _repo.DeleteAsync(_token, id);
+
+        public Task<ProductDto?> GetProductByIdAsync(int id) => 
+            _repo.GetProductByIdAsync(_token, id);
     }
 }

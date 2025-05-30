@@ -83,8 +83,10 @@ namespace WebAPI.Services
         public async Task<IEnumerable<StockCheckDto>> GetStockCheckHistoryAsync()
         {
             var stockCheckRepo = _repositoryFactory.GetRepository<StockCheck>();
-            var stockChecks = await stockCheckRepo.GetAllAsync();
+            var stockChecks = await _context.StockChecks.Include(sc => sc.Product).ToListAsync();
+
             return _mapper.Map<IEnumerable<StockCheckDto>>(stockChecks);
+
         }
 
         public async Task<bool> PerformStockCheckAsync(List<StockCheckDto> stockChecks)
@@ -106,6 +108,20 @@ namespace WebAPI.Services
 
             await stockCheckRepo.SaveChangesAsync();
 
+            return true;
+        }
+
+        public async Task<bool> ClearStockCheckHistoryAsync()
+        {
+            var stockCheckRepo = _repositoryFactory.GetRepository<StockCheck>();
+            var stockChecks = await stockCheckRepo.GetAllAsync();
+
+            foreach (var stockCheck in stockChecks)
+            {
+                stockCheckRepo.Remove(stockCheck);
+            }
+
+            await stockCheckRepo.SaveChangesAsync();
             return true;
         }
     }
