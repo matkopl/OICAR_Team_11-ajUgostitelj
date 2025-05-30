@@ -22,6 +22,11 @@ namespace WPF.Services
             return await _repository.AddProductToInventoryAsync(token, inventoryDto);
         }
 
+        public async Task<bool> ClearStockCheckHistoryAsync(string token)
+        {
+            return await _repository.ClearStockCheckHistoryAsync(token);
+        }
+
         public async Task<bool> DeleteInventoryAsync(string token, int inventoryId)
         {
             return await _repository.DeleteInventoryAsync(token, inventoryId);

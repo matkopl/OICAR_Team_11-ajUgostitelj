@@ -15,5 +15,6 @@ namespace WPF.Services
         Task<bool> DeleteInventoryAsync(string token, int inventoryId);
         Task<IEnumerable<StockCheckDto>> GetStockCheckHistoryAsync(string token);
         Task<bool> PerformStockCheckAsync(string token, List<StockCheckDto> stockChecks);
+        Task<bool> ClearStockCheckHistoryAsync(string token);
     }
 }

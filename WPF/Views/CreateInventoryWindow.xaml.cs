@@ -28,6 +28,7 @@ namespace WPF.Views
         {
             InitializeComponent();
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            ProductComboBox.SelectedIndex = 0;
 
             _token = token;
             _inventoryService = inventoryService;

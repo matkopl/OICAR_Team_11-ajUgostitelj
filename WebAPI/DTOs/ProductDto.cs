@@ -12,6 +12,7 @@ namespace WebAPI.DTOs
         public decimal Price { get; set; }
         public int CategoryId { get; set; }
         public string CategoryName { get; set; } = string.Empty;
+        public int Quantity { get; set; } = 0;
         public double? AverageRating { get; set; }
     }
 }

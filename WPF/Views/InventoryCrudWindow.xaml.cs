@@ -46,7 +46,7 @@ namespace WPF.Views
         private void CreateInventory_Click(object sender, RoutedEventArgs e)
         {
             var productRepo = ((App)Application.Current).ServiceProvider.GetRequiredService<IProductRepository>();
-            var _productService = new ProductService(productRepo, _token);           
+            var _productService = new ProductService(productRepo, _token);
             var createInventoryWindow = new CreateInventoryWindow(_token, _inventoryService, _productService);
 
             createInventoryWindow.Closed += (s, args) => LoadInventory();
@@ -100,6 +100,12 @@ namespace WPF.Views
             {
                 MessageBox.Show("Failed to delete inventory item!", "Delete", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void PerformStockCheck_Click(object sender, RoutedEventArgs e)
+        {
+            var stockCheckWindow = new StockCheckHistoryWindow(_token, _inventoryService);
+            stockCheckWindow.Show();
         }
     }
 }

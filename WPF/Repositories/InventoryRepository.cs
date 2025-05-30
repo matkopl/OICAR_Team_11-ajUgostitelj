@@ -7,6 +7,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 using WebAPI.DTOs;
+using WebAPI.Models;
 
 namespace WPF.Repositories
 {
@@ -76,6 +77,16 @@ namespace WPF.Repositories
                  new AuthenticationHeaderValue("Bearer", token);
 
             var response = await _httpClient.PostAsJsonAsync($"{_apiKey}/stock_check/perform", stockChecks);
+
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> ClearStockCheckHistoryAsync(string token)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _httpClient.DeleteAsync($"{_apiKey}/stock_check/clear");
 
             return response.IsSuccessStatusCode;
         }

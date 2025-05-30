@@ -11,5 +11,6 @@ namespace WebAPI.Services
         Task<bool> DeleteInventoryAsync(int id);
         Task<IEnumerable<StockCheckDto>> GetStockCheckHistoryAsync();
         Task<bool> PerformStockCheckAsync(List<StockCheckDto> stockChecks);
+        Task<bool> ClearStockCheckHistoryAsync();
     }
 }
