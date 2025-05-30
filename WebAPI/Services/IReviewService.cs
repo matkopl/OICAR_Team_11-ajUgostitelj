@@ -9,7 +9,7 @@ namespace WebAPI.Services
         Task<ReviewDTO> CreateReviewAsync(ReviewDTO reviewDTO);
         Task<ReviewDTO> UpdateReviewAsync(int id, ReviewDTO reviewDTO);
         Task<double?> GetAverageRatingAsync(int productId);
-
         Task DeleteReviewAsync(int id);
+        Task<IEnumerable<ReviewDTO>> GetReviewsByProductIdAsync(int productId);
     }
 }

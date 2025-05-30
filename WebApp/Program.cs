@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql("Server=fretfully-serene-crane.data-1.use1.tembo.io;Port=5432;Database=postgres;User Id=postgres;Password=1ssKI1zsVZ965lZH;"));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("connStr")));
 
 builder.Services.AddHttpClient<ProductApiClient>(client =>
 {
@@ -29,6 +29,11 @@ builder.Services.AddHttpClient<PaymentApiClient>(client =>
 });
 
 builder.Services.AddHttpClient<CategoriesApiClient>(client =>
+{
+    client.BaseAddress = new Uri("https://oicar-team-11-ajugostitelj-11.onrender.com/api/");
+});
+
+builder.Services.AddHttpClient<ReviewApiClient>(client =>
 {
     client.BaseAddress = new Uri("https://oicar-team-11-ajugostitelj-11.onrender.com/api/");
 });

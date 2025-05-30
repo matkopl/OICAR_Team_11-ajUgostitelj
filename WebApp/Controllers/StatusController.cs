@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
-using WebAPI.DTOs;
 using WebApp.ApiClients;
-using WebApp.ViewModels;
 
 namespace WebApp.Controllers
 {

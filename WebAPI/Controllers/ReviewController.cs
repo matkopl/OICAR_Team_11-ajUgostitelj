@@ -130,5 +130,13 @@ namespace WebAPI.Controllers
                 return StatusCode(500, "Internal server error while calculating average rating");
             }
         }
+
+        [HttpGet("by-product/{productId}")]
+        public async Task<ActionResult<IEnumerable<ReviewDTO>>> GetReviewsByProductId(int productId)
+        {
+            var reviews = await _reviewService.GetReviewsByProductIdAsync(productId);
+            return Ok(reviews);
+        }
+
     }
 }

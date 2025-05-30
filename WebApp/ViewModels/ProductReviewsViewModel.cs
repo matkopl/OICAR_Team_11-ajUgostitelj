@@ -1,11 +1,11 @@
-﻿using WebAPI.Models;
+﻿using WebApp.DTOs;
 
 namespace WebApp.ViewModels
 {
     public class ProductReviewsViewModel
     {
-        public List<WebAPI.Models.Product> Products { get; set; } = new();
-        public List<Review> Reviews { get; set; } = new();
-        public Review NewReview { get; set; } = new();
+        public List<ProductDto> Products { get; set; } = new();
+        public List<ReviewDTO> Reviews { get; set; } = new();
+        public ReviewDTO NewReview { get; set; } = new();
     }
 }

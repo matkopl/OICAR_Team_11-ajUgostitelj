@@ -216,8 +216,8 @@ p {
         @foreach (var r in Model.Reviews)
         {
             <li>
-                <strong>@r.ReviewerName</strong> (@r.ReviewDate.ToString("g")) - <em>@r.Product?.Name</em><br />
-                Rating: @r.Rating ★<br />
+                <strong>@r.ReviewerName</strong> (@r.ReviewDate.ToString("g")) - <em>@r.ProductName</em><br />
+                Rating: @r.Rating ★<br />   
                 @r.Comment
             </li>
         }

@@ -1,13 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebApp.ApiClients;
 using WebApp.ViewModels;
-using WebAPI.DTOs;
-using WebAPI.Models;
+using WebApp.DTOs;
 using System.Text.Json;
-using WebAPI;
-using WebApp.Models;
-using static System.Net.WebRequestMethods;
-using System.Net.Http;
 
 namespace WebApp.Controllers
 {

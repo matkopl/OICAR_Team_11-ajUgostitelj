@@ -1,5 +1,4 @@
-﻿using WebAPI.DTOs;
-using static System.Net.WebRequestMethods;
+﻿using WebApp.DTOs;
 
 namespace WebApp.ApiClients
 {
