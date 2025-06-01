@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using Microsoft.Win32;
+using System.Xml.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using WebAPI.DTOs;
+using WebAPI.Models;
 using WPF.Repositories;
 using WPF.Services;
 
@@ -23,7 +23,6 @@ namespace WPF.Views
 
         private ObservableCollection<ProductDto> _products = new();
         private ObservableCollection<CategoryDto> _categories = new();
-        private string? _selectedImageFilePath;
 
         public ProductWindow(string token)
         {
@@ -41,12 +40,15 @@ namespace WPF.Views
             };
         }
 
+        
         private async Task LoadCategoriesAsync()
         {
             try
             {
                 var allCats = await _categoryRepo.GetAllAsync(_token);
                 _categories = new ObservableCollection<CategoryDto>(allCats);
+
+                
                 _categories.Insert(0, new CategoryDto { Id = 0, Name = "— odaberi kategoriju —" });
                 cbCategory.ItemsSource = _categories;
                 cbCategory.SelectedIndex = 0;
@@ -58,11 +60,11 @@ namespace WPF.Views
             }
         }
 
+        
         private async Task LoadProductsAsync()
         {
             try
             {
-               
                 var all = (await _service.GetAllProductsAsync()).ToList();
 
                 
@@ -72,7 +74,6 @@ namespace WPF.Views
                     prod.CategoryName = cat?.Name ?? "(nedefinirano)";
                 }
 
-               
                 _products = new ObservableCollection<ProductDto>(all);
                 dgProducts.ItemsSource = _products;
             }
@@ -93,70 +94,50 @@ namespace WPF.Views
             }
         }
 
+        
         private void Tb_LostFocus(object sender, RoutedEventArgs e)
         {
-            if (sender is TextBox tb && string.IsNullOrWhiteSpace(tb.Text))
+            if (sender is not TextBox tb) return;
+            if (!string.IsNullOrWhiteSpace(tb.Text)) return;
+
+            switch (tb.Name)
             {
-                switch (tb.Name)
-                {
-                    case "tbName":
-                        tb.Text = "Naziv proizvoda";
-                        break;
-                    case "tbDesc":
-                        tb.Text = "Opis (opcionalno)";
-                        break;
-                    case "tbPrice":
-                        tb.Text = "Cijena";
-                        break;
-                }
-                tb.Foreground = Brushes.Gray;
+                case "tbName":
+                    tb.Text = "Naziv proizvoda";
+                    break;
+                case "tbDesc":
+                    tb.Text = "Opis (opcionalno)";
+                    break;
+                case "tbPrice":
+                    tb.Text = "Cijena";
+                    break;
+                case "tbQuantity":
+                    tb.Text = "Količina";
+                    break;
+                case "tbImageUrl":
+                    tb.Text = "Image URL";
+                    break;
             }
+
+            tb.Foreground = Brushes.Gray;
         }
 
-        // Odabir slike
-        private void BtnSelectImage_Click(object sender, RoutedEventArgs e)
-        {
-            var dlg = new OpenFileDialog
-            {
-                Filter = "Slike (*.jpg;*.jpeg;*.png;*.gif)|*.jpg;*.jpeg;*.png;*.gif"
-            };
-            if (dlg.ShowDialog() != true) return;
-
-            _selectedImageFilePath = dlg.FileName;
-            tbImagePath.Text = Path.GetFileName(_selectedImageFilePath);
-
-            try
-            {
-                var bmp = new BitmapImage();
-                bmp.BeginInit();
-                bmp.UriSource = new Uri(_selectedImageFilePath);
-                bmp.CacheOption = BitmapCacheOption.OnLoad;
-                bmp.EndInit();
-                imgPreview.Source = bmp;
-            }
-            catch
-            {
-                imgPreview.Source = null;
-            }
-        }
-
-        // Dodaj novi proizvod
+        
         private async void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
             if (!TryReadInputs(out var dto))
                 return;
 
-            // Popuni kategoriju
+            
             var cat = cbCategory.SelectedItem as CategoryDto;
             dto.CategoryId = cat!.Id;
             dto.CategoryName = cat.Name;
 
-            // Placeholder URL za sliku
-            dto.ImageUrl = "https://via.placeholder.com/150";
-
             try
             {
                 var created = await _service.CreateProductAsync(dto);
+                
+                created.CategoryName = dto.CategoryName;
                 _products.Add(created);
                 ResetInputs();
             }
@@ -167,36 +148,38 @@ namespace WPF.Views
             }
         }
 
-        // Inline update
+       
         private async void DgProducts_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
             if (e.EditAction != DataGridEditAction.Commit) return;
-            if (e.Row.Item is ProductDto dto)
+            if (e.Row.Item is not ProductDto dto) return;
+
+            
+            try
             {
-                try
-                {
-                    await _service.UpdateProductAsync(dto.Id, dto);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Greška pri spremanju izmjena:\n{ex.Message}",
-                                    "Greška", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+                await _service.UpdateProductAsync(dto.Id, dto);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Greška pri spremanju izmjena:\n{ex.Message}",
+                                "Greška", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        // Brisanje
+        
         private async void BtnDelete_Click(object sender, RoutedEventArgs e)
         {
-            if ((sender as Button)?.DataContext is not ProductDto dto) return;
+            if ((sender as Button)?.DataContext is not ProductDto dto)
+                return;
 
             var result = MessageBox.Show(
                 $"Obrisati proizvod '{dto.Name}'?",
                 "Potvrda brisanja",
                 MessageBoxButton.YesNo,
-                MessageBoxImage.Question
-            );
-            if (result != MessageBoxResult.Yes) return;
+                MessageBoxImage.Question);
+
+            if (result != MessageBoxResult.Yes)
+                return;
 
             try
             {
@@ -210,17 +193,18 @@ namespace WPF.Views
             }
         }
 
-        // Zatvori prozor
+        
         private void BtnClose_Click(object sender, RoutedEventArgs e)
         {
             Close();
         }
 
-        // Validacija inputa
+        
         private bool TryReadInputs(out ProductDto dto)
         {
             dto = new ProductDto();
 
+            
             if (string.IsNullOrWhiteSpace(tbName.Text) || tbName.Foreground == Brushes.Gray)
             {
                 MessageBox.Show("Unesite naziv proizvoda.", "Upozorenje",
@@ -229,10 +213,12 @@ namespace WPF.Views
             }
             dto.Name = tbName.Text;
 
-            dto.Description = tbDesc.Foreground == Brushes.Gray
+            
+            dto.Description = (tbDesc.Foreground == Brushes.Gray)
                               ? ""
                               : tbDesc.Text;
 
+            
             if (!decimal.TryParse(tbPrice.Text, out var price))
             {
                 MessageBox.Show("Neispravna cijena.", "Upozorenje",
@@ -241,6 +227,25 @@ namespace WPF.Views
             }
             dto.Price = price;
 
+            
+            if (!int.TryParse(tbQuantity.Text, out var qty))
+            {
+                MessageBox.Show("Neispravna količina.", "Upozorenje",
+                                MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+            dto.Quantity = qty;
+
+           
+            if (string.IsNullOrWhiteSpace(tbImageUrl.Text) || tbImageUrl.Foreground == Brushes.Gray)
+            {
+                MessageBox.Show("Unesite Image URL.", "Upozorenje",
+                                MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+            dto.ImageUrl = tbImageUrl.Text;
+
+            
             if (cbCategory.SelectedIndex <= 0)
             {
                 MessageBox.Show("Odaberite kategoriju.", "Upozorenje",
@@ -251,17 +256,21 @@ namespace WPF.Views
             return true;
         }
 
-        // Reset forme
+        
         private void ResetInputs()
         {
             tbName.Text = "Naziv proizvoda";
             tbDesc.Text = "Opis (opcionalno)";
             tbPrice.Text = "Cijena";
+            tbQuantity.Text = "Količina";
+            tbImageUrl.Text = "Image URL";
             cbCategory.SelectedIndex = 0;
-            tbName.Foreground = tbDesc.Foreground = tbPrice.Foreground = Brushes.Gray;
-            tbImagePath.Text = "Nijedna slika odabrana";
-            imgPreview.Source = null;
-            _selectedImageFilePath = null;
+
+            tbName.Foreground = Brushes.Gray;
+            tbDesc.Foreground = Brushes.Gray;
+            tbPrice.Foreground = Brushes.Gray;
+            tbQuantity.Foreground = Brushes.Gray;
+            tbImageUrl.Foreground = Brushes.Gray;
         }
     }
 }
