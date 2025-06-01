@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -90,6 +92,37 @@ namespace WPF.Views
             else
             {
                 MessageBox.Show("Failed to clear stock check history!", "Stock Check", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async void ExportStockCheckToCsv_Click(object sender, RoutedEventArgs e)
+        {
+            var stockChecks = await _inventoryService.GetStockCheckHistoryAsync(_token);
+            if (stockChecks == null || !stockChecks.Any())
+            {
+                MessageBox.Show("No stock check history found!", "Export CSV", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var sb = new StringBuilder();
+            sb.AppendLine("Product ID,Product name,Recorded quantity,Actual quantity, Difference");
+
+            foreach (var s in stockChecks)
+            {
+                sb.AppendLine($"{s.ProductId}, {s.ProductName}, {s.RecordedQuantity},{s.ActualQuantity}, {s.Difference}");
+            }
+
+            var saveFileDialog = new SaveFileDialog
+            {
+                FileName = $"Inventura {DateTime.Now:dd.MM.yyyy}",
+                DefaultExt = ".csv",
+                Filter = "CSV files (*.csv)|*.csv"
+            };
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                File.WriteAllText(saveFileDialog.FileName, sb.ToString());
+                MessageBox.Show("Stock check exported successfully!", "CSV Export", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
     }
