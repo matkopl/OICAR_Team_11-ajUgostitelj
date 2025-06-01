@@ -18,7 +18,8 @@ namespace WebAPI.AutoMapper
             CreateMap<User, RegisterDto>().ReverseMap();
             CreateMap<User, ChangePasswordDto>().ReverseMap();
             CreateMap<Notification, NotificationDto>().ReverseMap();
-            CreateMap<User, UserDto>().ReverseMap();
+            CreateMap<User, UserDto>()
+                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.Name)).ReverseMap();
             CreateMap<User, CreateUserDto>().ReverseMap();
             CreateMap<User, UpdateUserDto>().ReverseMap();
             CreateMap<Product, ProductDto>().ReverseMap();

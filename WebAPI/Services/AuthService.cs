@@ -105,6 +105,7 @@ namespace WebAPI.Services
                 var hash = PasswordHashProvider.GetHash(registerDto.Password, salt);
 
                 var newUser = _mapper.Map<User>(registerDto);
+                newUser.Email = DataEncriptionProvider.Encrypt(registerDto.Email);
                 newUser.PwdSalt = salt;
                 newUser.PwdHash = hash;
                 newUser.RoleId = 2;
