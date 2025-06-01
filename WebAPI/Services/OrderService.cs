@@ -117,7 +117,7 @@ namespace WebAPI.Services
                throw new KeyNotFoundException($"Order with ID {statusDto.OrderId} not found");
             }
 
-            if (!Enum.TryParse<OrderStatus>(statusDto.Status, out var newStatus))
+            if (!Enum.TryParse<OrderStatus>(statusDto.Status.ToString(), out var newStatus))
                 throw new ArgumentException($"Invalid status value: {statusDto.Status}");
 
             // Logika za validne status tranzicije

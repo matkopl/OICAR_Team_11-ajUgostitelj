@@ -21,6 +21,8 @@ namespace WPF.Services
         public Task<IEnumerable<OrderDto>> GetAllOrdersAsync() =>
             _repo.GetAllAsync(_token);
 
+
+
         public Task<IEnumerable<OrderItemDto>> GetOrderItemsAsync(int orderId) =>
             _repo.GetItemsAsync(_token, orderId);
 
@@ -29,6 +31,12 @@ namespace WPF.Services
 
         public Task<IEnumerable<OrderDto>> GetOrdersByPaymentMethodAsync(string paymentMethod) =>
             _repo.GetByPaymentMethodAsync(_token, paymentMethod);
+
+        public Task<OrderDto> GetByIdAsync(int orderId) => 
+            _repo.GetByIdAsync(_token, orderId);
+
+        public Task<bool> UpdateOrderStatusAsync(OrderStatusDto orderStatusDto) =>
+            _repo.UpdateOrderStatusAsync(_token, orderStatusDto);
     }
 
 }

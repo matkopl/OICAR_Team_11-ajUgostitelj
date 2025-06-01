@@ -11,9 +11,11 @@ namespace WPF.Repositories
     public interface IOrderRepository
     {
         Task<IEnumerable<OrderDto>> GetAllAsync(string token);
+        Task<OrderDto> GetByIdAsync(string token, int orderId);
         Task<IEnumerable<OrderItemDto>> GetItemsAsync(string token, int orderId);
         Task<IEnumerable<OrderDto>> GetByTableAsync(string token, int tableId);
         Task<IEnumerable<OrderDto>> GetByPaymentMethodAsync(string token, string paymentMethod);
+        Task<bool> UpdateOrderStatusAsync(string token, OrderStatusDto orderStatusDto);
     }
 
 }

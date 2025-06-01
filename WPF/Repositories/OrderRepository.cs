@@ -55,6 +55,26 @@ namespace WPF.Repositories
             resp.EnsureSuccessStatusCode();
             return await resp.Content.ReadFromJsonAsync<IEnumerable<OrderDto>>();
         }
+
+        public async Task<OrderDto> GetByIdAsync(string token, int orderId)
+        {
+            SetAuth(token);
+            var resp = await _httpClient.GetAsync($"{_baseUrl}/{orderId}/details");
+            resp.EnsureSuccessStatusCode();
+            return await resp.Content.ReadFromJsonAsync<OrderDto>();
+        }
+
+        public async Task<bool> UpdateOrderStatusAsync(string token, OrderStatusDto orderStatusDto)
+        {
+            SetAuth(token);
+            var resp = await _httpClient.PutAsJsonAsync($"{_baseUrl}/{orderStatusDto.OrderId}/status", orderStatusDto);
+            if (!resp.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"Failed to update order {orderStatusDto.OrderId} status. Error: {resp.ReasonPhrase}");
+            }
+
+            return resp.IsSuccessStatusCode;
+        }
     }
 
 }

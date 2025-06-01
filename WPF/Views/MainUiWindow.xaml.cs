@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,8 @@ namespace WPF.Views
     /// </summary>
     public partial class MainUiWindow : Window
     {
+        private HubConnection _hubConnection;
+
         private readonly string _username;
         private readonly string _token;
         public MainUiWindow(string username, string token)
@@ -28,6 +31,22 @@ namespace WPF.Views
             InitializeComponent();
             _username = username;
             _token = token;
+
+            _hubConnection = new HubConnectionBuilder()
+                .WithUrl("http://localhost:5207/orderHub")
+                .Build();
+
+            _hubConnection.On<int>("ReceiveOrderNotification", (orderId) =>
+            {
+                MessageBox.Show($"New order received! Order ID: {orderId}", "New order", MessageBoxButton.OK, MessageBoxImage.Information);
+            });
+
+            _hubConnection.On<int, string>("ReceiveOrderStatusUpdate", (orderId, newStatus) =>
+            {
+                MessageBox.Show($"Order: {orderId} is now {newStatus}", "Order status update", MessageBoxButton.OK, MessageBoxImage.Information);
+            });
+
+            _hubConnection.StartAsync();
 
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
 

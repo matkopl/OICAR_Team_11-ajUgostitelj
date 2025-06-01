@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Serilog;
 using WebAPI.DTOs;
+using WebAPI.Hubs;
 using WebAPI.Services;
 
 namespace WebAPI.Controllers
@@ -11,10 +13,12 @@ namespace WebAPI.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
+        private readonly IHubContext<OrderHub> _orderHub;
 
-        public OrderController(IOrderService orderService)
+        public OrderController(IOrderService orderService, IHubContext<OrderHub> orderHub)
         {
             _orderService = orderService;
+            _orderHub = orderHub;
         }
 
         [HttpGet]
@@ -53,6 +57,26 @@ namespace WebAPI.Controllers
             }
         }
 
+        [HttpGet("{id}/details")]
+        public async Task<ActionResult<OrderDto>> GetOrderDetails(int id)
+        {
+            try
+            {
+                var order = await _orderService.GetOrderByIdAsync(id);
+                if (order == null) 
+                {
+                    Log.Warning($"Order with ID {id} not found");
+                    return NotFound();
+                }
+                return Ok(order);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Error fetching order details for ID {id}");
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPost]
         public async Task<ActionResult<OrderDto>> Create(OrderDto orderDto)
         {
@@ -61,6 +85,8 @@ namespace WebAPI.Controllers
                 Log.Information($"Creating order...");
                 var createdOrder = await _orderService.CreateOrderAsync(orderDto);
                 Log.Information($"Successfully created with ID:{createdOrder.Id}");
+                await _orderHub.Clients.All.SendAsync("ReceiveOrderNotification", createdOrder.Id);
+
                 return CreatedAtAction(nameof(GetById), new { id = createdOrder.Id }, createdOrder);
             }
             catch (Exception ex)
@@ -150,7 +176,9 @@ namespace WebAPI.Controllers
             {
                 Log.Information($"Updating order status with ID:{id}...");
                 await _orderService.UpdateOrderStatusAsync(statusDto);
-                Log.Information($"Order updated!");
+                Log.Information($"Order updated to status: {statusDto.Status}");
+
+                await _orderHub.Clients.All.SendAsync("ReceiveOrderStatusUpdate", id, Enum.GetName(typeof(OrderStatus), statusDto.Status));
                 return NoContent();
             }
             catch (Exception ex)

@@ -36,7 +36,7 @@ namespace WebAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("WebAPI.Models.Inventory", b =>
@@ -60,7 +60,7 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Inventories");
+                    b.ToTable("Inventories", (string)null);
                 });
 
             modelBuilder.Entity("WebAPI.Models.Notification", b =>
@@ -86,7 +86,7 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("Notifications", (string)null);
                 });
 
             modelBuilder.Entity("WebAPI.Models.Order", b =>
@@ -113,7 +113,7 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("TableId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("WebAPI.Models.OrderItem", b =>
@@ -139,7 +139,7 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderItems");
+                    b.ToTable("OrderItems", (string)null);
                 });
 
             modelBuilder.Entity("WebAPI.Models.Payment", b =>
@@ -168,7 +168,7 @@ namespace WebAPI.Migrations
                     b.HasIndex("OrderId")
                         .IsUnique();
 
-                    b.ToTable("Payments");
+                    b.ToTable("Payments", (string)null);
                 });
 
             modelBuilder.Entity("WebAPI.Models.Product", b =>
@@ -206,7 +206,7 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("WebAPI.Models.Review", b =>
@@ -245,7 +245,7 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Reviews");
+                    b.ToTable("Reviews", (string)null);
                 });
 
             modelBuilder.Entity("WebAPI.Models.Role", b =>
@@ -263,7 +263,7 @@ namespace WebAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("WebAPI.Models.StockCheck", b =>
@@ -290,7 +290,7 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("StockChecks");
+                    b.ToTable("StockChecks", (string)null);
                 });
 
             modelBuilder.Entity("WebAPI.Models.Table", b =>
@@ -311,7 +311,7 @@ namespace WebAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tables");
+                    b.ToTable("Tables", (string)null);
                 });
 
             modelBuilder.Entity("WebAPI.Models.User", b =>
@@ -346,7 +346,7 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("WebAPI.Models.Inventory", b =>
