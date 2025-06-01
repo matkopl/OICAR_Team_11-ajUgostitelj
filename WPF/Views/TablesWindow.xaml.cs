@@ -103,7 +103,7 @@ namespace WPF.Views
             }
         }
 
-        
+
         private void BtnGenerateQr_Click(object sender, RoutedEventArgs e)
         {
             if (dgTables.SelectedItem is not TableDto table)
@@ -114,16 +114,11 @@ namespace WPF.Views
             }
 
             
-            var payload = new
-            {
-                url = $"https://localhost.com?table={table.Id}",
-                tableName = table.Name
-            };
-            var json = JsonSerializer.Serialize(payload);
+            string url = $"https://oicar-team-11-ajugostitelj-solowebapp.onrender.com/?table={table.Id}";
 
             
             using var qrGen = new QRCodeGenerator();
-            using var qrData = qrGen.CreateQrCode(json, QRCodeGenerator.ECCLevel.Q);
+            using var qrData = qrGen.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
             _lastQrBytes = new PngByteQRCode(qrData).GetGraphic(20);
 
             
@@ -138,7 +133,8 @@ namespace WPF.Views
             btnSaveQr.IsEnabled = true;
         }
 
-       
+
+
         private void BtnSaveQr_Click(object sender, RoutedEventArgs e)
         {
             if (_lastQrBytes == null) return;
