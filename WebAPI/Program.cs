@@ -121,10 +121,14 @@ var app = builder.Build();
 
 app.UseRouting();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapHub<OrderHub>("/orderHub");
 });
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -134,10 +138,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseExceptionHandler("/error");
-
-app.UseAuthentication();
 app.UseSerilogRequestLogging();
-app.UseAuthorization();
 
 app.MapControllers();
 

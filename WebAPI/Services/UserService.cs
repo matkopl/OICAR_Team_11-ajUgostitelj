@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using WebAPI.DTOs;
 using WebAPI.Models;
 using WebAPI.Repository;
 using WebAPI.Security;
+using static QRCoder.PayloadGenerator;
 
 namespace WebAPI.Services
 {
@@ -10,11 +12,13 @@ namespace WebAPI.Services
     {
         private readonly IRepositoryFactory _repositoryFactory;
         private readonly IMapper _mapper;
+        private readonly AppDbContext _context;
 
-        public UserService(IRepositoryFactory repositoryFactory, IMapper mapper)
+        public UserService(IRepositoryFactory repositoryFactory, IMapper mapper, AppDbContext context)
         {
             _repositoryFactory = repositoryFactory;
             _mapper = mapper;
+            _context = context;
         }
 
         public async Task<bool> CreateUserAsync(CreateUserDto createUserDto)
@@ -31,6 +35,7 @@ namespace WebAPI.Services
             var hash = PasswordHashProvider.GetHash(createUserDto.Password, salt);
 
             var newUser = _mapper.Map<User>(createUserDto);
+            newUser.Email = DataEncriptionProvider.Encrypt(newUser.Email);
             newUser.PwdSalt = salt;
             newUser.PwdHash = hash;
             newUser.RoleId = createUserDto.RoleId;
@@ -65,7 +70,7 @@ namespace WebAPI.Services
             {
                 Id = user.Id,
                 Username = user.Username,
-                Email = user.Email,
+                Email = DataEncriptionProvider.Decrypt(user.Email),
                 Role = user.Role != null ? user.Role.Name : (user.RoleId == 1 ? "Admin" : "User") 
             }).ToList();
         }
@@ -80,26 +85,30 @@ namespace WebAPI.Services
                 return null;
             }
 
-            return _mapper.Map<UserDto>(user);
+            var userDto = _mapper.Map<UserDto>(user);
+            userDto.Email = DataEncriptionProvider.Decrypt(user.Email);
+
+            return userDto;
         }
 
         public async Task<UserDto?> GetUserByUsernameAsync(string username)
         {
-            var userRepo = _repositoryFactory.GetRepository<User>();
-            var user = (await userRepo.GetAllAsync()).FirstOrDefault(u => u.Username == username);
+            var user = await _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.Username == username);
 
             if (user == null)
             {
+                Console.WriteLine("User not found");
                 return null;
             }
 
-            return new UserDto
-            {
-                Username = user.Username,
-                Email = user.Email,
-                Role = user.RoleId == 1 ? "Admin" : "User"
-            };
+            var userDto = _mapper.Map<UserDto>(user);
+            userDto.Email = DataEncriptionProvider.Decrypt(user.Email);
+
+            return userDto;
         }
+
 
         public async Task<bool> UpdateUserAsync(UpdateUserDto updateUserDto)
         {
@@ -112,7 +121,7 @@ namespace WebAPI.Services
             }
 
             user.Username = updateUserDto.Username;
-            user.Email = updateUserDto.Email;
+            user.Email = DataEncriptionProvider.Encrypt(updateUserDto.Email);
             user.RoleId = updateUserDto.RoleId;
             userRepo.Update(user);
             await userRepo.SaveChangesAsync();
