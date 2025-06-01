@@ -11,33 +11,47 @@
                   RowDetailsVisibilityMode="Visible"
                   AlternatingRowBackground="#F0F0F0"
                   GridLinesVisibility="Horizontal"
-                  FontSize="14">
-            
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Stol"
-                        Binding="{Binding TableName}"
-                        Width="120"
-                        MinWidth="80"/>
-                <DataGridTextColumn Header="Datum"
-                        Binding="{Binding Order.OrderDate, StringFormat=dd.MM.yyyy HH:mm}"
-                        Width="180" MinWidth="120"/>
-                <DataGridTextColumn Header="Status"
-                        Binding="{Binding Order.Status}"
-                        Width="100" MinWidth="80"/>
-                <DataGridTextColumn Header="Ukupno (€)"
-                        Binding="{Binding Order.TotalAmount, StringFormat=N2}"
-                        Width="100" MinWidth="80"/>
+                  FontSize="14"
+                  ItemsSource="{Binding}"  
+            Margin="0,0,0,8">
 
-                <DataGridTemplateColumn Header="Actions" Width="120">
+            <DataGrid.Columns>
+                
+                <DataGridTextColumn Header="Stol"
+                                    Binding="{Binding TableName}"
+                                    Width="120" MinWidth="80"/>
+
+                
+                <DataGridTextColumn Header="Datum"
+                                    Binding="{Binding Order.OrderDate, StringFormat=dd.MM.yyyy HH:mm}"
+                                    Width="180" MinWidth="120"/>
+
+                
+                <DataGridTextColumn Header="Status"
+                                    Binding="{Binding Order.Status}"
+                                    Width="100" MinWidth="80"/>
+
+                
+                <DataGridTextColumn Header="Ukupno (€)"
+                                    Binding="{Binding Order.TotalAmount, StringFormat=N2}"
+                                    Width="100" MinWidth="80"/>
+
+                
+               
+
+                
+                <DataGridTemplateColumn Header="Obriši" Width="80">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button Content="View Details" Click="OpenOrderDetails_Click" Width="100" Height="30"/>
+                            <Button Content="Obriši"
+                                    Click="BtnDeleteOrder_Click"
+                                    Width="60" Height="25"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-
             </DataGrid.Columns>
 
+           
             <DataGrid.RowDetailsTemplate>
                 <DataTemplate>
                     <Border Background="#EFEFEF"
@@ -61,14 +75,17 @@
                                                     Binding="{Binding ProductName}"
                                                     Width="2*"
                                                     MinWidth="150"/>
+
                                 <DataGridTextColumn Header="Količina"
                                                     Binding="{Binding Quantity}"
                                                     Width="*"
                                                     MinWidth="70"/>
+
                                 <DataGridTextColumn Header="Cijena (€)"
                                                     Binding="{Binding UnitPrice, StringFormat=N2}"
                                                     Width="*"
                                                     MinWidth="90"/>
+
                                 <DataGridTextColumn Header="Ukupno (€)"
                                                     Binding="{Binding TotalPrice, StringFormat=N2}"
                                                     Width="*"

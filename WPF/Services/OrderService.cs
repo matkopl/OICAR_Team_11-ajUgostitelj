@@ -37,6 +37,9 @@ namespace WPF.Services
 
         public Task<bool> UpdateOrderStatusAsync(OrderStatusDto orderStatusDto) =>
             _repo.UpdateOrderStatusAsync(_token, orderStatusDto);
+
+        public Task DeleteOrderAsync(int orderId) =>
+            _repo.DeleteAsync(_token, orderId);
     }
 
 }
