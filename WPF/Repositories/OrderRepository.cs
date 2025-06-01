@@ -75,6 +75,13 @@ namespace WPF.Repositories
 
             return resp.IsSuccessStatusCode;
         }
+
+        public async Task DeleteAsync(string token, int orderId)
+        {
+            SetAuth(token);
+            var resp = await _httpClient.DeleteAsync($"{_baseUrl}/{orderId}");
+            resp.EnsureSuccessStatusCode();
+        }
     }
 
 }

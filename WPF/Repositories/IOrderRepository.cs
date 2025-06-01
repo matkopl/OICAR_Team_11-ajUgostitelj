@@ -16,6 +16,7 @@ namespace WPF.Repositories
         Task<IEnumerable<OrderDto>> GetByTableAsync(string token, int tableId);
         Task<IEnumerable<OrderDto>> GetByPaymentMethodAsync(string token, string paymentMethod);
         Task<bool> UpdateOrderStatusAsync(string token, OrderStatusDto orderStatusDto);
+        Task DeleteAsync(string token, int orderId);
     }
 
 }

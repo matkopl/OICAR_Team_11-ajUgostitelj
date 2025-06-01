@@ -16,6 +16,7 @@ namespace WPF.Services
         Task<IEnumerable<OrderDto>> GetOrdersByTableAsync(int tableId);
         Task<IEnumerable<OrderDto>> GetOrdersByPaymentMethodAsync(string paymentMethod);
         Task<bool> UpdateOrderStatusAsync(OrderStatusDto orderStatusDto);
+        Task DeleteOrderAsync(int orderId);
     }
 
 }
