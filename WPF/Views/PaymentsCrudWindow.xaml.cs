@@ -91,5 +91,10 @@ namespace WPF.Views
                 MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            _timer.Stop();
+        }
     }
 }

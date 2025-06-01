@@ -12,6 +12,7 @@
                   AlternatingRowBackground="#F0F0F0"
                   GridLinesVisibility="Horizontal"
                   FontSize="14">
+            
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Stol"
                         Binding="{Binding TableName}"
@@ -26,6 +27,15 @@
                 <DataGridTextColumn Header="Ukupno (€)"
                         Binding="{Binding Order.TotalAmount, StringFormat=N2}"
                         Width="100" MinWidth="80"/>
+
+                <DataGridTemplateColumn Header="Actions" Width="120">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="View Details" Click="OpenOrderDetails_Click" Width="100" Height="30"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
             </DataGrid.Columns>
 
             <DataGrid.RowDetailsTemplate>

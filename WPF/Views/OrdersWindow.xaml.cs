@@ -16,7 +16,7 @@ namespace WPF.Views
         private readonly IProductRepository _productRepo;
         private readonly ITableRepository _tableRepo;
         private readonly string _token;
-        private readonly DispatcherTimer _refreshTimer;  
+        private readonly DispatcherTimer _refreshTimer;
 
         private class OrderDisplay
         {
@@ -35,7 +35,7 @@ namespace WPF.Views
             _productRepo = sp.GetRequiredService<IProductRepository>();
             _tableRepo = sp.GetRequiredService<ITableRepository>();
 
-            
+
             _refreshTimer = new DispatcherTimer
             {
                 Interval = TimeSpan.FromSeconds(5)
@@ -43,7 +43,7 @@ namespace WPF.Views
             _refreshTimer.Tick += async (_, __) => await LoadAllAsync();
             _refreshTimer.Start();
 
-            
+
             Loaded += async (_, __) => await LoadAllAsync();
         }
 
@@ -51,7 +51,7 @@ namespace WPF.Views
         {
             try
             {
-                
+
                 var products = await _productRepo.GetAllAsync(_token);
                 var prodDict = products.ToDictionary(p => p.Id, p => p);
 
@@ -60,7 +60,7 @@ namespace WPF.Views
 
                 var orders = await _orderRepo.GetAllAsync(_token);
 
-                
+
                 var displayList = new List<OrderDisplay>();
                 foreach (var o in orders)
                 {
@@ -84,10 +84,22 @@ namespace WPF.Views
             }
             catch (Exception ex)
             {
-                
+
                 Console.WriteLine($"Greška pri učitavanju: {ex.Message}");
             }
         }
+
+        private void OpenOrderDetails_Click(object sender, EventArgs e)
+        {
+            if (dgOrders.SelectedItem is not OrderDisplay selectedOrder)
+            {
+                MessageBox.Show("Please select an order!", "Error", MessageBoxButton.OK, MessageBoxImage.Warning); 
+                return;
+            }
+
+            var orderDetailsWindow = new OrderDetailsWindow(_token, selectedOrder.Order.Id);
+            orderDetailsWindow.Show();
+        } 
 
         protected override void OnClosed(EventArgs e)
         {

@@ -8,7 +8,11 @@ namespace WebAPI.AutoMapper
     {
         public MappingProfile()
         {
-            CreateMap<Order, OrderDto>().ReverseMap();
+            CreateMap<Order, OrderDto>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status)).ReverseMap();
+            CreateMap<Order, OrderStatusDto>().ReverseMap();
+            CreateMap<OrderDto, OrderStatusDto>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status)).ReverseMap();
             CreateMap<Table, TableDto>().ReverseMap();
             CreateMap<User, LoginDto>().ReverseMap();
             CreateMap<User, RegisterDto>().ReverseMap();

@@ -11,6 +11,7 @@
  using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using WebAPI.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -93,6 +94,8 @@ builder.Services.AddAuthentication("Bearer")
         };
     });
 
+builder.Services.AddSignalR();
+
 builder.Services.AddScoped<IRepositoryFactory, RepositoryFactory>();
 
 // AutoMapper
@@ -115,6 +118,13 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 
 var app = builder.Build();
+
+app.UseRouting();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<OrderHub>("/orderHub");
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
