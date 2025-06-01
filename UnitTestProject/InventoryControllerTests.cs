@@ -15,122 +15,186 @@ namespace UnitTestProject
     public class InventoryControllerTests
     {
         [Fact]
-        public async Task GetAll_Returns_Ok()
+        public async Task GetAll_Returns_Ok_With_Data()
         {
-            // Arrange
             var fakeService = A.Fake<IInventoryService>();
             var items = new List<InventoryDto> { new InventoryDto { Id = 1, ProductId = 10, Quantity = 5 } };
-            A.CallTo(() => fakeService.GetAllInventoryItemsAsync()).Returns(items);
+            A.CallTo(() => fakeService.GetAllInventoriesAsync()).Returns(items);
 
             var controller = new InventoryController(fakeService);
 
-            // Act
             var result = await controller.GetAll();
 
-            // Assert
             var okResult = Assert.IsType<OkObjectResult>(result.Result);
             var data = Assert.IsAssignableFrom<IEnumerable<InventoryDto>>(okResult.Value);
             Assert.Single(data);
         }
 
         [Fact]
-        public async Task GetById_Returns_Ok_When_Found()
+        public async Task GetAll_Returns_Ok_With_EmptyList()
         {
             var fakeService = A.Fake<IInventoryService>();
-            var dto = new InventoryDto { Id = 1, ProductId = 10, Quantity = 5 };
-            A.CallTo(() => fakeService.GetInventoryItemByIdAsync(1)).Returns(dto);
+            A.CallTo(() => fakeService.GetAllInventoriesAsync()).Returns(new List<InventoryDto>());
 
             var controller = new InventoryController(fakeService);
-            var result = await controller.GetById(1);
 
-            var ok = Assert.IsType<OkObjectResult>(result.Result);
-            Assert.Equal(dto, ok.Value);
-        }
+            var result = await controller.GetAll();
 
-
-        [Fact]
-        public async Task GetByProductId_Returns_Ok_When_Found()
-        {
-            var fakeService = A.Fake<IInventoryService>();
-            var dto = new InventoryDto { Id = 2, ProductId = 15, Quantity = 50 };
-            A.CallTo(() => fakeService.GetInventoryByProductIdAsync(15)).Returns(dto);
-
-            var controller = new InventoryController(fakeService);
-            var result = await controller.GetByProductId(15);
-
-            var ok = Assert.IsType<OkObjectResult>(result.Result);
-            Assert.Equal(dto, ok.Value);
+            var okResult = Assert.IsType<OkObjectResult>(result.Result);
+            var data = Assert.IsAssignableFrom<IEnumerable<InventoryDto>>(okResult.Value);
+            Assert.Empty(data);
         }
 
         [Fact]
-        public async Task GetByProductId_Returns_NotFound_When_Null()
+        public async Task GetAll_Returns_BadRequest_On_Exception()
         {
             var fakeService = A.Fake<IInventoryService>();
-            A.CallTo(() => fakeService.GetInventoryByProductIdAsync(99)).Returns((InventoryDto?)null);
+            A.CallTo(() => fakeService.GetAllInventoriesAsync()).Throws(new Exception("Database error"));
 
             var controller = new InventoryController(fakeService);
-            var result = await controller.GetByProductId(99);
 
-            Assert.IsType<NotFoundResult>(result.Result);
-        }
-
-        [Fact]
-        public async Task Create_Returns_CreatedAt_When_Successful()
-        {
-            var fakeService = A.Fake<IInventoryService>();
-            var input = new InventoryDto { ProductId = 10, Quantity = 20 };
-            var created = new InventoryDto { Id = 1, ProductId = 10, Quantity = 20 };
-
-            A.CallTo(() => fakeService.CreateInventoryItemAsync(input)).Returns(created);
-
-            var controller = new InventoryController(fakeService);
-            var result = await controller.Create(input);
-
-            var createdResult = Assert.IsType<CreatedAtActionResult>(result.Result);
-            Assert.Equal(created, createdResult.Value);
-        }
-
-        [Fact]
-        public async Task Create_Returns_BadRequest_On_Exception()
-        {
-            var fakeService = A.Fake<IInventoryService>();
-            var input = new InventoryDto { ProductId = 10, Quantity = 20 };
-
-            A.CallTo(() => fakeService.CreateInventoryItemAsync(input))
-                .Throws(new InvalidOperationException("Something went wrong"));
-
-            var controller = new InventoryController(fakeService);
-            var result = await controller.Create(input);
+            var result = await controller.GetAll();
 
             var badRequest = Assert.IsType<BadRequestObjectResult>(result.Result);
-            Assert.Equal("Something went wrong", badRequest.Value);
+            Assert.Equal("Database error", badRequest.Value);
         }
 
         [Fact]
-        public async Task Update_Returns_NotFound_On_KeyNotFound()
+        public async Task AddProductToInventory_Returns_Ok_When_Successful()
         {
             var fakeService = A.Fake<IInventoryService>();
-            var dto = new InventoryDto { Id = 1, ProductId = 10, Quantity = 50 };
+            var inventoryDto = new InventoryDto { ProductId = 10, Quantity = 5 };
 
-            A.CallTo(() => fakeService.UpdateInventoryItemAsync(1, dto))
-                .Throws(new KeyNotFoundException());
+            A.CallTo(() => fakeService.AddProductToInventoryAsync(inventoryDto)).Returns(true);
 
             var controller = new InventoryController(fakeService);
-            var result = await controller.Update(1, dto);
 
-            Assert.IsType<NotFoundResult>(result);
+            var result = await controller.AddProductToInventory(inventoryDto);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            Assert.Equal("Product added to inventory", okResult.Value);
         }
 
         [Fact]
-        public async Task Delete_Returns_NoContent_When_Successful()
+        public async Task AddProductToInventory_Returns_BadRequest_When_ProductAlreadyExists()
         {
             var fakeService = A.Fake<IInventoryService>();
-            A.CallTo(() => fakeService.DeleteInventoryItemAsync(1)).Returns(Task.CompletedTask);
+            var inventoryDto = new InventoryDto { ProductId = 10, Quantity = 5 };
+
+            A.CallTo(() => fakeService.AddProductToInventoryAsync(inventoryDto)).Returns(false);
 
             var controller = new InventoryController(fakeService);
-            var result = await controller.Delete(1);
 
-            Assert.IsType<NoContentResult>(result);
+            var result = await controller.AddProductToInventory(inventoryDto);
+
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("This product is already in inventory!", badRequestResult.Value);
+        }
+
+        [Fact]
+        public async Task AddProductToInventory_Returns_BadRequest_On_Exception()
+        {
+            var fakeService = A.Fake<IInventoryService>();
+            var inventoryDto = new InventoryDto { ProductId = 10, Quantity = 5 };
+
+            A.CallTo(() => fakeService.AddProductToInventoryAsync(inventoryDto)).Throws(new Exception("Database error"));
+
+            var controller = new InventoryController(fakeService);
+
+            var result = await controller.AddProductToInventory(inventoryDto);
+
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Database error", badRequestResult.Value);
+        }
+
+        [Fact]
+        public async Task UpdateInventory_Returns_Ok_When_Successful()
+        {
+            var fakeService = A.Fake<IInventoryService>();
+            var inventoryDto = new InventoryDto { Id = 1, ProductId = 10, Quantity = 10 };
+
+            A.CallTo(() => fakeService.UpdateInventoryAsync(inventoryDto)).Returns(true);
+
+            var controller = new InventoryController(fakeService);
+
+            var result = await controller.UpdateInventory(1, inventoryDto);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            Assert.Equal("Inventory updated successfully", okResult.Value);
+        }
+
+        [Fact]
+        public async Task UpdateInventory_Returns_NotFound_When_Inventory_Does_Not_Exist()
+        {
+            var fakeService = A.Fake<IInventoryService>();
+            var inventoryDto = new InventoryDto { Id = 99, ProductId = 20, Quantity = 5 };
+
+            A.CallTo(() => fakeService.UpdateInventoryAsync(inventoryDto)).Returns(false);
+
+            var controller = new InventoryController(fakeService);
+
+            var result = await controller.UpdateInventory(99, inventoryDto);
+
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal("Inventory not found", notFoundResult.Value);
+        }
+
+        [Fact]
+        public async Task UpdateInventory_Returns_BadRequest_On_Exception()
+        {
+            var fakeService = A.Fake<IInventoryService>();
+            var inventoryDto = new InventoryDto { Id = 1, ProductId = 10, Quantity = 5 };
+
+            A.CallTo(() => fakeService.UpdateInventoryAsync(inventoryDto)).Throws(new Exception("Database error"));
+
+            var controller = new InventoryController(fakeService);
+
+            var result = await controller.UpdateInventory(1, inventoryDto);
+
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Database error", badRequestResult.Value);
+        }
+
+        [Fact]
+        public async Task DeleteInventory_Returns_Ok_When_Successful()
+        {
+            var fakeService = A.Fake<IInventoryService>();
+            A.CallTo(() => fakeService.DeleteInventoryAsync(1)).Returns(true);
+
+            var controller = new InventoryController(fakeService);
+
+            var result = await controller.DeleteInventory(1);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            Assert.Equal("Inventory deleted successfully", okResult.Value);
+        }
+
+        [Fact]
+        public async Task DeleteInventory_Returns_NotFound_When_Inventory_Does_Not_Exist()
+        {
+            var fakeService = A.Fake<IInventoryService>();
+            A.CallTo(() => fakeService.DeleteInventoryAsync(99)).Returns(false);
+
+            var controller = new InventoryController(fakeService);
+
+            var result = await controller.DeleteInventory(99);
+
+            Assert.IsType<NotFoundObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task DeleteInventory_Returns_BadRequest_On_Exception()
+        {
+            var fakeService = A.Fake<IInventoryService>();
+
+            A.CallTo(() => fakeService.DeleteInventoryAsync(1)).Throws(new Exception("Database error"));
+
+            var controller = new InventoryController(fakeService);
+
+            var result = await controller.DeleteInventory(1);
+
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Database error", badRequestResult.Value);
         }
     }
 }
