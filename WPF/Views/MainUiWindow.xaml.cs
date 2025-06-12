@@ -38,7 +38,13 @@ namespace WPF.Views
 
             _hubConnection.On<int>("ReceiveOrderNotification", (orderId) =>
             {
-                MessageBox.Show($"New order received! Order ID: {orderId}", "New order", MessageBoxButton.OK, MessageBoxImage.Information);
+                var result = MessageBox.Show($"New order received! Order ID: {orderId}\nWould you like to view details?",
+                                 "New Order", MessageBoxButton.YesNo, MessageBoxImage.Information);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    Dispatcher.Invoke(() => OpenOrderDetails(orderId));
+                }
             });
 
             _hubConnection.On<int, string>("ReceiveOrderStatusUpdate", (orderId, newStatus) =>
@@ -54,6 +60,12 @@ namespace WPF.Views
 
             var userRole = JwtDecodeService.GetUserRole(token);
             AdminPanelButton.Visibility = userRole.Equals("Admin") ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void OpenOrderDetails(int orderId)
+        {
+            var ordersWindow = new OrdersWindow(_token);
+            ordersWindow.Show();
         }
 
         private void ProfileButton_Click(object sender, RoutedEventArgs e)

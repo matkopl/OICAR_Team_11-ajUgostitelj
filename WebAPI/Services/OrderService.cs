@@ -125,6 +125,7 @@ namespace WebAPI.Services
                 throw new InvalidOperationException("Completed orders can only transition to Paid status");
 
             order.Status = newStatus;
+            order.Notes = statusDto.Notes;
             repo.Update(order);
             await repo.SaveChangesAsync();
         }

@@ -17,8 +17,8 @@ namespace WPF.Views
         private readonly ITableRepository _tableRepo;
         private readonly string _token;
         private readonly DispatcherTimer _refreshTimer;
+        private int? _selectedOrderId; 
 
-        
         private class OrderDisplay
         {
             public OrderDto Order { get; set; } = default!;
@@ -47,32 +47,27 @@ namespace WPF.Views
             Loaded += async (_, __) => await LoadAllAsync();
         }
 
-        
+
         private async Task LoadAllAsync()
         {
             try
             {
-                
+                _selectedOrderId = (dgOrders.SelectedItem as OrderDisplay)?.Order.Id; 
+
                 var products = await _productRepo.GetAllAsync(_token);
                 var prodDict = products.ToDictionary(p => p.Id, p => p);
 
-                
                 var tables = await _tableRepo.GetAllAsync(_token);
                 var tableDict = tables.ToDictionary(t => t.Id, t => t.Name);
 
-                
                 var orders = await _orderRepo.GetAllAsync(_token);
-
-                
                 orders = orders.OrderByDescending(o => o.OrderDate).ToList();
 
-                
                 var displayList = new List<OrderDisplay>();
                 foreach (var o in orders)
                 {
-                    
                     var items = (await _orderRepo.GetItemsAsync(_token, o.Id)).ToList();
-                    
+
                     foreach (var it in items)
                     {
                         if (prodDict.TryGetValue(it.ProductId, out var prod))
@@ -82,7 +77,6 @@ namespace WPF.Views
                         }
                     }
 
-                    
                     displayList.Add(new OrderDisplay
                     {
                         Order = o,
@@ -91,17 +85,20 @@ namespace WPF.Views
                     });
                 }
 
-                
-                dgOrders.ItemsSource = displayList;
+                dgOrders.ItemsSource = displayList; 
+
+                if (_selectedOrderId.HasValue)
+                {
+                    SelectOrder(_selectedOrderId.Value); 
+                }
             }
             catch (Exception ex)
             {
-               
                 Console.WriteLine($"Greška pri učitavanju: {ex.Message}");
             }
         }
 
-        
+
         private void OpenOrderDetails_Click(object sender, RoutedEventArgs e)
         {
             if (dgOrders.SelectedItem is not OrderDisplay selectedOrder)
@@ -143,6 +140,17 @@ namespace WPF.Views
             {
                 MessageBox.Show($"Greška pri brisanju narudžbe:\n{ex.Message}",
                                 "Greška", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        public void SelectOrder(int orderId)
+        {
+            var selectedOrder = dgOrders.Items.Cast<OrderDto>().FirstOrDefault(o => o.Id == orderId);
+
+            if (selectedOrder != null)
+            {
+                dgOrders.SelectedItem = selectedOrder;
+                dgOrders.ScrollIntoView(selectedOrder);
             }
         }
 
