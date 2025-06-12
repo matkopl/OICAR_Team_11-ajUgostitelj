@@ -9,7 +9,8 @@ namespace WebAPI.AutoMapper
         public MappingProfile()
         {
             CreateMap<Order, OrderDto>()
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status)).ReverseMap();
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+                .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes)).ReverseMap();
             CreateMap<Order, OrderStatusDto>().ReverseMap();
             CreateMap<OrderDto, OrderStatusDto>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status)).ReverseMap();
@@ -19,7 +20,8 @@ namespace WebAPI.AutoMapper
             CreateMap<User, ChangePasswordDto>().ReverseMap();
             CreateMap<Notification, NotificationDto>().ReverseMap();
             CreateMap<User, UserDto>()
-                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.Name)).ReverseMap();
+                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.Name))
+                .ForMember(dest => dest.IsAnonymized, opt => opt.MapFrom(src => src.IsAnonymized)).ReverseMap();
             CreateMap<User, CreateUserDto>().ReverseMap();
             CreateMap<User, UpdateUserDto>().ReverseMap();
             CreateMap<Product, ProductDto>().ReverseMap();

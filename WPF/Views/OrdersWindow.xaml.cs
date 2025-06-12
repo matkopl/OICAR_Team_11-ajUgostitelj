@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using WebAPI.DTOs;
@@ -26,10 +27,11 @@ namespace WPF.Views
             public IEnumerable<OrderItemDto> Items { get; set; } = Array.Empty<OrderItemDto>();
         }
 
-        public OrdersWindow(string token)
+        public OrdersWindow(string token, int? preselectedOrderId = null)
         {
             InitializeComponent();
             _token = token;
+            _selectedOrderId = preselectedOrderId;
 
             var sp = ((App)Application.Current).ServiceProvider;
             _orderRepo = sp.GetRequiredService<IOrderRepository>();
@@ -52,8 +54,6 @@ namespace WPF.Views
         {
             try
             {
-                _selectedOrderId = (dgOrders.SelectedItem as OrderDisplay)?.Order.Id; 
-
                 var products = await _productRepo.GetAllAsync(_token);
                 var prodDict = products.ToDictionary(p => p.Id, p => p);
 
@@ -85,11 +85,14 @@ namespace WPF.Views
                     });
                 }
 
-                dgOrders.ItemsSource = displayList; 
+                dgOrders.ItemsSource = displayList;
 
                 if (_selectedOrderId.HasValue)
                 {
-                    SelectOrder(_selectedOrderId.Value); 
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        SelectOrder(_selectedOrderId.Value);
+                    }), DispatcherPriority.Background);
                 }
             }
             catch (Exception ex)
@@ -145,7 +148,7 @@ namespace WPF.Views
 
         public void SelectOrder(int orderId)
         {
-            var selectedOrder = dgOrders.Items.Cast<OrderDto>().FirstOrDefault(o => o.Id == orderId);
+            var selectedOrder = dgOrders.Items.Cast<OrderDisplay>().FirstOrDefault(o => o.Order.Id == orderId);
 
             if (selectedOrder != null)
             {
@@ -158,6 +161,14 @@ namespace WPF.Views
         {
             _refreshTimer.Stop();
             base.OnClosed(e);
+        }
+
+        private void dgOrders_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (dgOrders.SelectedItem is OrderDisplay selectedOrder)
+            {
+                _selectedOrderId = selectedOrder.Order.Id;
+            }
         }
     }
 }

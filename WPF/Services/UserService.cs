@@ -16,7 +16,6 @@ namespace WPF.Services
         {
             _repository = repository;
         }
-
         public async Task<bool> CreateUserAsync(string username, CreateUserDto createUserDto)
         {
             return await _repository.CreateUserAsync(username, createUserDto);
@@ -40,6 +39,11 @@ namespace WPF.Services
         public async Task<bool> UpdateUserAsync(string token, UpdateUserDto updateUserDto)
         {
             return await _repository.UpdateUserAsync(token, updateUserDto);
+        }
+
+        public async Task<bool> AnonymizeUserAsync(string token, int userId)
+        {
+            return await _repository.AnonymizeUserAsync(token, userId);
         }
     }
 }

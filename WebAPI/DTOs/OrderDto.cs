@@ -7,5 +7,6 @@
         public OrderStatus Status { get; set; }
         public decimal TotalAmount { get; set; }
         public int TableId { get; set; }
+        public string? Notes { get; set; }
     }
 }

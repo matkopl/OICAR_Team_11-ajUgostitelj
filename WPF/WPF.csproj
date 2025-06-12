@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Images\danger.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\WebAPI\WebAPI.csproj" />
   </ItemGroup>
 
@@ -21,6 +25,10 @@
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.5" />
 
     <PackageReference Include="QRCoder" Version="1.6.0" />
+
+    <Resource Include="Images\danger.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
 
     <Page Update="Views\PaymentsCrudWindow.xaml">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>

@@ -14,5 +14,6 @@ namespace WPF.Services
         Task<bool> CreateUserAsync(string username, CreateUserDto createUserDto);
         Task<bool> UpdateUserAsync(string token, UpdateUserDto updateUserDto);
         Task<bool> DeleteUserAsync(string token, int userId);
+        Task<bool> AnonymizeUserAsync(string token, int userId);
     }
 }

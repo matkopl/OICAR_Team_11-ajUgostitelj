@@ -13,7 +13,7 @@ namespace WebAPI.Hubs
         public async Task NotifyOrderStatusChange(int orderId, OrderStatus newStatus)
         {
             var statusName = Enum.GetName(typeof(OrderStatus), newStatus);
-            await Clients.All.SendAsync("ReceiveOrderStatuUpdate", orderId, statusName);
+            await Clients.All.SendAsync("ReceiveOrderStatusUpdate", orderId, statusName);
         }
     }
 }

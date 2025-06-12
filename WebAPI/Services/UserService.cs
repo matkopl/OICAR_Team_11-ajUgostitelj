@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata.Ecma335;
 using WebAPI.DTOs;
 using WebAPI.Models;
 using WebAPI.Repository;
@@ -35,7 +36,6 @@ namespace WebAPI.Services
             var hash = PasswordHashProvider.GetHash(createUserDto.Password, salt);
 
             var newUser = _mapper.Map<User>(createUserDto);
-            newUser.Email = DataEncriptionProvider.Encrypt(newUser.Email);
             newUser.PwdSalt = salt;
             newUser.PwdHash = hash;
             newUser.RoleId = createUserDto.RoleId;
@@ -70,7 +70,7 @@ namespace WebAPI.Services
             {
                 Id = user.Id,
                 Username = user.Username,
-                Email = DataEncriptionProvider.Decrypt(user.Email),
+                Email = user.Email,
                 Role = user.Role != null ? user.Role.Name : (user.RoleId == 1 ? "Admin" : "User") 
             }).ToList();
         }
@@ -86,7 +86,6 @@ namespace WebAPI.Services
             }
 
             var userDto = _mapper.Map<UserDto>(user);
-            userDto.Email = DataEncriptionProvider.Decrypt(user.Email);
 
             return userDto;
         }
@@ -104,7 +103,6 @@ namespace WebAPI.Services
             }
 
             var userDto = _mapper.Map<UserDto>(user);
-            userDto.Email = DataEncriptionProvider.Decrypt(user.Email);
 
             return userDto;
         }
@@ -121,11 +119,36 @@ namespace WebAPI.Services
             }
 
             user.Username = updateUserDto.Username;
-            user.Email = DataEncriptionProvider.Encrypt(updateUserDto.Email);
+            user.Email = updateUserDto.Email;
             user.RoleId = updateUserDto.RoleId;
             userRepo.Update(user);
             await userRepo.SaveChangesAsync();
 
+            return true;
+        }
+
+        public async Task<bool> AnonymizeUserAsync(int userId)
+        {
+            var userRepo = _repositoryFactory.GetRepository<User>();
+            var user = await userRepo.GetByIdAsync(userId);
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            var salt = PasswordHashProvider.GetSalt();
+            var hash = PasswordHashProvider.GetHash(Guid.NewGuid().ToString(), salt);
+
+            user.Username = $"anonymoususer{user.Id}";
+            user.Email = $"anon{user.Id}@anon.com";
+            user.PwdSalt = salt;
+            user.PwdHash = hash;
+            user.RoleId = 3;
+            user.IsAnonymized = true;
+
+            userRepo.Update(user);
+            await userRepo.SaveChangesAsync();
             return true;
         }
     }

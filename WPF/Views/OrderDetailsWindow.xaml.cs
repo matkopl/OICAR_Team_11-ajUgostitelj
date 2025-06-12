@@ -44,6 +44,7 @@ namespace WPF.Views
             OrderIdText.Text = order.Id.ToString();
             StatusComboBox.ItemsSource = new[] { "Pending", "InProgress", "Completed", "Cancelled", "Paid" };
             StatusComboBox.SelectedItem = order.Status.ToString();
+            NotesTextBox.Text = order.Notes;
         }
 
         private async void UpdateStatus_ClickAsync(object sender, RoutedEventArgs e)

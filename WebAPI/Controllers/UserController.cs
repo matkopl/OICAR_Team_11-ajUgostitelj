@@ -135,5 +135,17 @@ namespace WebAPI.Controllers
                 throw;
             }
         }
+
+        [HttpPost("anonymize/{id}")]
+        public async Task <IActionResult> AnonymizeUser(int id)
+        {
+            var result = await _userService.AnonymizeUserAsync(id);
+            if (!result)
+            {
+                return NotFound();
+            }
+
+            return Ok("User anonymized");
+        }
     }
 }

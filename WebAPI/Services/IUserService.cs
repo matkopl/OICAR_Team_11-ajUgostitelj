@@ -10,5 +10,6 @@ namespace WebAPI.Services
         Task<bool> CreateUserAsync(CreateUserDto createUserDto);
         Task<bool> UpdateUserAsync(UpdateUserDto updateUserDto);
         Task<bool> DeleteUserAsync(int id);
+        Task<bool> AnonymizeUserAsync(int userId);
     }
 }
