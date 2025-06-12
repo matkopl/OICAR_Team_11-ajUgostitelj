@@ -27,5 +27,6 @@ namespace WebAPI.Models
 
         [Required]
         public OrderStatus Status { get; set; }
+        public string? Notes { get; set; }
     }
 }
