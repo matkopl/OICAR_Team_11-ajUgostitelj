@@ -64,7 +64,7 @@ namespace WPF.Views
 
         private void OpenOrderDetails(int orderId)
         {
-            var ordersWindow = new OrdersWindow(_token);
+            var ordersWindow = new OrdersWindow(_token, orderId);
             ordersWindow.Show();
         }
 

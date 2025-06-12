@@ -134,5 +134,21 @@ namespace WPF.Repositories
                 throw new Exception(e.Message);
             }
         }
+
+        public async Task<bool> AnonymizeUserAsync(string token, int userId)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _httpClient.PostAsync($"{_apiKey}/anonymize/{userId}", null);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception(error);
+            }
+
+            return true;
+        }
     }
 }
