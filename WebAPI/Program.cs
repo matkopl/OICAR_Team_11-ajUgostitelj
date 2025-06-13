@@ -31,7 +31,7 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 builder.Host.UseSerilog();
-
+builder.Services.AddSignalR();
 builder.Services.AddSwaggerGen(option =>
 {
     option.SwaggerDoc("v1",
@@ -118,7 +118,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 
 var app = builder.Build();
-
+app.MapHub<WebAPI.SignalR.OrderHub>("/orderHub");
 app.UseRouting();
 
 app.UseAuthentication();
