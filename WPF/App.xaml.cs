@@ -44,6 +44,10 @@ namespace WPF
             serviceCollection.AddScoped<IPaymentService, PaymentService>();
             serviceCollection.AddScoped<IInventoryRepository, InventoryRepository>();
             serviceCollection.AddScoped<IInventoryService, InventoryService>();
+            serviceCollection.AddScoped<ICategoryService, CategoryService>();
+
+
+
         }
     }
 }

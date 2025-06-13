@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
+﻿using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text;
 using System.Threading.Tasks;
 using WebAPI.DTOs;
 
@@ -30,6 +27,28 @@ namespace WPF.Repositories
             var resp = await _httpClient.GetAsync(BaseUrl);
             resp.EnsureSuccessStatusCode();
             return await resp.Content.ReadFromJsonAsync<IEnumerable<CategoryDto>>();
+        }
+
+        public async Task<CategoryDto> CreateAsync(string token, CategoryDto category)
+        {
+            SetAuth(token);
+            var resp = await _httpClient.PostAsJsonAsync(BaseUrl, category);
+            resp.EnsureSuccessStatusCode();
+            return await resp.Content.ReadFromJsonAsync<CategoryDto>();
+        }
+
+        public async Task UpdateAsync(string token, CategoryDto category)
+        {
+            SetAuth(token);
+            var resp = await _httpClient.PutAsJsonAsync($"{BaseUrl}/{category.Id}", category);
+            resp.EnsureSuccessStatusCode();
+        }
+
+        public async Task DeleteAsync(string token, int categoryId)
+        {
+            SetAuth(token);
+            var resp = await _httpClient.DeleteAsync($"{BaseUrl}/{categoryId}");
+            resp.EnsureSuccessStatusCode();
         }
     }
 }

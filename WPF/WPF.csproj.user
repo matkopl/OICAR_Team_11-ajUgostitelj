@@ -10,6 +10,9 @@
     <Compile Update="Views\AdminPanelWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\CategoryCrudWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\ChangePasswordWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -64,6 +67,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\AdminPanelWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\CategoryCrudWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\ChangePasswordWindow.xaml">

@@ -68,5 +68,12 @@ namespace WPF.Views
             var inventoryCrudWindow = new InventoryCrudWindow(_token, _inventoryService);
             inventoryCrudWindow.Show();
         }
+
+        private void OpenCategoryCrud_Click(object sender, RoutedEventArgs e)
+        {
+            var win = new CategoryCrudWindow(_token);
+            win.Show();
+        }
+
     }
 }
