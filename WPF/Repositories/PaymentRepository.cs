@@ -13,7 +13,7 @@ namespace WPF.Repositories
     public class PaymentRepository : IPaymentRepository
     {
         private readonly HttpClient _httpClient;
-        private readonly string _apiKey = "http://localhost:5207/api/payment";
+        private readonly string _apiKey = "api/payment";
 
         public PaymentRepository(HttpClient httpClient)
         {
