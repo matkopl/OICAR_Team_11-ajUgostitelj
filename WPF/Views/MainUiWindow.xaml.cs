@@ -33,7 +33,7 @@ namespace WPF.Views
             _token = token;
 
             _hubConnection = new HubConnectionBuilder()
-                .WithUrl("http://localhost:5207/orderHub")
+                .WithUrl("https://oicar-team-11-ajugostitelj-11.onrender.com/orderHub")
                 .Build();
 
             _hubConnection.On<int>("ReceiveOrderNotification", (orderId) =>
