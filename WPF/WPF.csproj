@@ -9,15 +9,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Viewmodels\**" />
+    <EmbeddedResource Remove="Viewmodels\**" />
+    <None Remove="Viewmodels\**" />
+    <Page Remove="Viewmodels\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Images\danger.jpg" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\WebAPI\WebAPI.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Viewmodels\" />
   </ItemGroup>
 
   <ItemGroup>
