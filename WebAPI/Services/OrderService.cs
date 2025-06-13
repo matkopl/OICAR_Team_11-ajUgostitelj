@@ -5,6 +5,8 @@ using WebAPI.Models;
 using WebAPI.Repository;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
+using Microsoft.AspNetCore.SignalR;
+using WebAPI.Hubs;
 
 namespace WebAPI.Services
 {
@@ -13,12 +15,14 @@ namespace WebAPI.Services
         private readonly AppDbContext _context;
         private readonly IRepositoryFactory _repositoryFactory;
         private readonly IMapper _mapper;
+        private readonly IHubContext<OrderHub> _signalR;
 
-        public OrderService(IRepositoryFactory repositoryFactory, IMapper mapper, AppDbContext context)
+        public OrderService(AppDbContext context, IRepositoryFactory repositoryFactory, IMapper mapper, IHubContext<OrderHub> signalR)
         {
+            _context = context;
             _repositoryFactory = repositoryFactory;
             _mapper = mapper;
-            _context = context;
+            _signalR = signalR;
         }
 
         public async Task<IEnumerable<OrderDto>> GetAllOrdersAsync()
@@ -128,6 +132,10 @@ namespace WebAPI.Services
             order.Notes = statusDto.Notes;
             repo.Update(order);
             await repo.SaveChangesAsync();
+
+            //za signalr
+            await _signalR.Clients.Group(statusDto.OrderId.ToString()).SendAsync("OrderStatusUpdated", order.Status.ToString());
+
         }
 
         public async Task<string> GetOrderStatusAsync(int orderId)
