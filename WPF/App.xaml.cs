@@ -26,7 +26,7 @@ namespace WPF
         {
             serviceCollection.AddSingleton(new HttpClient
             {
-                BaseAddress = new Uri("http://localhost:5207/")
+                BaseAddress = new Uri("https://oicar-team-11-ajugostitelj-11.onrender.com")
             });
 
             serviceCollection.AddScoped<MainWindow>();

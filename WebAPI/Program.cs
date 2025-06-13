@@ -32,6 +32,8 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
+builder.Services.AddSignalR();
+
 builder.Services.AddSwaggerGen(option =>
 {
     option.SwaggerDoc("v1",

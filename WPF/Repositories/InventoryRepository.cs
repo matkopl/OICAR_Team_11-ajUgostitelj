@@ -14,7 +14,7 @@ namespace WPF.Repositories
     public class InventoryRepository : IInventoryRepository
     {
         private readonly HttpClient _httpClient;
-        private readonly string _apiKey = "http://localhost:5207/api/inventory";
+        private readonly string _apiKey = "api/inventory";
 
         public InventoryRepository(HttpClient httpClient)
         {

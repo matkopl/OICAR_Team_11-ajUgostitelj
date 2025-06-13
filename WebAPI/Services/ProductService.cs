@@ -36,7 +36,17 @@ namespace WebAPI.Services
         public async Task<ProductDto> CreateProductAsync(ProductDto productDto)
         {
             var repo = _repositoryFactory.GetRepository<Product>();
-            var product = _mapper.Map<Product>(productDto);
+
+            var product = new Product
+            {
+                Name = productDto.Name,
+                Description = productDto.Description,
+                ImageUrl = productDto.ImageUrl,
+                Price = productDto.Price,
+                Quantity = productDto.Quantity,
+                CategoryId = productDto.CategoryId
+            };
+
 
             await repo.AddAsync(product);
             await repo.SaveChangesAsync();

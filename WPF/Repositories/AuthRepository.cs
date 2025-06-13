@@ -8,7 +8,7 @@ namespace WPF.Repositories
     public class AuthRepository : IAuthRepository
     {
         private readonly HttpClient _httpClient;
-        private readonly string _apiKey = "http://localhost:5207/api/auth";
+        private readonly string _apiKey = "api/auth";
 
         public AuthRepository(HttpClient httpClient)
         {

@@ -13,7 +13,7 @@ namespace WPF.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly HttpClient _httpClient;
-        private readonly string _apiKey = "http://localhost:5207/api/user";
+        private readonly string _apiKey = "api/user";
 
         public UserRepository(HttpClient httpClient)
         {
