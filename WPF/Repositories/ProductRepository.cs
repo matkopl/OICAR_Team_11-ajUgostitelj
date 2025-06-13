@@ -55,5 +55,13 @@ namespace WPF.Repositories
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<ProductDto>();
         }
+        public async Task<IEnumerable<ProductDto>> GetByCategoryAsync(string token, int categoryId)
+        {
+            SetAuth(token);
+            
+            var resp = await _httpClient.GetAsync($"{BaseUrl}/byCategory/{categoryId}");
+            resp.EnsureSuccessStatusCode();
+            return await resp.Content.ReadFromJsonAsync<IEnumerable<ProductDto>>();
+        }
     }
 }

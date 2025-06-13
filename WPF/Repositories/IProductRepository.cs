@@ -11,5 +11,7 @@ namespace WPF.Repositories
         Task<ProductDto> CreateAsync(string token, ProductDto product);
         Task UpdateAsync(string token, int id, ProductDto product);
         Task DeleteAsync(string token, int id);
+        Task<IEnumerable<ProductDto>> GetByCategoryAsync(string token, int categoryId);
+
     }
 }

@@ -7,8 +7,11 @@ using WebAPI.DTOs;
 
 namespace WPF.Repositories
 {
-    internal interface ICategoryRepository
+    public interface ICategoryRepository
     {
         Task<IEnumerable<CategoryDto>> GetAllAsync(string token);
+        Task<CategoryDto> CreateAsync(string token, CategoryDto category);
+        Task UpdateAsync(string token, CategoryDto category);
+        Task DeleteAsync(string token, int categoryId);
     }
 }
