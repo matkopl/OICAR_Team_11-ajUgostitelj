@@ -5,58 +5,69 @@
         Height="400" Width="500"
         WindowStartupLocation="CenterScreen"
         Background="#FAFAFA">
+
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            
             <RowDefinition Height="*"/>
-            
             <RowDefinition Height="Auto"/>
-            
         </Grid.RowDefinitions>
 
-        
+        <!-- new category input -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-            <TextBox x:Name="tbNewCategory"
-                     Width="200"
-                     VerticalContentAlignment="Center"
-                     />
-            <Button Content="Dodaj"
-                    Width="80"
-                    Margin="8,0,0,0"
-                    Click="BtnAdd_Click"/>
+            <TextBox 
+                x:Name="tbNewCategory"
+                AutomationProperties.AutomationId="tbNewCategory"
+                Width="200"
+                VerticalContentAlignment="Center"/>
+            <Button 
+                x:Name="btnAdd"
+                AutomationProperties.AutomationId="btnAdd"
+                Content="Dodaj"
+                Width="80"
+                Margin="8,0,0,0"
+                Click="BtnAdd_Click"/>
         </StackPanel>
 
-        
-        <DataGrid x:Name="dgCategories"
-                  Grid.Row="1"
-                  AutoGenerateColumns="False"
-                  CanUserAddRows="False"
-                  RowEditEnding="DgCategories_RowEditEnding"
-                  IsReadOnly="False"
-                  FontSize="14">
+        <!-- categories grid -->
+        <DataGrid 
+            x:Name="dgCategories"
+            AutomationProperties.AutomationId="dgCategories"
+            Grid.Row="1"
+            AutoGenerateColumns="False"
+            CanUserAddRows="False"
+            IsReadOnly="False"
+            RowEditEnding="DgCategories_RowEditEnding"
+            FontSize="14">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Naziv"
-                                    Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
-                                    Width="*"/>
+                <DataGridTextColumn 
+                    Header="Naziv"
+                    Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                    Width="*" />
                 <DataGridTemplateColumn Header="Obriši" Width="80">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button Content="Obriši"
-                                    Click="BtnDelete_Click"
-                                    Width="60"/>
+                            <Button 
+                                x:Name="btnDelete"
+                                AutomationProperties.AutomationId="btnDelete"
+                                Content="Obriši"
+                                Width="60"
+                                Click="BtnDelete_Click"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
 
-        
-        <Button Grid.Row="2"
-                Content="Zatvori"
-                Width="80"
-                HorizontalAlignment="Right"
-                Margin="0,10,0,0"
-                Click="BtnClose_Click"/>
+        <!-- close -->
+        <Button 
+            x:Name="btnClose"
+            AutomationProperties.AutomationId="btnClose"
+            Grid.Row="2"
+            Content="Zatvori"
+            Width="80"
+            HorizontalAlignment="Right"
+            Margin="0,10,0,0"
+            Click="BtnClose_Click"/>
     </Grid>
 </Window>
