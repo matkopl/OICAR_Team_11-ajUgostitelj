@@ -97,8 +97,17 @@ namespace WPF.Views
 
                 if (apiResult)
                 {
-                    MessageBox.Show("Profil je uspješno anonimiziran! Bit ćete odjavljeni iz aplikacije.");
-                    Application.Current.Shutdown(); 
+                    var messageResult = MessageBox.Show(
+                        "Profil je uspješno anonimiziran! Bit ćete odjavljeni iz aplikacije.",
+                        "Anonimizacija uspješna",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+
+                    if (messageResult == MessageBoxResult.OK)
+                    {
+                        Application.Current.Shutdown();
+                    }
+
                 }
                 else
                 {
