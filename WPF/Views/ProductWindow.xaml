@@ -9,124 +9,126 @@
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            
+            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
-            
-            <RowDefinition Height="Auto"/>
-            
         </Grid.RowDefinitions>
 
-        
+        <!-- Row 0: unos novog proizvoda -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
-            
             <TextBox x:Name="tbName"
-                     Width="120"
-                     Text="Naziv proizvoda"
-                     Foreground="Gray"
-                     VerticalContentAlignment="Center"
-                     GotFocus="Tb_GotFocus"
-                     LostFocus="Tb_LostFocus"/>
-
-            
+               AutomationProperties.AutomationId="tbName"
+               Width="120"
+               Text="Naziv proizvoda"
+               Foreground="Gray"
+               VerticalContentAlignment="Center"
+               GotFocus="Tb_GotFocus"
+               LostFocus="Tb_LostFocus"/>
             <TextBox x:Name="tbDesc"
-                     Width="200"
-                     Text="Opis "
-                     Foreground="Gray"
-                     VerticalContentAlignment="Center"
-                     GotFocus="Tb_GotFocus"
-                     LostFocus="Tb_LostFocus"/>
-
-           
+               AutomationProperties.AutomationId="tbDesc"
+               Width="200"
+               Text="Opis "
+               Foreground="Gray"
+               VerticalContentAlignment="Center"
+               GotFocus="Tb_GotFocus"
+               LostFocus="Tb_LostFocus"
+               Margin="8,0,0,0"/>
             <TextBox x:Name="tbPrice"
-                     Width="80"
-                     Text="Cijena"
-                     Foreground="Gray"
-                     VerticalContentAlignment="Center"
-                     GotFocus="Tb_GotFocus"
-                     LostFocus="Tb_LostFocus"/>
-
-           
+               AutomationProperties.AutomationId="tbPrice"
+               Width="80"
+               Text="Cijena"
+               Foreground="Gray"
+               VerticalContentAlignment="Center"
+               GotFocus="Tb_GotFocus"
+               LostFocus="Tb_LostFocus"
+               Margin="8,0,0,0"/>
             <TextBox x:Name="tbQuantity"
-                     Width="80"
-                     Text="Količina"
-                     Foreground="Gray"
-                     VerticalContentAlignment="Center"
-                     GotFocus="Tb_GotFocus"
-                     LostFocus="Tb_LostFocus"/>
-
-            
+               AutomationProperties.AutomationId="tbQuantity"
+               Width="80"
+               Text="Količina"
+               Foreground="Gray"
+               VerticalContentAlignment="Center"
+               GotFocus="Tb_GotFocus"
+               LostFocus="Tb_LostFocus"
+               Margin="8,0,0,0"/>
             <TextBox x:Name="tbImageUrl"
-                     Width="200"
-                     Text="Image URL"
-                     Foreground="Gray"
-                     VerticalContentAlignment="Center"
-                     GotFocus="Tb_GotFocus"
-                     LostFocus="Tb_LostFocus"/>
-
-            
+               AutomationProperties.AutomationId="tbImageUrl"
+               Width="200"
+               Text="Image URL"
+               Foreground="Gray"
+               VerticalContentAlignment="Center"
+               GotFocus="Tb_GotFocus"
+               LostFocus="Tb_LostFocus"
+               Margin="8,0,0,0"/>
             <ComboBox x:Name="cbCategory"
-                      Width="120"
-                      DisplayMemberPath="Name"
-                      SelectedValuePath="Id"
-                      VerticalContentAlignment="Center"/>
-
-            
-            <Button Content="Dodaj"
-                    Width="80"
-                    Click="BtnAdd_Click"/>
+                AutomationProperties.AutomationId="cbCategory"
+                Width="120"
+                DisplayMemberPath="Name"
+                SelectedValuePath="Id"
+                VerticalContentAlignment="Center"
+                Margin="8,0,0,0"/>
+            <Button x:Name="btnAdd"
+              AutomationProperties.AutomationId="btnAdd"
+              Content="Dodaj"
+              Width="80"
+              Margin="8,0,0,0"
+              Click="BtnAdd_Click"/>
         </StackPanel>
 
-        
+        <!-- Row 1: DataGrid proizvoda -->
         <DataGrid x:Name="dgProducts"
-                  Grid.Row="1"
-                  AutoGenerateColumns="False"
-                  CanUserAddRows="False"
-                  IsReadOnly="False"
-                  RowHeight="30"
-                  FontSize="14"
-                  RowEditEnding="DgProducts_RowEditEnding"
-                  Margin="0,0,0,12">
+              AutomationProperties.AutomationId="dgProducts"
+              Grid.Row="1"
+              AutoGenerateColumns="False"
+              CanUserAddRows="False"
+              IsReadOnly="False"
+              RowHeight="30"
+              FontSize="14"
+              RowEditEnding="DgProducts_RowEditEnding"
+              Margin="0,0,0,12">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Naziv"
-                                    Binding="{Binding Name}"
-                                    Width="2*"
-                                    MinWidth="120"/>
+                            Binding="{Binding Name}"
+                            Width="2*"
+                            MinWidth="120"/>
                 <DataGridTextColumn Header="Opis"
-                                    Binding="{Binding Description}"
-                                    Width="3*"
-                                    MinWidth="150"/>
+                            Binding="{Binding Description}"
+                            Width="3*"
+                            MinWidth="150"/>
                 <DataGridTextColumn Header="Cijena"
-                                    Binding="{Binding Price, StringFormat=N2}"
-                                    Width="*"
-                                    MinWidth="80"/>
+                            Binding="{Binding Price, StringFormat=N2}"
+                            Width="*"
+                            MinWidth="80"/>
                 <DataGridTextColumn Header="Kategorija"
-                                    Binding="{Binding CategoryName}"
-                                    Width="*"
-                                    MinWidth="100"/>
+                            Binding="{Binding CategoryName}"
+                            Width="*"
+                            MinWidth="100"/>
                 <DataGridTextColumn Header="Količina"
-                                    Binding="{Binding Quantity}"
-                                    Width="80"
-                                    MinWidth="60"/>
+                            Binding="{Binding Quantity}"
+                            Width="80"
+                            MinWidth="60"/>
                 <DataGridTextColumn Header="Image URL"
-                                    Binding="{Binding ImageUrl}"
-                                    Width="2*"
-                                    MinWidth="150"/>
+                            Binding="{Binding ImageUrl}"
+                            Width="2*"
+                            MinWidth="150"/>
                 <DataGridTemplateColumn Header="Akcija" Width="100">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Content="Obriši"
-                                    Click="BtnDelete_Click"/>
+                      AutomationProperties.AutomationId="btnDelete"
+                      Click="BtnDelete_Click"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
 
-        
-        <Button Content="Zatvori"
-                Grid.Row="2"
-                HorizontalAlignment="Right"
-                Width="80"
-                Click="BtnClose_Click"/>
+        <!-- Row 2: Zatvori -->
+        <Button x:Name="btnClose"
+            AutomationProperties.AutomationId="btnClose"
+            Content="Zatvori"
+            Grid.Row="2"
+            Width="80"
+            HorizontalAlignment="Right"
+            Click="BtnClose_Click"/>
     </Grid>
 </Window>

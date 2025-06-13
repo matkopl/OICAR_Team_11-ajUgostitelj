@@ -8,52 +8,65 @@
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- gumbi za Add/Delete -->
+            <!-- Add/Delete -->
             <RowDefinition Height="*"/>
-            <!-- DataGrid stolova -->
+            <!-- DataGrid -->
             <RowDefinition Height="Auto"/>
-            <!-- QR gumb + preview -->
+            <!-- QR -->
         </Grid.RowDefinitions>
 
-        <!-- Row0: Dodaj / Obriši stol -->
-        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,8" >
+        <!-- Row 0: Add / Delete -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
             <TextBox x:Name="tbNewTableName"
-               Width="200"
-               VerticalContentAlignment="Center"
-               />
-            <Button Content="Dodaj stol" Width="100" Click="BtnAddTable_Click"/>
-            <Button Content="Obriši odabrani" Width="120" Click="BtnDeleteTable_Click"/>
+                     AutomationProperties.AutomationId="tbNewTableName"
+                     Width="200" VerticalContentAlignment="Center"/>
+            <Button x:Name="btnAddTable"
+                    AutomationProperties.AutomationId="btnAddTable"
+                    Content="Dodaj stol"
+                    Width="100"
+                    Margin="8,0,0,0"
+                    Click="BtnAddTable_Click"/>
+            <Button x:Name="btnDeleteTable"
+                    AutomationProperties.AutomationId="btnDeleteTable"
+                    Content="Obriši odabrani"
+                    Width="120"
+                    Margin="8,0,0,0"
+                    Click="BtnDeleteTable_Click"/>
         </StackPanel>
 
-        <!-- Row1: Pregled stolova -->
+        <!-- Row 1: DataGrid of tables -->
         <DataGrid x:Name="dgTables"
-              Grid.Row="1"
-              AutoGenerateColumns="False"
-              CanUserAddRows="False"
-              IsReadOnly="True"
-              SelectionMode="Single"
-              Margin="0,0,0,8">
+                  AutomationProperties.AutomationId="dgTables"
+                  Grid.Row="1"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  IsReadOnly="True"
+                  SelectionMode="Single"
+                  Margin="0,0,0,8">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID"    Binding="{Binding Id}"   Width="80"/>
                 <DataGridTextColumn Header="Naziv" Binding="{Binding Name}" Width="*"/>
             </DataGrid.Columns>
         </DataGrid>
 
-        <!-- Row2: QR kod -->
-        <StackPanel Orientation="Horizontal" Grid.Row="2"  VerticalAlignment="Center">
+        <!-- Row 2: QR controls -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Center">
             <Button x:Name="btnGenerateQr"
-              Content="Generiraj QR kod"
-              Width="150"
-              Click="BtnGenerateQr_Click"/>
+                    AutomationProperties.AutomationId="btnGenerateQr"
+                    Content="Generiraj QR kod"
+                    Width="150"
+                    Click="BtnGenerateQr_Click"/>
             <Image x:Name="imgQr"
-             Width="150" Height="150"
-             Margin="0,0,12,0"
-             Stretch="Uniform"/>
+                   AutomationProperties.AutomationId="imgQr"
+                   Width="150" Height="150"
+                   Margin="12,0,12,0"
+                   Stretch="Uniform"/>
             <Button x:Name="btnSaveQr"
-              Content="Spremi PNG..."
-              Width="100"
-              IsEnabled="False"
-              Click="BtnSaveQr_Click"/>
+                    AutomationProperties.AutomationId="btnSaveQr"
+                    Content="Spremi PNG..."
+                    Width="100"
+                    IsEnabled="False"
+                    Click="BtnSaveQr_Click"/>
         </StackPanel>
     </Grid>
 </Window>
