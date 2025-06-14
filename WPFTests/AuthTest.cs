@@ -15,7 +15,6 @@ namespace WPFTests
         [Test]
         public void User_Can_Register_Login_ChangePassword_And_Anonymize()
         {
-            // Generiraj random username/email za test
             var rand = new Random();
             var username = $"testuser{rand.Next(10000, 99999)}";
             var email = $"{username}@test.com";
@@ -148,15 +147,29 @@ namespace WPFTests
 
 
                 // 7. ANONIMIZIRAJ KORISNIKA
-                profileWindow = app.GetAllTopLevelWindows(automation)
-                    .FirstOrDefault(w => w.Title.Contains("Profile - ajUgostitelj"));
+                profileWindow = Retry.WhileNull(() =>
+                    app.GetAllTopLevelWindows(automation)
+                        .FirstOrDefault(w => w.Title.Contains("Profile - ajUgostitelj")),
+                    TimeSpan.FromSeconds(10)).Result;
+                Assert.That(profileWindow, Is.Not.Null, "Profile window not found.");
 
-
-                var anonCheck = profileWindow.FindFirstDescendant(cf => cf.ByAutomationId("AnonCheckBox")).AsCheckBox();
+                var anonCheck = Retry.WhileNull(() =>
+                    profileWindow.FindFirstDescendant(cf => cf.ByAutomationId("AnonCheckBox"))?.AsCheckBox(),
+                    TimeSpan.FromSeconds(5)).Result;
                 Assert.That(anonCheck, Is.Not.Null, "AnonCheckBox not found.");
 
-                anonCheck.Focus();
-                anonCheck.Click(); 
+                if (anonCheck.IsEnabled && anonCheck.IsChecked != true)
+                {
+                    anonCheck.Focus();
+                    anonCheck.Click();
+                    Thread.Sleep(200);
+                }
+                else
+                {
+                    Console.WriteLine("Checkbox je već checked ili nije enabled, preskačem klik.");
+                }
+
+
 
                 var anonMsgBox = Retry.WhileNull(() =>
                     automation.GetDesktop().FindAllChildren()
@@ -171,16 +184,14 @@ namespace WPFTests
                 Assert.That(yesButton, Is.Not.Null, "Yes button not found.");
                 yesButton.AsButton().Invoke();
 
-
-                // KLIKNI OK NA ZAVRŠNU PORUKU
                 var anonSuccessBox = Retry.WhileNull(() =>
-    automation.GetDesktop().FindAllChildren()
-        .FirstOrDefault(w =>
-            w.FindFirstDescendant(cf =>
-                cf.ByControlType(FlaUI.Core.Definitions.ControlType.Text)
-            )?.AsLabel().Text.ToLower().Contains("uspješno anonimiziran") == true
-        ),
-    TimeSpan.FromSeconds(10)).Result;
+                    automation.GetDesktop().FindAllChildren()
+                        .FirstOrDefault(w =>
+                        w.FindFirstDescendant(cf =>
+                    cf.ByControlType(FlaUI.Core.Definitions.ControlType.Text)
+                    )?.AsLabel().Text.ToLower().Contains("uspješno anonimiziran") == true
+                        ),
+                        TimeSpan.FromSeconds(10)).Result;
                 Assert.That(anonSuccessBox, Is.Not.Null, "Anonimizacija success MessageBox not found.");
 
                 var okButton = anonSuccessBox.FindAllDescendants(cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.Button))
@@ -190,9 +201,6 @@ namespace WPFTests
                     );
                 Assert.That(okButton, Is.Not.Null, "OK button not found in anonimizacija MessageBox.");
                 okButton.AsButton().Invoke();
-
-
-                // Ovdje će se aplikacija zatvoriti (Application.Current.Shutdown())
             }
         }
     }
